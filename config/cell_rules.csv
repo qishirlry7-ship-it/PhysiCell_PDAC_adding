@@ -41,3 +41,17 @@ PD-L1lo_tumor,glucose,decreases,necrosis,0,0.05,3,0
 PD-L1hi_tumor,glucose,decreases,necrosis,0,0.05,3,0
 PD-L1lo_tumor,oxygen,decreases,lactate secretion,0.1,5,3,0
 PD-L1hi_tumor,oxygen,decreases,lactate secretion,0.1,5,3,0
+PD-1hi_CD137lo_CD8_Tcell,ECM,decreases,migration speed,0,2,3,0
+PD-1hi_CD137lo_CD8_Tcell,CXCL12,decreases,migration speed,0,2,2,0
+PD-1lo_CD137lo_CD8_Tcell,ECM,decreases,migration speed,0,2,3,0
+PD-1lo_CD137lo_CD8_Tcell,CXCL12,decreases,migration speed,0,2,2,0
+PD-1hi_CD137hi_CD8_Tcell,ECM,decreases,migration speed,0,2,3,0
+PD-1hi_CD137hi_CD8_Tcell,CXCL12,decreases,migration speed,0,2,2,0
+PD-1lo_CD137hi_CD8_Tcell,ECM,decreases,migration speed,0,2,3,0
+PD-1lo_CD137hi_CD8_Tcell,CXCL12,decreases,migration speed,0,2,2,0
+PD-1hi_CD4_Tcell,ECM,decreases,migration speed,0,2,3,0
+PD-1hi_CD4_Tcell,CXCL12,decreases,migration speed,0,2,2,0
+PD-1lo_CD4_Tcell,ECM,decreases,migration speed,0,2,3,0
+PD-1lo_CD4_Tcell,CXCL12,decreases,migration speed,0,2,2,0
+Treg,ECM,decreases,migration speed,0,2,3,0
+Treg,CXCL12,decreases,migration speed,0,2,2,0
