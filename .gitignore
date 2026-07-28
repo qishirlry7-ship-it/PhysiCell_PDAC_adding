@@ -1,0 +1,9 @@
+*.o
+*.log
+*.err
+project
+project.exe
+output/*
+!output/empty.txt
+outputs/
+.DS_Store
