@@ -95,7 +95,7 @@
                 <boundary_value ID="zmax" enabled="False">0.0</boundary_value>
             </Dirichlet_options>
         </variable>
-        <variable name="pro-inflammatory factor" units="dimensionless" ID="2">
+        <variable name="IFN_gamma" units="dimensionless" ID="2">
             <physical_parameter_set>
                 <diffusion_coefficient units="micron^2/min">1000</diffusion_coefficient>
                 <decay_rate units="1/min">0.1</decay_rate>
@@ -111,7 +111,7 @@
                 <boundary_value ID="zmax" enabled="False">0.0</boundary_value>
             </Dirichlet_options>
         </variable>
-        <variable name="anti-inflammatory factor" units="dimensionless" ID="3">
+        <variable name="TGF_beta" units="dimensionless" ID="3">
             <physical_parameter_set>
                 <diffusion_coefficient units="micron^2/min">1000</diffusion_coefficient>
                 <decay_rate units="1/min">0.1</decay_rate>
@@ -137,7 +137,183 @@
                 <filename>./config/dirichlet.mat</filename>
             </dirichlet_nodes>
         </options>
-    </microenvironment_setup>
+            <variable name="IL10" units="dimensionless" ID="4">
+            <physical_parameter_set>
+                <diffusion_coefficient units="micron^2/min">6000</diffusion_coefficient>
+                <decay_rate units="1/min">0.015</decay_rate>
+            </physical_parameter_set>
+            <initial_condition units="dimensionless">0.0</initial_condition>
+            <Dirichlet_boundary_condition units="dimensionless" enabled="False">0.0</Dirichlet_boundary_condition>
+            <Dirichlet_options>
+                <boundary_value ID="xmin" enabled="False">0.0</boundary_value>
+                <boundary_value ID="xmax" enabled="False">0.0</boundary_value>
+                <boundary_value ID="ymin" enabled="False">0.0</boundary_value>
+                <boundary_value ID="ymax" enabled="False">0.0</boundary_value>
+                <boundary_value ID="zmin" enabled="False">0.0</boundary_value>
+                <boundary_value ID="zmax" enabled="False">0.0</boundary_value>
+            </Dirichlet_options>
+        </variable>
+        <variable name="IL6" units="dimensionless" ID="5">
+            <physical_parameter_set>
+                <diffusion_coefficient units="micron^2/min">7000</diffusion_coefficient>
+                <decay_rate units="1/min">0.01</decay_rate>
+            </physical_parameter_set>
+            <initial_condition units="dimensionless">0.0</initial_condition>
+            <Dirichlet_boundary_condition units="dimensionless" enabled="False">0.0</Dirichlet_boundary_condition>
+            <Dirichlet_options>
+                <boundary_value ID="xmin" enabled="False">0.0</boundary_value>
+                <boundary_value ID="xmax" enabled="False">0.0</boundary_value>
+                <boundary_value ID="ymin" enabled="False">0.0</boundary_value>
+                <boundary_value ID="ymax" enabled="False">0.0</boundary_value>
+                <boundary_value ID="zmin" enabled="False">0.0</boundary_value>
+                <boundary_value ID="zmax" enabled="False">0.0</boundary_value>
+            </Dirichlet_options>
+        </variable>
+        <variable name="CCL2" units="dimensionless" ID="6">
+            <physical_parameter_set>
+                <diffusion_coefficient units="micron^2/min">8000</diffusion_coefficient>
+                <decay_rate units="1/min">0.02</decay_rate>
+            </physical_parameter_set>
+            <initial_condition units="dimensionless">0.0</initial_condition>
+            <Dirichlet_boundary_condition units="dimensionless" enabled="False">0.0</Dirichlet_boundary_condition>
+            <Dirichlet_options>
+                <boundary_value ID="xmin" enabled="False">0.0</boundary_value>
+                <boundary_value ID="xmax" enabled="False">0.0</boundary_value>
+                <boundary_value ID="ymin" enabled="False">0.0</boundary_value>
+                <boundary_value ID="ymax" enabled="False">0.0</boundary_value>
+                <boundary_value ID="zmin" enabled="False">0.0</boundary_value>
+                <boundary_value ID="zmax" enabled="False">0.0</boundary_value>
+            </Dirichlet_options>
+        </variable>
+        <variable name="CXCL9_10" units="dimensionless" ID="7">
+            <physical_parameter_set>
+                <diffusion_coefficient units="micron^2/min">8000</diffusion_coefficient>
+                <decay_rate units="1/min">0.02</decay_rate>
+            </physical_parameter_set>
+            <initial_condition units="dimensionless">0.0</initial_condition>
+            <Dirichlet_boundary_condition units="dimensionless" enabled="False">0.0</Dirichlet_boundary_condition>
+            <Dirichlet_options>
+                <boundary_value ID="xmin" enabled="False">0.0</boundary_value>
+                <boundary_value ID="xmax" enabled="False">0.0</boundary_value>
+                <boundary_value ID="ymin" enabled="False">0.0</boundary_value>
+                <boundary_value ID="ymax" enabled="False">0.0</boundary_value>
+                <boundary_value ID="zmin" enabled="False">0.0</boundary_value>
+                <boundary_value ID="zmax" enabled="False">0.0</boundary_value>
+            </Dirichlet_options>
+        </variable>
+        <variable name="CXCL12" units="dimensionless" ID="8">
+            <physical_parameter_set>
+                <diffusion_coefficient units="micron^2/min">5000</diffusion_coefficient>
+                <decay_rate units="1/min">0.005</decay_rate>
+            </physical_parameter_set>
+            <initial_condition units="dimensionless">0.0</initial_condition>
+            <Dirichlet_boundary_condition units="dimensionless" enabled="False">0.0</Dirichlet_boundary_condition>
+            <Dirichlet_options>
+                <boundary_value ID="xmin" enabled="False">0.0</boundary_value>
+                <boundary_value ID="xmax" enabled="False">0.0</boundary_value>
+                <boundary_value ID="ymin" enabled="False">0.0</boundary_value>
+                <boundary_value ID="ymax" enabled="False">0.0</boundary_value>
+                <boundary_value ID="zmin" enabled="False">0.0</boundary_value>
+                <boundary_value ID="zmax" enabled="False">0.0</boundary_value>
+            </Dirichlet_options>
+        </variable>
+        <variable name="CXCL1_2_5_8" units="dimensionless" ID="9">
+            <physical_parameter_set>
+                <diffusion_coefficient units="micron^2/min">8000</diffusion_coefficient>
+                <decay_rate units="1/min">0.02</decay_rate>
+            </physical_parameter_set>
+            <initial_condition units="dimensionless">0.0</initial_condition>
+            <Dirichlet_boundary_condition units="dimensionless" enabled="False">0.0</Dirichlet_boundary_condition>
+            <Dirichlet_options>
+                <boundary_value ID="xmin" enabled="False">0.0</boundary_value>
+                <boundary_value ID="xmax" enabled="False">0.0</boundary_value>
+                <boundary_value ID="ymin" enabled="False">0.0</boundary_value>
+                <boundary_value ID="ymax" enabled="False">0.0</boundary_value>
+                <boundary_value ID="zmin" enabled="False">0.0</boundary_value>
+                <boundary_value ID="zmax" enabled="False">0.0</boundary_value>
+            </Dirichlet_options>
+        </variable>
+        <variable name="CCL22" units="dimensionless" ID="10">
+            <physical_parameter_set>
+                <diffusion_coefficient units="micron^2/min">7000</diffusion_coefficient>
+                <decay_rate units="1/min">0.02</decay_rate>
+            </physical_parameter_set>
+            <initial_condition units="dimensionless">0.0</initial_condition>
+            <Dirichlet_boundary_condition units="dimensionless" enabled="False">0.0</Dirichlet_boundary_condition>
+            <Dirichlet_options>
+                <boundary_value ID="xmin" enabled="False">0.0</boundary_value>
+                <boundary_value ID="xmax" enabled="False">0.0</boundary_value>
+                <boundary_value ID="ymin" enabled="False">0.0</boundary_value>
+                <boundary_value ID="ymax" enabled="False">0.0</boundary_value>
+                <boundary_value ID="zmin" enabled="False">0.0</boundary_value>
+                <boundary_value ID="zmax" enabled="False">0.0</boundary_value>
+            </Dirichlet_options>
+        </variable>
+        <variable name="CXCL13" units="dimensionless" ID="11">
+            <physical_parameter_set>
+                <diffusion_coefficient units="micron^2/min">7000</diffusion_coefficient>
+                <decay_rate units="1/min">0.01</decay_rate>
+            </physical_parameter_set>
+            <initial_condition units="dimensionless">0.0</initial_condition>
+            <Dirichlet_boundary_condition units="dimensionless" enabled="False">0.0</Dirichlet_boundary_condition>
+            <Dirichlet_options>
+                <boundary_value ID="xmin" enabled="False">0.0</boundary_value>
+                <boundary_value ID="xmax" enabled="False">0.0</boundary_value>
+                <boundary_value ID="ymin" enabled="False">0.0</boundary_value>
+                <boundary_value ID="ymax" enabled="False">0.0</boundary_value>
+                <boundary_value ID="zmin" enabled="False">0.0</boundary_value>
+                <boundary_value ID="zmax" enabled="False">0.0</boundary_value>
+            </Dirichlet_options>
+        </variable>
+        <variable name="ECM" units="dimensionless" ID="12">
+            <physical_parameter_set>
+                <diffusion_coefficient units="micron^2/min">1e-05</diffusion_coefficient>
+                <decay_rate units="1/min">0.0</decay_rate>
+            </physical_parameter_set>
+            <initial_condition units="dimensionless">0.0</initial_condition>
+            <Dirichlet_boundary_condition units="dimensionless" enabled="False">0.0</Dirichlet_boundary_condition>
+            <Dirichlet_options>
+                <boundary_value ID="xmin" enabled="False">0.0</boundary_value>
+                <boundary_value ID="xmax" enabled="False">0.0</boundary_value>
+                <boundary_value ID="ymin" enabled="False">0.0</boundary_value>
+                <boundary_value ID="ymax" enabled="False">0.0</boundary_value>
+                <boundary_value ID="zmin" enabled="False">0.0</boundary_value>
+                <boundary_value ID="zmax" enabled="False">0.0</boundary_value>
+            </Dirichlet_options>
+        </variable>
+        <variable name="glucose" units="mM" ID="13">
+            <physical_parameter_set>
+                <diffusion_coefficient units="micron^2/min">15000</diffusion_coefficient>
+                <decay_rate units="1/min">0.0</decay_rate>
+            </physical_parameter_set>
+            <initial_condition units="mM">1.0</initial_condition>
+            <Dirichlet_boundary_condition units="mM" enabled="False">1.0</Dirichlet_boundary_condition>
+            <Dirichlet_options>
+                <boundary_value ID="xmin" enabled="False">1.0</boundary_value>
+                <boundary_value ID="xmax" enabled="False">1.0</boundary_value>
+                <boundary_value ID="ymin" enabled="False">1.0</boundary_value>
+                <boundary_value ID="ymax" enabled="False">1.0</boundary_value>
+                <boundary_value ID="zmin" enabled="False">1.0</boundary_value>
+                <boundary_value ID="zmax" enabled="False">1.0</boundary_value>
+            </Dirichlet_options>
+        </variable>
+        <variable name="lactate" units="mM" ID="14">
+            <physical_parameter_set>
+                <diffusion_coefficient units="micron^2/min">60000</diffusion_coefficient>
+                <decay_rate units="1/min">0.003</decay_rate>
+            </physical_parameter_set>
+            <initial_condition units="mM">0.0</initial_condition>
+            <Dirichlet_boundary_condition units="mM" enabled="False">0.0</Dirichlet_boundary_condition>
+            <Dirichlet_options>
+                <boundary_value ID="xmin" enabled="False">0.0</boundary_value>
+                <boundary_value ID="xmax" enabled="False">0.0</boundary_value>
+                <boundary_value ID="ymin" enabled="False">0.0</boundary_value>
+                <boundary_value ID="ymax" enabled="False">0.0</boundary_value>
+                <boundary_value ID="zmin" enabled="False">0.0</boundary_value>
+                <boundary_value ID="zmax" enabled="False">0.0</boundary_value>
+            </Dirichlet_options>
+        </variable>
+</microenvironment_setup>
 
     <cell_definitions>
         <cell_definition name="PD-L1lo_tumor" ID="0">
@@ -227,8 +403,8 @@
                             <chemotactic_sensitivities>
                                 <chemotactic_sensitivity substrate="oxygen">0.0</chemotactic_sensitivity>
                                 <chemotactic_sensitivity substrate="debris">0.0</chemotactic_sensitivity>
-                                <chemotactic_sensitivity substrate="pro-inflammatory factor">0.0</chemotactic_sensitivity>
-                                <chemotactic_sensitivity substrate="anti-inflammatory factor">0.0</chemotactic_sensitivity>
+                                <chemotactic_sensitivity substrate="IFN_gamma">0.0</chemotactic_sensitivity>
+                                <chemotactic_sensitivity substrate="TGF_beta">0.0</chemotactic_sensitivity>
                                 <chemotactic_sensitivity substrate="substrate">0.0</chemotactic_sensitivity>
                             </chemotactic_sensitivities>
                         </advanced_chemotaxis>
@@ -247,13 +423,13 @@
                         <uptake_rate units="1/min">0.0</uptake_rate>
                         <net_export_rate units="total substrate/min">0.0</net_export_rate>
                     </substrate>
-                    <substrate name="pro-inflammatory factor">
+                    <substrate name="IFN_gamma">
                         <secretion_rate units="1/min">0.0</secretion_rate>
                         <secretion_target units="substrate density">1</secretion_target>
                         <uptake_rate units="1/min">0.0</uptake_rate>
                         <net_export_rate units="total substrate/min">0.0</net_export_rate>
                     </substrate>
-                    <substrate name="anti-inflammatory factor">
+                    <substrate name="TGF_beta">
                         <secretion_rate units="1/min">0.0</secretion_rate>
                         <secretion_target units="substrate density">1</secretion_target>
                         <uptake_rate units="1/min">0.0</uptake_rate>
@@ -395,8 +571,8 @@
                             <chemotactic_sensitivities>
                                 <chemotactic_sensitivity substrate="oxygen">0.0</chemotactic_sensitivity>
                                 <chemotactic_sensitivity substrate="debris">0.0</chemotactic_sensitivity>
-                                <chemotactic_sensitivity substrate="pro-inflammatory factor">0.0</chemotactic_sensitivity>
-                                <chemotactic_sensitivity substrate="anti-inflammatory factor">0.0</chemotactic_sensitivity>
+                                <chemotactic_sensitivity substrate="IFN_gamma">0.0</chemotactic_sensitivity>
+                                <chemotactic_sensitivity substrate="TGF_beta">0.0</chemotactic_sensitivity>
                                 <chemotactic_sensitivity substrate="substrate">0.0</chemotactic_sensitivity>
                             </chemotactic_sensitivities>
                         </advanced_chemotaxis>
@@ -415,13 +591,13 @@
                         <uptake_rate units="1/min">0.0</uptake_rate>
                         <net_export_rate units="total substrate/min">0.0</net_export_rate>
                     </substrate>
-                    <substrate name="pro-inflammatory factor">
+                    <substrate name="IFN_gamma">
                         <secretion_rate units="1/min">0.0</secretion_rate>
                         <secretion_target units="substrate density">1</secretion_target>
                         <uptake_rate units="1/min">1</uptake_rate>
                         <net_export_rate units="total substrate/min">0.0</net_export_rate>
                     </substrate>
-                    <substrate name="anti-inflammatory factor">
+                    <substrate name="TGF_beta">
                         <secretion_rate units="1/min">0</secretion_rate>
                         <secretion_target units="substrate density">1</secretion_target>
                         <uptake_rate units="1/min">0.0</uptake_rate>
@@ -564,8 +740,8 @@
                             <chemotactic_sensitivities>
                                 <chemotactic_sensitivity substrate="oxygen">0.0</chemotactic_sensitivity>
                                 <chemotactic_sensitivity substrate="debris">0.0</chemotactic_sensitivity>
-                                <chemotactic_sensitivity substrate="pro-inflammatory factor">0.0</chemotactic_sensitivity>
-                                <chemotactic_sensitivity substrate="anti-inflammatory factor">0.0</chemotactic_sensitivity>
+                                <chemotactic_sensitivity substrate="IFN_gamma">0.0</chemotactic_sensitivity>
+                                <chemotactic_sensitivity substrate="TGF_beta">0.0</chemotactic_sensitivity>
                                 <chemotactic_sensitivity substrate="substrate">0.0</chemotactic_sensitivity>
                             </chemotactic_sensitivities>
                         </advanced_chemotaxis>
@@ -584,13 +760,13 @@
                         <uptake_rate units="1/min">1</uptake_rate>
                         <net_export_rate units="total substrate/min">0.0</net_export_rate>
                     </substrate>
-                    <substrate name="pro-inflammatory factor">
+                    <substrate name="IFN_gamma">
                         <secretion_rate units="1/min">0.0</secretion_rate>
                         <secretion_target units="substrate density">1</secretion_target>
                         <uptake_rate units="1/min">0</uptake_rate>
                         <net_export_rate units="total substrate/min">0.0</net_export_rate>
                     </substrate>
-                    <substrate name="anti-inflammatory factor">
+                    <substrate name="TGF_beta">
                         <secretion_rate units="1/min">1</secretion_rate>
                         <secretion_target units="substrate density">10</secretion_target>
                         <uptake_rate units="1/min">0.0</uptake_rate>
@@ -724,7 +900,7 @@
                         <use_2D>true</use_2D>
                         <chemotaxis>
                             <enabled>true</enabled>
-                            <substrate>pro-inflammatory factor</substrate>
+                            <substrate>IFN_gamma</substrate>
                             <direction>1</direction>
                         </chemotaxis>
                         <advanced_chemotaxis>
@@ -733,8 +909,8 @@
                             <chemotactic_sensitivities>
                                 <chemotactic_sensitivity substrate="oxygen">0.0</chemotactic_sensitivity>
                                 <chemotactic_sensitivity substrate="debris">0.0</chemotactic_sensitivity>
-                                <chemotactic_sensitivity substrate="pro-inflammatory factor">0.0</chemotactic_sensitivity>
-                                <chemotactic_sensitivity substrate="anti-inflammatory factor">0.0</chemotactic_sensitivity>
+                                <chemotactic_sensitivity substrate="IFN_gamma">0.0</chemotactic_sensitivity>
+                                <chemotactic_sensitivity substrate="TGF_beta">0.0</chemotactic_sensitivity>
                                 <chemotactic_sensitivity substrate="substrate">0.0</chemotactic_sensitivity>
                             </chemotactic_sensitivities>
                         </advanced_chemotaxis>
@@ -753,13 +929,13 @@
                         <uptake_rate units="1/min">0</uptake_rate>
                         <net_export_rate units="total substrate/min">0.0</net_export_rate>
                     </substrate>
-                    <substrate name="pro-inflammatory factor">
+                    <substrate name="IFN_gamma">
                         <secretion_rate units="1/min">0</secretion_rate>
                         <secretion_target units="substrate density">1</secretion_target>
                         <uptake_rate units="1/min">0</uptake_rate>
                         <net_export_rate units="total substrate/min">0.0</net_export_rate>
                     </substrate>
-                    <substrate name="anti-inflammatory factor">
+                    <substrate name="TGF_beta">
                         <secretion_rate units="1/min">0</secretion_rate>
                         <secretion_target units="substrate density">1</secretion_target>
                         <uptake_rate units="1/min">0</uptake_rate>
@@ -893,7 +1069,7 @@
                         <use_2D>true</use_2D>
                         <chemotaxis>
                             <enabled>true</enabled>
-                            <substrate>pro-inflammatory factor</substrate>
+                            <substrate>IFN_gamma</substrate>
                             <direction>1</direction>
                         </chemotaxis>
                         <advanced_chemotaxis>
@@ -902,8 +1078,8 @@
                             <chemotactic_sensitivities>
                                 <chemotactic_sensitivity substrate="oxygen">0.0</chemotactic_sensitivity>
                                 <chemotactic_sensitivity substrate="debris">0.0</chemotactic_sensitivity>
-                                <chemotactic_sensitivity substrate="pro-inflammatory factor">0.0</chemotactic_sensitivity>
-                                <chemotactic_sensitivity substrate="anti-inflammatory factor">0.0</chemotactic_sensitivity>
+                                <chemotactic_sensitivity substrate="IFN_gamma">0.0</chemotactic_sensitivity>
+                                <chemotactic_sensitivity substrate="TGF_beta">0.0</chemotactic_sensitivity>
                                 <chemotactic_sensitivity substrate="substrate">0.0</chemotactic_sensitivity>
                             </chemotactic_sensitivities>
                         </advanced_chemotaxis>
@@ -922,13 +1098,13 @@
                         <uptake_rate units="1/min">0</uptake_rate>
                         <net_export_rate units="total substrate/min">0.0</net_export_rate>
                     </substrate>
-                    <substrate name="pro-inflammatory factor">
+                    <substrate name="IFN_gamma">
                         <secretion_rate units="1/min">0</secretion_rate>
                         <secretion_target units="substrate density">1</secretion_target>
                         <uptake_rate units="1/min">0</uptake_rate>
                         <net_export_rate units="total substrate/min">0.0</net_export_rate>
                     </substrate>
-                    <substrate name="anti-inflammatory factor">
+                    <substrate name="TGF_beta">
                         <secretion_rate units="1/min">0</secretion_rate>
                         <secretion_target units="substrate density">1</secretion_target>
                         <uptake_rate units="1/min">0</uptake_rate>
@@ -1064,7 +1240,7 @@
                         <use_2D>true</use_2D>
                         <chemotaxis>
                             <enabled>true</enabled>
-                            <substrate>pro-inflammatory factor</substrate>
+                            <substrate>IFN_gamma</substrate>
                             <direction>1</direction>
                         </chemotaxis>
                         <advanced_chemotaxis>
@@ -1073,8 +1249,8 @@
                             <chemotactic_sensitivities>
                                 <chemotactic_sensitivity substrate="oxygen">0.0</chemotactic_sensitivity>
                                 <chemotactic_sensitivity substrate="debris">0.0</chemotactic_sensitivity>
-                                <chemotactic_sensitivity substrate="pro-inflammatory factor">0.0</chemotactic_sensitivity>
-                                <chemotactic_sensitivity substrate="anti-inflammatory factor">0.0</chemotactic_sensitivity>
+                                <chemotactic_sensitivity substrate="IFN_gamma">0.0</chemotactic_sensitivity>
+                                <chemotactic_sensitivity substrate="TGF_beta">0.0</chemotactic_sensitivity>
                                 <chemotactic_sensitivity substrate="substrate">0.0</chemotactic_sensitivity>
                             </chemotactic_sensitivities>
                         </advanced_chemotaxis>
@@ -1093,13 +1269,13 @@
                         <uptake_rate units="1/min">0</uptake_rate>
                         <net_export_rate units="total substrate/min">0.0</net_export_rate>
                     </substrate>
-                    <substrate name="pro-inflammatory factor">
+                    <substrate name="IFN_gamma">
                         <secretion_rate units="1/min">1</secretion_rate>
                         <secretion_target units="substrate density">1</secretion_target>
                         <uptake_rate units="1/min">0</uptake_rate>
                         <net_export_rate units="total substrate/min">0.0</net_export_rate>
                     </substrate>
-                    <substrate name="anti-inflammatory factor">
+                    <substrate name="TGF_beta">
                         <secretion_rate units="1/min">0</secretion_rate>
                         <secretion_target units="substrate density">1</secretion_target>
                         <uptake_rate units="1/min">0</uptake_rate>
@@ -1228,7 +1404,7 @@
                         <use_2D>true</use_2D>
                         <chemotaxis>
                             <enabled>true</enabled>
-                            <substrate>pro-inflammatory factor</substrate>
+                            <substrate>IFN_gamma</substrate>
                             <direction>1</direction>
                         </chemotaxis>
                         <advanced_chemotaxis>
@@ -1237,8 +1413,8 @@
                             <chemotactic_sensitivities>
                                 <chemotactic_sensitivity substrate="oxygen">0.0</chemotactic_sensitivity>
                                 <chemotactic_sensitivity substrate="debris">0.0</chemotactic_sensitivity>
-                                <chemotactic_sensitivity substrate="pro-inflammatory factor">0.0</chemotactic_sensitivity>
-                                <chemotactic_sensitivity substrate="anti-inflammatory factor">0.0</chemotactic_sensitivity>
+                                <chemotactic_sensitivity substrate="IFN_gamma">0.0</chemotactic_sensitivity>
+                                <chemotactic_sensitivity substrate="TGF_beta">0.0</chemotactic_sensitivity>
                                 <chemotactic_sensitivity substrate="substrate">0.0</chemotactic_sensitivity>
                             </chemotactic_sensitivities>
                         </advanced_chemotaxis>
@@ -1257,13 +1433,13 @@
                         <uptake_rate units="1/min">0</uptake_rate>
                         <net_export_rate units="total substrate/min">0.0</net_export_rate>
                     </substrate>
-                    <substrate name="pro-inflammatory factor">
+                    <substrate name="IFN_gamma">
                         <secretion_rate units="1/min">0.1</secretion_rate>
                         <secretion_target units="substrate density">0.1</secretion_target>
                         <uptake_rate units="1/min">0</uptake_rate>
                         <net_export_rate units="total substrate/min">0.0</net_export_rate>
                     </substrate>
-                    <substrate name="anti-inflammatory factor">
+                    <substrate name="TGF_beta">
                         <secretion_rate units="1/min">0</secretion_rate>
                         <secretion_target units="substrate density">1</secretion_target>
                         <uptake_rate units="1/min">0</uptake_rate>
@@ -1396,7 +1572,7 @@
                         <use_2D>true</use_2D>
                         <chemotaxis>
                             <enabled>true</enabled>
-                            <substrate>pro-inflammatory factor</substrate>
+                            <substrate>IFN_gamma</substrate>
                             <direction>1</direction>
                         </chemotaxis>
                         <advanced_chemotaxis>
@@ -1405,8 +1581,8 @@
                             <chemotactic_sensitivities>
                                 <chemotactic_sensitivity substrate="oxygen">0.0</chemotactic_sensitivity>
                                 <chemotactic_sensitivity substrate="debris">0.0</chemotactic_sensitivity>
-                                <chemotactic_sensitivity substrate="pro-inflammatory factor">0.0</chemotactic_sensitivity>
-                                <chemotactic_sensitivity substrate="anti-inflammatory factor">0.0</chemotactic_sensitivity>
+                                <chemotactic_sensitivity substrate="IFN_gamma">0.0</chemotactic_sensitivity>
+                                <chemotactic_sensitivity substrate="TGF_beta">0.0</chemotactic_sensitivity>
                                 <chemotactic_sensitivity substrate="substrate">0.0</chemotactic_sensitivity>
                             </chemotactic_sensitivities>
                         </advanced_chemotaxis>
@@ -1425,13 +1601,13 @@
                         <uptake_rate units="1/min">0</uptake_rate>
                         <net_export_rate units="total substrate/min">0.0</net_export_rate>
                     </substrate>
-                    <substrate name="pro-inflammatory factor">
+                    <substrate name="IFN_gamma">
                         <secretion_rate units="1/min">0</secretion_rate>
                         <secretion_target units="substrate density">1</secretion_target>
                         <uptake_rate units="1/min">0</uptake_rate>
                         <net_export_rate units="total substrate/min">0.0</net_export_rate>
                     </substrate>
-                    <substrate name="anti-inflammatory factor">
+                    <substrate name="TGF_beta">
                         <secretion_rate units="1/min">0</secretion_rate>
                         <secretion_target units="substrate density">1</secretion_target>
                         <uptake_rate units="1/min">0</uptake_rate>
@@ -1564,7 +1740,7 @@
                         <use_2D>true</use_2D>
                         <chemotaxis>
                             <enabled>true</enabled>
-                            <substrate>pro-inflammatory factor</substrate>
+                            <substrate>IFN_gamma</substrate>
                             <direction>1</direction>
                         </chemotaxis>
                         <advanced_chemotaxis>
@@ -1573,8 +1749,8 @@
                             <chemotactic_sensitivities>
                                 <chemotactic_sensitivity substrate="oxygen">0.0</chemotactic_sensitivity>
                                 <chemotactic_sensitivity substrate="debris">0.0</chemotactic_sensitivity>
-                                <chemotactic_sensitivity substrate="pro-inflammatory factor">0.0</chemotactic_sensitivity>
-                                <chemotactic_sensitivity substrate="anti-inflammatory factor">0.0</chemotactic_sensitivity>
+                                <chemotactic_sensitivity substrate="IFN_gamma">0.0</chemotactic_sensitivity>
+                                <chemotactic_sensitivity substrate="TGF_beta">0.0</chemotactic_sensitivity>
                                 <chemotactic_sensitivity substrate="substrate">0.0</chemotactic_sensitivity>
                             </chemotactic_sensitivities>
                         </advanced_chemotaxis>
@@ -1593,13 +1769,13 @@
                         <uptake_rate units="1/min">0</uptake_rate>
                         <net_export_rate units="total substrate/min">0.0</net_export_rate>
                     </substrate>
-                    <substrate name="pro-inflammatory factor">
+                    <substrate name="IFN_gamma">
                         <secretion_rate units="1/min">0.1</secretion_rate>
                         <secretion_target units="substrate density">0.1</secretion_target>
                         <uptake_rate units="1/min">0</uptake_rate>
                         <net_export_rate units="total substrate/min">0.0</net_export_rate>
                     </substrate>
-                    <substrate name="anti-inflammatory factor">
+                    <substrate name="TGF_beta">
                         <secretion_rate units="1/min">0</secretion_rate>
                         <secretion_target units="substrate density">1</secretion_target>
                         <uptake_rate units="1/min">0</uptake_rate>
