@@ -55,3 +55,7 @@ PD-1lo_CD4_Tcell,ECM,decreases,migration speed,0,2,3,0
 PD-1lo_CD4_Tcell,CXCL12,decreases,migration speed,0,2,2,0
 Treg,ECM,decreases,migration speed,0,2,3,0
 Treg,CXCL12,decreases,migration speed,0,2,2,0
+PD-1lo_CD137lo_CD8_Tcell,TGF_beta,increases,transform to PD-1hi_CD137lo_CD8_Tcell,0.002,2,2,0
+PD-1lo_CD137hi_CD8_Tcell,TGF_beta,increases,transform to PD-1hi_CD137hi_CD8_Tcell,0.002,2,2,0
+PD-1hi_CD137lo_CD8_Tcell,contact with cDC1,increases,transform to PD-1hi_CD137hi_CD8_Tcell,0.002,0.5,2,0
+PD-1lo_CD137lo_CD8_Tcell,contact with cDC1,increases,transform to PD-1lo_CD137hi_CD8_Tcell,0.002,0.5,2,0
