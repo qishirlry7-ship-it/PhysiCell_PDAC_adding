@@ -184,7 +184,31 @@ void setup_tissue_domain(void)
 
 std::vector<std::string> my_coloring_function(Cell *pCell)
 {
-	return paint_by_number_cell_coloring(pCell);
+	// paint_by_number_cell_coloring() only has 13 colors (type index 0-12)
+	// and silently falls back to white -- invisible on the white SVG
+	// background -- for any type index >= 13. Adding cell types 9-16
+	// (myCAF..NK_cell) pushed PMN_MDSC(13)/cDC1(14)/B_cell(15)/NK_cell(16)
+	// past that limit, and fixed_vessel_source(17) hit it too. Types 0-12
+	// keep the exact same colors as before (unchanged for the 9 original
+	// pdac_therapy types + myCAF/iCAF/Treg/M_MDSC); 13-17 get explicit,
+	// mutually distinct colors instead of the invisible white fallback.
+	if( pCell->type < 13 )
+	{ return paint_by_number_cell_coloring(pCell); }
+
+	static std::vector<std::string> extra_colors = {
+		"brown",      // 13: PMN_MDSC
+		"purple",     // 14: cDC1
+		"gold",       // 15: B_cell
+		"teal",       // 16: NK_cell
+		"black"       // 17: fixed_vessel_source
+	};
+	std::string interior_color = "white";
+	int extra_index = pCell->type - 13;
+	if( extra_index >= 0 && extra_index < (int)extra_colors.size() )
+	{ interior_color = extra_colors[extra_index]; }
+
+	std::vector<std::string> output = { interior_color, "black", interior_color, "black" };
+	return output;
 }
 
 void phenotype_function(Cell *pCell, Phenotype &phenotype, double dt)
