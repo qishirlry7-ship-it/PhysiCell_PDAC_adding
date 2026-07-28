@@ -339,7 +339,7 @@
                         </parameters>
                     </model>
                     <model code="101" name="necrosis">
-                        <death_rate units="1/min">0</death_rate>
+                        <death_rate units="1/min">0.005</death_rate>
                         <phase_durations units="min">
                             <duration index="0" fixed_duration="true">0</duration>
                             <duration index="1" fixed_duration="true">86400</duration>
@@ -435,7 +435,19 @@
                         <uptake_rate units="1/min">0.0</uptake_rate>
                         <net_export_rate units="total substrate/min">0.0</net_export_rate>
                     </substrate>
-                </secretion>
+                                    <substrate name="glucose">
+                        <secretion_rate units="1/min">0</secretion_rate>
+                        <secretion_target units="substrate density">1</secretion_target>
+                        <uptake_rate units="1/min">5</uptake_rate>
+                        <net_export_rate units="total substrate/min">0</net_export_rate>
+                    </substrate>
+                    <substrate name="lactate">
+                        <secretion_rate units="1/min">1.0</secretion_rate>
+                        <secretion_target units="substrate density">10</secretion_target>
+                        <uptake_rate units="1/min">0</uptake_rate>
+                        <net_export_rate units="total substrate/min">0</net_export_rate>
+                    </substrate>
+</secretion>
                 <cell_interactions>
                     <apoptotic_phagocytosis_rate units="1/min">0</apoptotic_phagocytosis_rate>
                     <necrotic_phagocytosis_rate units="1/min">0</necrotic_phagocytosis_rate>
@@ -507,7 +519,7 @@
                         </parameters>
                     </model>
                     <model code="101" name="necrosis">
-                        <death_rate units="1/min">0</death_rate>
+                        <death_rate units="1/min">0.005</death_rate>
                         <phase_durations units="min">
                             <duration index="0" fixed_duration="true">0</duration>
                             <duration index="1" fixed_duration="true">86400</duration>
@@ -603,7 +615,19 @@
                         <uptake_rate units="1/min">0.0</uptake_rate>
                         <net_export_rate units="total substrate/min">0.0</net_export_rate>
                     </substrate>
-                </secretion>
+                                    <substrate name="glucose">
+                        <secretion_rate units="1/min">0</secretion_rate>
+                        <secretion_target units="substrate density">1</secretion_target>
+                        <uptake_rate units="1/min">5</uptake_rate>
+                        <net_export_rate units="total substrate/min">0</net_export_rate>
+                    </substrate>
+                    <substrate name="lactate">
+                        <secretion_rate units="1/min">1.0</secretion_rate>
+                        <secretion_target units="substrate density">10</secretion_target>
+                        <uptake_rate units="1/min">0</uptake_rate>
+                        <net_export_rate units="total substrate/min">0</net_export_rate>
+                    </substrate>
+</secretion>
                 <cell_interactions>
                     <apoptotic_phagocytosis_rate units="1/min">0</apoptotic_phagocytosis_rate>
                     <necrotic_phagocytosis_rate units="1/min">0</necrotic_phagocytosis_rate>
@@ -2986,7 +3010,13 @@
                         <uptake_rate units="1/min">0</uptake_rate>
                         <net_export_rate units="total substrate/min">0</net_export_rate>
                     </substrate>
-                </secretion>
+                                    <substrate name="glucose">
+                        <secretion_rate units="1/min">100</secretion_rate>
+                        <secretion_target units="substrate density">1</secretion_target>
+                        <uptake_rate units="1/min">0</uptake_rate>
+                        <net_export_rate units="total substrate/min">0</net_export_rate>
+                    </substrate>
+</secretion>
                 <cell_interactions>
                     <apoptotic_phagocytosis_rate units="1/min">0.1</apoptotic_phagocytosis_rate>
                     <necrotic_phagocytosis_rate units="1/min">0.017</necrotic_phagocytosis_rate>
