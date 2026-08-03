@@ -6,7 +6,7 @@ rm -rf _frames; mkdir -p _frames
 n=0
 for f in $(ls snapshot*.svg | sort); do
     idx=$(printf "%04d" $n)
-    convert -density 150 -background white "$f" "_frames/frame_${idx}.png"
+    convert -limit time 120 -density 150 -background white "$f" "_frames/frame_${idx}.png"
     n=$((n+1))
 done
 

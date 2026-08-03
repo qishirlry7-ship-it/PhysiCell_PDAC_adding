@@ -221,6 +221,8 @@ int main(int argc, char *argv[])
 			  Custom add-ons could potentially go here.
 			*/
 
+			recruit_bacteria( diffusion_dt );
+
 			PhysiCell_globals.current_time += diffusion_dt;
 		}
 

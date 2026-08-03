@@ -90,3 +90,7 @@ void phenotype_function(Cell *pCell, Phenotype &phenotype, double dt);
 void custom_function(Cell *pCell, Phenotype &phenotype, double dt);
 
 void contact_function(Cell *pMe, Phenotype &phenoMe, Cell *pOther, Phenotype &phenoOther, double dt);
+
+// probabilistic Bifidobacterium longum entry near vessels (called once
+// per main-loop iteration from main.cpp, dt = diffusion_dt)
+void recruit_bacteria(double dt);

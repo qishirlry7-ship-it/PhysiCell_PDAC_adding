@@ -201,7 +201,12 @@ std::vector<std::string> my_coloring_function(Cell *pCell)
 		"gold",       // 15: B_cell
 		"teal",       // 16: NK_cell
 		"black",      // 17: fixed_vessel_source
-		"crimson"     // 18: fixed_vessel_source_compressed
+		"crimson",    // 18: fixed_vessel_source_compressed
+		"lawngreen",  // 19: Bifidobacterium_longum
+		"navy",       // 20: PD-L1lo_tumor_infected
+		"deeppink",   // 21: PD-L1lo_tumor_xenophagy
+		"sienna",     // 22: PD-L1hi_tumor_infected
+		"turquoise"   // 23: PD-L1hi_tumor_xenophagy
 	};
 	std::string interior_color = "white";
 	int extra_index = pCell->type - 13;
@@ -210,6 +215,50 @@ std::vector<std::string> my_coloring_function(Cell *pCell)
 
 	std::vector<std::string> output = { interior_color, "black", interior_color, "black" };
 	return output;
+}
+
+// ---------------------------------------------------------------------------
+// recruit_bacteria -- probabilistic Bifidobacterium longum entry near
+// vessels, replacing the earlier bulk-seeded-at-t=0 approach per the
+// user's correction: real translocation from blood is an ongoing,
+// low-probability event per vessel, not a one-time bolus. Same Poisson-
+// per-timestep pattern as PhysiCell_PDAC_TME's recruit_immune_cells:
+// each vessel independently has probability lambda*dt of spawning one
+// new bacterium nearby, each call. lambda is deliberately small
+// ("进入数量极少") -- no literature value exists for translocation
+// rate into a specific tumor, so this stays an adjustable placeholder,
+// not a calibrated number.
+// ---------------------------------------------------------------------------
+
+void recruit_bacteria( double dt )
+{
+	static Cell_Definition* pBacteriaDef = find_cell_definition( "Bifidobacterium_longum" );
+	static double lambda = parameters.doubles("bacteria_entry_lambda");
+
+	std::vector<Cell*> vessels;
+	for( int i=0; i < (*all_cells).size(); i++ )
+	{
+		Cell* pC = (*all_cells)[i];
+		if( pC->phenotype.death.dead == true )
+		{ continue; }
+		if( pC->type_name == "fixed_vessel_source" || pC->type_name == "fixed_vessel_source_compressed" )
+		{ vessels.push_back(pC); }
+	}
+
+	for( int i=0; i < vessels.size(); i++ )
+	{
+		if( UniformRandom() < lambda*dt )
+		{
+			Cell* pNew = create_cell( *pBacteriaDef );
+			double angle = UniformRandom() * 6.283185307;
+			double r = UniformRandom() * 30.0;
+			std::vector<double> pos = vessels[i]->position;
+			pos[0] += r*cos(angle);
+			pos[1] += r*sin(angle);
+			pNew->assign_position(pos);
+		}
+	}
+	return;
 }
 
 void phenotype_function(Cell *pCell, Phenotype &phenotype, double dt)
