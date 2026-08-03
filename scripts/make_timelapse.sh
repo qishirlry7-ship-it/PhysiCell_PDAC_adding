@@ -1,6 +1,6 @@
 #!/bin/bash
 set -e
-cd /home/shirley/PhysiCell_PDAC_hybrid/outputs/pdac_therapy
+cd /home/shirley/PhysiCell_PDAC_hybrid_v2/outputs/pdac_therapy
 rm -rf _frames; mkdir -p _frames
 
 n=0

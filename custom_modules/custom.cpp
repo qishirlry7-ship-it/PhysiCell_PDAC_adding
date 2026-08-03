@@ -200,7 +200,8 @@ std::vector<std::string> my_coloring_function(Cell *pCell)
 		"purple",     // 14: cDC1
 		"gold",       // 15: B_cell
 		"teal",       // 16: NK_cell
-		"black"       // 17: fixed_vessel_source
+		"black",      // 17: fixed_vessel_source
+		"crimson"     // 18: fixed_vessel_source_compressed
 	};
 	std::string interior_color = "white";
 	int extra_index = pCell->type - 13;
