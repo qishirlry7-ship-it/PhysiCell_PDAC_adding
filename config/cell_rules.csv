@@ -59,3 +59,7 @@ PD-1lo_CD137lo_CD8_Tcell,TGF_beta,increases,transform to PD-1hi_CD137lo_CD8_Tcel
 PD-1lo_CD137hi_CD8_Tcell,TGF_beta,increases,transform to PD-1hi_CD137hi_CD8_Tcell,0.002,2,2,0
 PD-1hi_CD137lo_CD8_Tcell,contact with cDC1,increases,transform to PD-1hi_CD137hi_CD8_Tcell,0.002,0.5,2,0
 PD-1lo_CD137lo_CD8_Tcell,contact with cDC1,increases,transform to PD-1lo_CD137hi_CD8_Tcell,0.002,0.5,2,0
+PD-L1lo_tumor,oxygen,increases,cycle entry,7.2e-4,3,2,0
+PD-L1hi_tumor,oxygen,increases,cycle entry,7.2e-4,3,2,0
+PD-L1lo_tumor,glucose,increases,cycle entry,7.2e-4,0.15,2,0
+PD-L1hi_tumor,glucose,increases,cycle entry,7.2e-4,0.15,2,0
