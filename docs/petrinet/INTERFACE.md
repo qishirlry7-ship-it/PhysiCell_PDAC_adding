@@ -89,7 +89,20 @@ child keep the same physical time and receive distinct random streams.
 
 ## Runtime configuration and observables
 
-XML parameters are `petrinet_enabled` (bool), `petrinet_global_seed` (int), and
-`petrinet_entry_csv` (string). MultiCellDS custom data exposes
+XML parameters are `petrinet_enabled` (bool), `petrinet_global_seed` (int),
+`petrinet_entry_csv` (string), `petrinet_demo_vacuolar_bacteria` (int),
+`petrinet_metrics_csv` (string), and `petrinet_metrics_interval` (minutes).
+
+`petrinet_demo_vacuolar_bacteria > 0` is a minimal-test-only hard-coded event:
+after tissue creation at `t=0`, that many bacteria are added to `SalVac` for
+every living target tumor cell. It is independent of the scheduled CSV input.
+
+The metrics CSV schema is:
+
+```text
+time_min,cell_id,cell_type,intracellular_bacteria,xenophagy_activity,surface_pMHC,death_probability
+```
+
+MultiCellDS custom data exposes
 `pn_state_index`, `pn_active`, `intracellular_bacteria`,
 `xenophagy_activity`, `surface_pMHC`, and `pn_death_probability`.

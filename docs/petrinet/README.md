@@ -30,3 +30,23 @@ tests are available in `scripts/run_petrinet_benchmark_quick.sh` and
 Do not edit generated files manually. Update `INTERFACE.md` before changing a
 public JSON, CSV, or C++ contract; regenerate and commit the model snapshot,
 integration configuration, generated pair, and version hashes together.
+
+## Verified minimal demo
+
+The following single command builds and runs four tumor cells for 120 minutes,
+injects 50 vacuolar bacteria into every cell at `t=0`, exports per-cell
+xenophagy trajectories, and renders a dependency-free SVG:
+
+```bash
+bash scripts/run_minimal_petrinet_demo.sh
+```
+
+Outputs are intentionally ignored runtime artifacts:
+
+- `outputs/petrinet_minimal/xenophagy_metrics.csv`
+- `outputs/petrinet_minimal/xenophagy_metrics.svg`
+- `outputs/petrinet_minimal/run.log`
+
+The script asserts that the generated model and unit tests pass, both output
+artifacts are non-empty, and the hard-coded injection was reported by the
+PhysiCell executable.

@@ -25,3 +25,9 @@ removed-cell state slots afterward.
 Random streams derive from the global seed and cell ID; daughters derive a new
 stream from their own ID. Network data is immutable, and each OpenMP worker
 only mutates the state belonging to its current cell.
+
+For the minimal demonstration, tissue setup is followed by one explicit `t=0`
+vacuolar entry event. The phenotype callback advances each PetriNet to the
+current PhysiCell clock—not one phenotype interval into the future. After cell
+updates, the main thread samples active-cell observables at the configured
+interval and writes one CSV, avoiding concurrent file output from OpenMP.

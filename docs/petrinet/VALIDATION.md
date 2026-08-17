@@ -13,6 +13,17 @@ Completed in WSL base:
 - complete PhysiCell 1.14.1 release build;
 - one-minute, 1,724-cell PhysiCell smoke run with PetriNet enabled and a
   50-bacterium vacuolar broadcast.
+- repeatable four-cell minimal demo for 120 minutes with a code-level `t=0`
+  entry event, CSV time series, and valid SVG visualization.
+
+Minimal-demo evidence from commit `6362963`:
+
+- 4 cells and 84 metric rows across 0–120 min at 6 min intervals;
+- all four cells contain exactly 50 bacteria at `t=0`;
+- maximum observed xenophagy activity: 9;
+- maximum observed surface pMHC: 2.34228;
+- generated SVG is non-empty and parses as valid XML;
+- `scripts/run_minimal_petrinet_demo.sh` exits successfully with `PASS`.
 
 The tracked initial-cell CSV uses CRLF. Its loader retains the trailing `\r` in
 type names under WSL, creating zero cells and causing a baseline MultiCellDS
