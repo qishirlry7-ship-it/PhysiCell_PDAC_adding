@@ -51,7 +51,7 @@ class ExpressionCompiler(ast.NodeVisitor):
 
     def visit_Name(self, node: ast.Name) -> str:
         if node.id in self.places:
-            return f"m[{cpp_ident(node.id)}]"
+            return f"static_cast<double>(m[{cpp_ident(node.id)}])"
         if node.id in self.params:
             return f"parameters.{cpp_ident(node.id)}"
         raise GenerationError(f"unknown identifier {node.id!r}")
@@ -101,6 +101,11 @@ def validate(model: dict, integration: dict) -> tuple[list[dict], dict[str, int]
     if any(not isinstance(p, str) or not p for p in place_ids) or len(place_ids) != len(set(place_ids)):
         raise GenerationError("place IDs must be unique non-empty strings")
     places = {name: i for i, name in enumerate(place_ids)}
+    for name, count in integration.get("initial_marking", {}).items():
+        if name not in places:
+            raise GenerationError(f"initial_marking references unknown place {name!r}")
+        if not isinstance(count, int) or isinstance(count, bool) or count < 0:
+            raise GenerationError(f"initial_marking[{name!r}] must be a non-negative integer")
     transitions = model["transitions"]
     ids = [t.get("id") for t in transitions]
     if any(not isinstance(t, str) or not t for t in ids) or len(ids) != len(set(ids)):
@@ -171,8 +176,9 @@ def render(model_path: Path, integration_path: Path) -> tuple[str, str]:
         rate = float(transition.get("rate") or 0.0)
         source.append(f'  {{"{transition["id"]}", {rate!r}, {str(expr is not None).lower()}, {str(transition["id"] not in disabled).lower()}, {{{inputs}}}, {{{outputs}}}}},')
     source += ["}};", "Marking initial_marking() {", "  Marking m{};"]
+    initial_override = integration.get("initial_marking", {})
     for place in model["places"]:
-        tokens = place.get("tokens", 0)
+        tokens = initial_override.get(place["id"], place.get("tokens", 0))
         if not isinstance(tokens, int) or isinstance(tokens, bool) or tokens < 0:
             raise GenerationError(f"{place['id']}: tokens must be a non-negative integer")
         source.append(f"  m[{cpp_ident(place['id'])}] = {tokens};")

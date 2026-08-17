@@ -1,5 +1,5 @@
 // Generated file. Do not edit.
-// generator=1.0.0 model_sha256=beaafd39036a29aab6eb846082b6d4f2ceef830d7c2d83594d976bd681b5c305 integration_sha256=2d12690ac472de15b05f476dfa7e5e2b6603d042865fc20d6e768d506189c807
+// generator=1.0.0 model_sha256=beaafd39036a29aab6eb846082b6d4f2ceef830d7c2d83594d976bd681b5c305 integration_sha256=0f63f40a98aacf1b6aa376275a2670fd506bb0a3a5d07b20dbd11428eb7949f1
 #include "xenophagy_model_generated.h"
 #include <algorithm>
 #include <cmath>
@@ -148,7 +148,7 @@ const std::array<Transition, 80> transitions = {{
 }};
 Marking initial_marking() {
   Marking m{};
-  m[SalRuffle] = 100;
+  m[SalRuffle] = 150;
   m[SalVac] = 0;
   m[SalCyt] = 0;
   m[AdapSalCyt] = 0;
@@ -165,12 +165,12 @@ Marking initial_marking() {
   m[Ap_Ub] = 0;
   m[Ap_Ub_N_S] = 0;
   m[Ap_Ub_OPTNp] = 0;
-  m[E3_ligase] = 50;
-  m[Gal8] = 100;
-  m[LC3_GABARAP] = 50;
-  m[N_S] = 30;
-  m[NDP52] = 100;
-  m[OPTN] = 50;
+  m[E3_ligase] = 200;
+  m[Gal8] = 200;
+  m[LC3_GABARAP] = 200;
+  m[N_S] = 200;
+  m[NDP52] = 200;
+  m[OPTN] = 200;
   m[S_damagedSCV] = 0;
   m[S_Gal8] = 0;
   m[S_Gal8_NDP52] = 0;
@@ -196,12 +196,12 @@ Marking initial_marking() {
   m[S_Ub_p62] = 0;
   m[SignalAutophagyInduction] = 0;
   m[SignalSCVdamage] = 0;
-  m[TBK1] = 50;
+  m[TBK1] = 200;
   m[ULK1comp] = 0;
-  m[mTORC1_ULK1comp] = 1;
+  m[mTORC1_ULK1comp] = 200;
   m[mTORC1_ULK1comp_SCV] = 0;
   m[mTORC1inactive] = 0;
-  m[p62] = 50;
+  m[p62] = 200;
   m[LC3_signal] = 0;
   m[LC3] = 0;
   m[XenoStart] = 0;
@@ -209,23 +209,23 @@ Marking initial_marking() {
 }
 double expression_propensity(std::size_t i, const Marking& m) {
   switch (i) {
-    case 2: return ((0.000105 * m[AdapSalVac]) * (1.0 - (m[AdapSalVac] / 150.0)));
-    case 3: return ((0.000105 * m[AdapSalCyt]) * (1.0 - (m[AdapSalCyt] / 700.0)));
-    case 6: return (((0.0001 * m[SalCyt]) * 100.0) / (100.0 + m[XenoSig]));
-    case 8: return (((0.0001 * m[AdapSalCyt]) * 100.0) / (100.0 + m[XenoSig]));
-    case 17: return ((0.001 * 200.0) / (200.0 + m[Gal8]));
-    case 18: return ((0.001 * 200.0) / (200.0 + m[E3_ligase]));
-    case 19: return ((0.001 * 200.0) / (200.0 + m[p62]));
-    case 20: return ((0.001 * 200.0) / (200.0 + m[NDP52]));
-    case 21: return ((0.001 * 200.0) / (200.0 + m[OPTN]));
-    case 22: return ((0.001 * 200.0) / (200.0 + m[N_S]));
-    case 23: return ((0.001 * 200.0) / (200.0 + m[TBK1]));
-    case 24: return ((0.001 * 200.0) / (200.0 + m[mTORC1_ULK1comp]));
-    case 74: return (0.01 * std::max((m[XenoSig] - 200.0), 0.0));
-    case 75: return ((0.001 * 200.0) / (200.0 + m[LC3_GABARAP]));
-    case 77: return (((((0.001 * m[SalCyt]) * std::min(m[Gal8], 1.0)) * std::min(m[E3_ligase], 1.0)) * std::max((m[XenoSig] - 200.0), 0.0)) / (300.0 + std::max((m[XenoSig] - 200.0), 0.0)));
-    case 78: return (((((0.001 * m[AdapSalCyt]) * std::min(m[Gal8], 1.0)) * std::min(m[E3_ligase], 1.0)) * std::max((m[XenoSig] - 200.0), 0.0)) / (300.0 + std::max((m[XenoSig] - 200.0), 0.0)));
-    case 79: return (0.01 * std::max((m[XenoSig] - 200.0), 0.0));
+    case 2: return ((0.000105 * static_cast<double>(m[AdapSalVac])) * (1.0 - (static_cast<double>(m[AdapSalVac]) / 150.0)));
+    case 3: return ((0.000105 * static_cast<double>(m[AdapSalCyt])) * (1.0 - (static_cast<double>(m[AdapSalCyt]) / 700.0)));
+    case 6: return (((0.0001 * static_cast<double>(m[SalCyt])) * 100.0) / (100.0 + static_cast<double>(m[XenoSig])));
+    case 8: return (((0.0001 * static_cast<double>(m[AdapSalCyt])) * 100.0) / (100.0 + static_cast<double>(m[XenoSig])));
+    case 17: return ((0.001 * 200.0) / (200.0 + static_cast<double>(m[Gal8])));
+    case 18: return ((0.001 * 200.0) / (200.0 + static_cast<double>(m[E3_ligase])));
+    case 19: return ((0.001 * 200.0) / (200.0 + static_cast<double>(m[p62])));
+    case 20: return ((0.001 * 200.0) / (200.0 + static_cast<double>(m[NDP52])));
+    case 21: return ((0.001 * 200.0) / (200.0 + static_cast<double>(m[OPTN])));
+    case 22: return ((0.001 * 200.0) / (200.0 + static_cast<double>(m[N_S])));
+    case 23: return ((0.001 * 200.0) / (200.0 + static_cast<double>(m[TBK1])));
+    case 24: return ((0.001 * 200.0) / (200.0 + static_cast<double>(m[mTORC1_ULK1comp])));
+    case 74: return (0.01 * std::max((static_cast<double>(m[XenoSig]) - 200.0), 0.0));
+    case 75: return ((0.001 * 200.0) / (200.0 + static_cast<double>(m[LC3_GABARAP])));
+    case 77: return (((((0.001 * static_cast<double>(m[SalCyt])) * std::min(static_cast<double>(m[Gal8]), 1.0)) * std::min(static_cast<double>(m[E3_ligase]), 1.0)) * std::max((static_cast<double>(m[XenoSig]) - 200.0), 0.0)) / (300.0 + std::max((static_cast<double>(m[XenoSig]) - 200.0), 0.0)));
+    case 78: return (((((0.001 * static_cast<double>(m[AdapSalCyt])) * std::min(static_cast<double>(m[Gal8]), 1.0)) * std::min(static_cast<double>(m[E3_ligase]), 1.0)) * std::max((static_cast<double>(m[XenoSig]) - 200.0), 0.0)) / (300.0 + std::max((static_cast<double>(m[XenoSig]) - 200.0), 0.0)));
+    case 79: return (0.01 * std::max((static_cast<double>(m[XenoSig]) - 200.0), 0.0));
     default: return 0.0;
   }
 }
