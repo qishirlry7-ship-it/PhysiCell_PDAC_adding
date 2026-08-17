@@ -19,20 +19,27 @@ struct EntryEvent {
 };
 
 struct MHCState {
-    double X = 0.0;
-    double M = 10000.0;
-    double C = 0.0;
-    double P = 0.0;
+    double X = parameters.mhc_X0;
+    double M = parameters.mhc_M0;
+    double C = parameters.mhc_C0;
+    double P = parameters.mhc_P0;
 };
 
 struct MHCParameters {
-    double d_X = 0.2;
-    double d_M = 0.07;
-    double k_T = 1.0;
-    double d_C = 0.03;
-    double d_P = 0.069;
-    double k_load = 0.0001;
-    double S_M = 200.0 + 4000.0 * 5.0 / (0.5 + 5.0);
+    double d_X;
+    double d_M;
+    double k_T;
+    double d_C;
+    double d_P;
+    double k_load;
+    double S_M;
+    double r_pep;
+
+    explicit MHCParameters(const ModelParameters& p = parameters)
+        : d_X(p.mhc_d_X), d_M(p.mhc_d_M), k_T(p.mhc_k_T),
+          d_C(p.mhc_d_C), d_P(p.mhc_d_P), k_load(p.mhc_k_load),
+          S_M(p.mhc_S_M_base + p.mhc_V_M_IFN * p.mhc_ifn_gamma /
+              (p.mhc_K_M_IFN + p.mhc_ifn_gamma)), r_pep(p.mhc_r_pep) {}
 };
 
 struct CellPetriNetState {
@@ -67,9 +74,11 @@ struct EngineConfig {
         ContinuousCompetingHazard
     };
 
-    ModelParameters model;
-    MHCParameters mhc;
-    XenoSignalMode xeno_signal_mode = XenoSignalMode::PythonPostReactionBernoulli;
+    ModelParameters model = parameters;
+    MHCParameters mhc = MHCParameters(model);
+    XenoSignalMode xeno_signal_mode = parameters.xeno_signal_mode == 0.0
+        ? XenoSignalMode::PythonPostReactionBernoulli
+        : XenoSignalMode::ContinuousCompetingHazard;
 };
 
 class PetriNetEngine {

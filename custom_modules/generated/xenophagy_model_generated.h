@@ -1,5 +1,5 @@
 // Generated file. Do not edit.
-// generator=1.0.0 model_sha256=beaafd39036a29aab6eb846082b6d4f2ceef830d7c2d83594d976bd681b5c305 integration_sha256=bd61f9887e1a99fb71f565198db4ac1b067c82492139f2a7194463b9236cbdf8
+// generator=2.0.0 model_sha256=beaafd39036a29aab6eb846082b6d4f2ceef830d7c2d83594d976bd681b5c305 parameters_sha256=776a561ca34be159148565ffcbb01d27b999de8629371288f2f98af9fc6d6fde
 #pragma once
 #include <array>
 #include <cstddef>
@@ -77,6 +77,24 @@ struct ModelParameters {
   double sigmoid_mid_slope = 200.0;
   double mhc_alpha = 1.0;
   double mhc_beta = 1.0;
+  double xeno_signal_mode = 0.0;
+  double division_daughter_fraction = 0.5;
+  double mhc_d_X = 0.2;
+  double mhc_d_M = 0.07;
+  double mhc_k_T = 1.0;
+  double mhc_d_C = 0.03;
+  double mhc_d_P = 0.069;
+  double mhc_k_load = 0.0001;
+  double mhc_S_M_base = 200.0;
+  double mhc_V_M_IFN = 4000.0;
+  double mhc_K_M_IFN = 0.5;
+  double mhc_ifn_gamma = 5.0;
+  double mhc_r_pep = 1.0;
+  double mhc_max_step_seconds = 60.0;
+  double mhc_X0 = 0.0;
+  double mhc_M0 = 10000.0;
+  double mhc_C0 = 0.0;
+  double mhc_P0 = 0.0;
 };
 struct Arc { Place place; int weight; };
 struct Transition { const char* id; double rate; bool uses_expression; bool enabled; std::vector<Arc> input; std::vector<Arc> output; };

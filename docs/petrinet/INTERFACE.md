@@ -18,16 +18,26 @@ An expression is the complete propensity and may reference place identifiers,
 numeric parameters, arithmetic operators, and `min`, `max`, `abs`, `sqrt`,
 `exp`, or `log`. Negative and non-finite results are clamped to zero.
 
-The build-time integration configuration may replace expressions and disable
-transitions. `EnteringCyt` and `StayingVac` are disabled because entry is an
-external event. Adding optional JSON fields is backward compatible; changing
-or removing the fields above requires a new interface version.
+The single non-PhysiCell parameter source is
+`config/petrinet/parameters.xml`. It contains engine/death/sigmoid/capacity
+parameters, all MHC parameters and initial conditions, initial Petri-net
+marking, signal mode, MHC integration step, division fraction, disabled
+transitions, and transition expression overrides. The build
+generator validates it and compiles it into the checked-in C++ pair.
+`EnteringCyt` and `StayingVac` are disabled because entry is external. There
+are no independent C++ numeric defaults that override this XML.
+
+The XML root is `petrinet_parameters`. Scalars are `<parameter>` nodes under
+`engine` or `mhc`; marking uses `<place id="..." tokens="..."/>`; transition
+rules use `<disable id="..."/>` and `<override id="...">expression`. Names
+must be unique and values finite. Renaming/removing a required parameter or
+changing its meaning requires an interface version increment.
 
 ## Time and input
 
 - PhysiCell public time: minutes.
 - Petri-net internal time and rates: seconds.
-- MHC parameters: hours; conversion occurs inside the adapter.
+- MHC rates in `parameters.xml`: hours; conversion occurs inside the engine.
 
 External input API:
 

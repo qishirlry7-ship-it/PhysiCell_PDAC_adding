@@ -10,14 +10,78 @@ import json
 import math
 import re
 import sys
+import xml.etree.ElementTree as ET
 from pathlib import Path
 
-VERSION = "1.0.0"
+VERSION = "2.0.0"
 ALLOWED_FUNCS = {"min", "max", "abs", "sqrt", "exp", "log"}
+REQUIRED_PARAMETERS = {
+    "k_death", "death_threshold", "cap_cyt_initial", "cap_vac_initial",
+    "sigmoid_k", "sigmoid_mid_base", "sigmoid_mid_slope", "mhc_alpha",
+    "mhc_beta", "xeno_signal_mode", "division_daughter_fraction",
+    "mhc_d_X", "mhc_d_M", "mhc_k_T", "mhc_d_C",
+    "mhc_d_P", "mhc_k_load", "mhc_S_M_base", "mhc_V_M_IFN",
+    "mhc_K_M_IFN", "mhc_ifn_gamma", "mhc_r_pep", "mhc_X0", "mhc_M0",
+    "mhc_C0", "mhc_P0", "mhc_max_step_seconds",
+}
 
 
 class GenerationError(ValueError):
     pass
+
+
+def load_parameters(path: Path) -> dict:
+    root = ET.parse(path).getroot()
+    if root.tag != "petrinet_parameters":
+        raise GenerationError("parameter XML root must be petrinet_parameters")
+    values = {}
+    for section_name in ("engine", "mhc"):
+        section = root.find(section_name)
+        if section is None:
+            raise GenerationError(f"parameter XML requires {section_name}")
+        for node in section.findall("parameter"):
+            name, raw = node.get("name"), node.get("value")
+            if not name or name in values or raw is None:
+                raise GenerationError(f"invalid or duplicate parameter in {section_name}")
+            try:
+                value = float(raw)
+            except ValueError as exc:
+                raise GenerationError(f"parameter {name!r} is not numeric") from exc
+            if not math.isfinite(value):
+                raise GenerationError(f"parameter {name!r} must be finite")
+            values[name] = value
+    missing = sorted(REQUIRED_PARAMETERS - values.keys())
+    if missing:
+        raise GenerationError("missing required parameters: " + ", ".join(missing))
+    if values["mhc_K_M_IFN"] + values["mhc_ifn_gamma"] == 0.0:
+        raise GenerationError("mhc_K_M_IFN + mhc_ifn_gamma must be non-zero")
+    if values["xeno_signal_mode"] not in (0.0, 1.0):
+        raise GenerationError("xeno_signal_mode must be 0 or 1")
+    if not 0.0 <= values["division_daughter_fraction"] <= 1.0:
+        raise GenerationError("division_daughter_fraction must be in [0,1]")
+    if values["mhc_max_step_seconds"] <= 0.0:
+        raise GenerationError("mhc_max_step_seconds must be positive")
+    marking = {}
+    for node in root.findall("./initial_marking/place"):
+        name, raw = node.get("id"), node.get("tokens")
+        if not name or name in marking or raw is None:
+            raise GenerationError("invalid or duplicate initial marking")
+        try:
+            value = int(raw)
+        except ValueError as exc:
+            raise GenerationError(f"initial marking {name!r} is not an integer") from exc
+        if value < 0:
+            raise GenerationError(f"initial marking {name!r} must be non-negative")
+        marking[name] = value
+    disabled = [node.get("id") for node in root.findall("./transitions/disable")]
+    overrides = {}
+    for node in root.findall("./transitions/override"):
+        name, expression = node.get("id"), (node.text or "").strip()
+        if not name or name in overrides or not expression:
+            raise GenerationError("invalid or duplicate transition override")
+        overrides[name] = expression
+    return {"parameters": values, "initial_marking": marking,
+            "disable": disabled, "override": overrides}
 
 
 def sha256(path: Path) -> str:
@@ -131,9 +195,9 @@ def validate(model: dict, integration: dict) -> tuple[list[dict], dict[str, int]
     return transitions, places
 
 
-def render(model_path: Path, integration_path: Path) -> tuple[str, str]:
+def render(model_path: Path, parameters_path: Path) -> tuple[str, str]:
     model = json.loads(model_path.read_text(encoding="utf-8"))
-    integration = json.loads(integration_path.read_text(encoding="utf-8"))
+    integration = load_parameters(parameters_path)
     transitions, places = validate(model, integration)
     params = integration.get("parameters", {})
     compiler = ExpressionCompiler(places, set(params))
@@ -141,7 +205,7 @@ def render(model_path: Path, integration_path: Path) -> tuple[str, str]:
     overrides = integration.get("override", {})
     header = [
         "// Generated file. Do not edit.",
-        f"// generator={VERSION} model_sha256={sha256(model_path)} integration_sha256={sha256(integration_path)}",
+        f"// generator={VERSION} model_sha256={sha256(model_path)} parameters_sha256={sha256(parameters_path)}",
         "#pragma once", "#include <array>", "#include <cstddef>", "#include <string>", "#include <vector>",
         "namespace xenophagy {",
         "enum Place : std::size_t {",
@@ -162,7 +226,7 @@ def render(model_path: Path, integration_path: Path) -> tuple[str, str]:
     ]
     source = [
         "// Generated file. Do not edit.",
-        f"// generator={VERSION} model_sha256={sha256(model_path)} integration_sha256={sha256(integration_path)}",
+        f"// generator={VERSION} model_sha256={sha256(model_path)} parameters_sha256={sha256(parameters_path)}",
         '#include "xenophagy_model_generated.h"', "#include <algorithm>", "#include <cmath>",
         "namespace xenophagy {", "const ModelParameters parameters{};",
         "const std::array<const char*, PLACE_COUNT> place_names = {{",
@@ -194,13 +258,13 @@ def render(model_path: Path, integration_path: Path) -> tuple[str, str]:
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--model", type=Path, default=Path("config/petrinet/xenophagy_model.json"))
-    parser.add_argument("--integration", type=Path, default=Path("config/petrinet/integration.json"))
+    parser.add_argument("--parameters", type=Path, default=Path("config/petrinet/parameters.xml"))
     parser.add_argument("--out-dir", type=Path, default=Path("custom_modules/generated"))
     parser.add_argument("--check", action="store_true")
     args = parser.parse_args()
     try:
-        header, source = render(args.model, args.integration)
-    except (OSError, json.JSONDecodeError, GenerationError) as exc:
+        header, source = render(args.model, args.parameters)
+    except (OSError, json.JSONDecodeError, ET.ParseError, GenerationError) as exc:
         print(f"generation failed: {exc}", file=sys.stderr)
         return 2
     expected = {"xenophagy_model_generated.h": header, "xenophagy_model_generated.cpp": source}

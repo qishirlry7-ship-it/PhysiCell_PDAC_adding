@@ -2,7 +2,9 @@
 
 This directory is the collaboration contract for the xenophagy Petri-net
 integration. The runtime is C++ only. Python is used at build time to convert
-the upstream JSON snapshot into deterministic C++ source.
+the upstream JSON topology plus `config/petrinet/parameters.xml` into
+deterministic C++ source. That XML is the sole source for all non-PhysiCell
+numeric parameters, initial marking, transition overrides, and MHC settings.
 
 ## WSL base workflow
 
@@ -28,8 +30,8 @@ tests are available in `scripts/run_petrinet_benchmark_quick.sh` and
 `scripts/run_petrinet_benchmark.sh`.
 
 Do not edit generated files manually. Update `INTERFACE.md` before changing a
-public JSON, CSV, or C++ contract; regenerate and commit the model snapshot,
-integration configuration, generated pair, and version hashes together.
+public JSON, XML, CSV, or C++ contract; regenerate and commit the model
+snapshot, unified parameter XML, generated pair, and version hashes together.
 
 ## Verified minimal demo
 

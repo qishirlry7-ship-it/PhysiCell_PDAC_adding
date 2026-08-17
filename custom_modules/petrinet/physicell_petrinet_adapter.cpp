@@ -262,7 +262,7 @@ void petrinet_division(PhysiCell::Cell* parent, PhysiCell::Cell* child) {
     CellPetriNetState* parent_state = state_for(parent, false);
     if (!parent_state) return;
     CellPetriNetState* child_state = state_for(child, true);
-    engine.split(*parent_state, *child_state, 0.5,
+    engine.split(*parent_state, *child_state, parameters.division_daughter_fraction,
                  mix_seed(global_seed ^ static_cast<std::uint64_t>(child->ID)));
     parent->custom_data["pn_active"] = parent_state->active ? 1.0 : 0.0;
     child->custom_data["pn_active"] = child_state->active ? 1.0 : 0.0;

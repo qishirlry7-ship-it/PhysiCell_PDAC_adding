@@ -118,10 +118,11 @@ void PetriNetEngine::integrate_interval(CellPetriNetState& state, double dt_seco
         std::max(0.0, static_cast<double>(burden) - config_.model.death_threshold);
     result.integrated_death_hazard += death_rate * dt_seconds;
 
-    const double phi = xenophagy_activity(state.marking);
+    const double phi = config_.mhc.r_pep * xenophagy_activity(state.marking);
     result.peak_xenophagy_activity = std::max(result.peak_xenophagy_activity, phi);
     result.antigen_flux += phi * dt_seconds / 3600.0;
-    const int steps = std::max(1, static_cast<int>(std::ceil(dt_seconds / 60.0)));
+    const int steps = std::max(1, static_cast<int>(std::ceil(
+        dt_seconds / config_.model.mhc_max_step_seconds)));
     const double dh = dt_seconds / 3600.0 / steps;
     for (int step = 0; step < steps; ++step) {
         const MHCState old = state.mhc;

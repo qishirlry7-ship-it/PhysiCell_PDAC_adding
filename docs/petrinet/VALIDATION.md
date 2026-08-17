@@ -67,3 +67,10 @@ All reported means pass the 10% criterion. This establishes statistical
 PetriNet and MHC alignment for the locked baseline; it does not establish
 seed-by-seed identity or parity after PhysiCell division. The formal 1,000-cell
 acceptance run remains to be recorded before release.
+
+Unified-XML migration check: after moving all non-PhysiCell values from the
+former integration JSON and C++ MHC defaults into `parameters.xml`, the
+100-seed C++ parity CSV was compared line-by-line with the pre-migration CSV.
+All 101 lines (header plus 100 cells) were identical. The complete 8-hour
+PhysiCell demo also passed with 5 observed PetriNet states, 373 metric rows,
+and zero deaths.
