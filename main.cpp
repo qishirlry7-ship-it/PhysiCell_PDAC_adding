@@ -178,6 +178,7 @@ int main(int argc, char *argv[])
 	{
 		while (PhysiCell_globals.current_time < PhysiCell_settings.max_time + 0.1 * diffusion_dt)
 		{
+			xenophagy::process_bacterial_entry_schedule(PhysiCell_globals.current_time);
 			// save data if it's time.
 			if (fabs(PhysiCell_globals.current_time - PhysiCell_globals.next_full_save_time) < 0.01 * diffusion_dt)
 			{
@@ -222,6 +223,7 @@ int main(int argc, char *argv[])
 			*/
 
 			recruit_bacteria( diffusion_dt );
+			xenophagy::cleanup_petrinet_states();
 
 			PhysiCell_globals.current_time += diffusion_dt;
 		}

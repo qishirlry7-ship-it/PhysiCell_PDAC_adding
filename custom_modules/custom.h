@@ -94,3 +94,6 @@ void contact_function(Cell *pMe, Phenotype &phenoMe, Cell *pOther, Phenotype &ph
 // probabilistic Bifidobacterium longum entry near vessels (called once
 // per main-loop iteration from main.cpp, dt = diffusion_dt)
 void recruit_bacteria(double dt);
+
+// Build-time generated intracellular xenophagy Petri-net integration.
+#include "petrinet/physicell_petrinet_adapter.h"

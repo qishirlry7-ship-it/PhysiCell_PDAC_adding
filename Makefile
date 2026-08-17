@@ -58,7 +58,7 @@ PhysiCell_pugixml.o PhysiCell_settings.o PhysiCell_geometry.o
 
 # put your custom objects here (they should be in the custom_modules directory)
 
-PhysiCell_custom_module_OBJECTS := custom.o
+PhysiCell_custom_module_OBJECTS := custom.o petrinet_engine.o physicell_petrinet_adapter.o xenophagy_model_generated.o
 
 pugixml_OBJECTS := pugixml.o
 
@@ -170,6 +170,22 @@ PhysiCell_geometry.o: ./modules/PhysiCell_geometry.cpp
 
 custom.o: ./custom_modules/custom.cpp
 	$(COMPILE_COMMAND) -c ./custom_modules/custom.cpp
+
+petrinet_engine.o: ./custom_modules/petrinet/petrinet_engine.cpp ./custom_modules/generated/xenophagy_model_generated.h
+	$(COMPILE_COMMAND) -c ./custom_modules/petrinet/petrinet_engine.cpp
+
+physicell_petrinet_adapter.o: ./custom_modules/petrinet/physicell_petrinet_adapter.cpp
+	$(COMPILE_COMMAND) -c ./custom_modules/petrinet/physicell_petrinet_adapter.cpp
+
+xenophagy_model_generated.o: ./custom_modules/generated/xenophagy_model_generated.cpp
+	$(COMPILE_COMMAND) -c ./custom_modules/generated/xenophagy_model_generated.cpp
+
+petrinet-generate:
+	python3 scripts/generate_petrinet_cpp.py
+
+petrinet-check:
+	python3 scripts/generate_petrinet_cpp.py --check
+	bash scripts/run_petrinet_tests.sh
 
 # cleanup
 

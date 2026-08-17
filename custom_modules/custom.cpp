@@ -94,6 +94,10 @@ void create_cell_types(void)
 	cell_defaults.functions.add_cell_basement_membrane_interactions = NULL;
 	cell_defaults.functions.calculate_distance_to_membrane = NULL;
 
+	// Custom data must exist on the default definition before XML inheritance;
+	// otherwise MultiCellDS output sees inconsistent per-type layouts.
+	xenophagy::register_petrinet_custom_data();
+
 	/*
 	   This parses the cell definitions in the XML config file.
 	*/
@@ -134,6 +138,10 @@ void create_cell_types(void)
 	*/
 
 	display_cell_definitions(std::cout);
+
+	// Attach the generated Petri-net only to tumor definitions and load the
+	// optional manual entry schedule after all definitions are available.
+	xenophagy::setup_petrinet_integration();
 
 	return;
 }
@@ -263,6 +271,7 @@ void recruit_bacteria( double dt )
 
 void phenotype_function(Cell *pCell, Phenotype &phenotype, double dt)
 {
+	xenophagy::petrinet_phenotype(pCell, phenotype, dt);
 	return;
 }
 

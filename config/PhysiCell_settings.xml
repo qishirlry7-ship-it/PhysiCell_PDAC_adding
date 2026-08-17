@@ -3966,5 +3966,8 @@
 
     <user_parameters>
         <bacteria_entry_lambda type="double" units="1/min" description="per-vessel probability rate of a new Bifidobacterium longum entering nearby (Poisson process); no literature value found, kept deliberately low and adjustable">0.0003</bacteria_entry_lambda>
+        <petrinet_enabled type="bool" description="enable generated intracellular xenophagy Petri-net">false</petrinet_enabled>
+        <petrinet_global_seed type="int" description="base seed for deterministic per-cell Petri-net streams">42</petrinet_global_seed>
+        <petrinet_entry_csv type="string" description="manual bacterial entry schedule; empty disables scheduled input"></petrinet_entry_csv>
     </user_parameters>
 </PhysiCell_settings>
