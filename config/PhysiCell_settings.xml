@@ -3969,5 +3969,8 @@
         <petrinet_enabled type="bool" description="enable generated intracellular xenophagy Petri-net">false</petrinet_enabled>
         <petrinet_global_seed type="int" description="base seed for deterministic per-cell Petri-net streams">42</petrinet_global_seed>
         <petrinet_entry_csv type="string" description="manual bacterial entry schedule; empty disables scheduled input"></petrinet_entry_csv>
+        <petrinet_demo_vacuolar_bacteria type="int" description="hard-coded t=0 vacuolar entry per target tumor cell; zero disables">0</petrinet_demo_vacuolar_bacteria>
+        <petrinet_metrics_csv type="string" description="optional per-cell xenophagy time-series output path"></petrinet_metrics_csv>
+        <petrinet_metrics_interval type="double" units="min" description="xenophagy metrics sampling interval; non-positive disables">6</petrinet_metrics_interval>
     </user_parameters>
 </PhysiCell_settings>

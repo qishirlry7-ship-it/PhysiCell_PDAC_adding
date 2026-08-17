@@ -37,6 +37,9 @@ std::vector<ScheduledEntry> schedule;
 std::size_t next_schedule = 0;
 std::uint64_t global_seed = 0;
 bool integration_enabled = false;
+std::ofstream metrics_file;
+double metrics_interval_minutes = 0.0;
+double next_metrics_time_minutes = 0.0;
 
 std::uint64_t mix_seed(std::uint64_t value) {
     value += 0x9e3779b97f4a7c15ULL;
@@ -142,12 +145,31 @@ void setup_petrinet_integration() {
     if (!integration_enabled) return;
     global_seed = static_cast<std::uint64_t>(PhysiCell::parameters.ints("petrinet_global_seed"));
     load_schedule(PhysiCell::parameters.strings("petrinet_entry_csv"));
+    metrics_interval_minutes = PhysiCell::parameters.doubles("petrinet_metrics_interval");
+    const std::string metrics_path = PhysiCell::parameters.strings("petrinet_metrics_csv");
+    if (!metrics_path.empty()) {
+        metrics_file.open(metrics_path.c_str(), std::ios::out | std::ios::trunc);
+        if (!metrics_file) throw std::runtime_error("cannot open PetriNet metrics CSV: " + metrics_path);
+        metrics_file << "time_min,cell_id,cell_type,intracellular_bacteria,xenophagy_activity,surface_pMHC,death_probability\n";
+    }
     for (const char* name : target_names) {
         PhysiCell::Cell_Definition* definition = PhysiCell::find_cell_definition(name);
         if (!definition) continue;
         definition->functions.update_phenotype = petrinet_phenotype;
         definition->functions.cell_division_function = petrinet_division;
     }
+}
+
+void inject_hardcoded_demo_event() {
+    if (!integration_enabled) return;
+    const int bacteria = PhysiCell::parameters.ints("petrinet_demo_vacuolar_bacteria");
+    if (bacteria <= 0) return;
+    for (PhysiCell::Cell* cell : *PhysiCell::all_cells) {
+        if (!cell->phenotype.death.dead && is_target_tumor_cell(cell))
+            enqueue_bacterial_entry(cell, 0.0, 0, bacteria);
+    }
+    std::cout << "[PetriNet demo] injected " << bacteria
+              << " vacuolar bacteria into each target tumor cell at t=0 min\n";
 }
 
 void enqueue_bacterial_entry(PhysiCell::Cell* cell, double time_minutes,
@@ -174,12 +196,33 @@ void process_bacterial_entry_schedule(double current_time_minutes) {
     }
 }
 
+void write_petrinet_metrics(double current_time_minutes) {
+    if (!integration_enabled || !metrics_file.is_open() || metrics_interval_minutes <= 0.0) return;
+    if (current_time_minutes + 1e-9 < next_metrics_time_minutes) return;
+    while (next_metrics_time_minutes <= current_time_minutes + 1e-9)
+        next_metrics_time_minutes += metrics_interval_minutes;
+    for (PhysiCell::Cell* cell : *PhysiCell::all_cells) {
+        if (!is_target_tumor_cell(cell)) continue;
+        CellPetriNetState* state = state_for(cell, false);
+        if (!state || !state->active) continue;
+        metrics_file << current_time_minutes << ',' << cell->ID << ',' << cell->type_name << ','
+                     << cell->custom_data["intracellular_bacteria"] << ','
+                     << cell->custom_data["xenophagy_activity"] << ','
+                     << cell->custom_data["surface_pMHC"] << ','
+                     << cell->custom_data["pn_death_probability"] << '\n';
+    }
+    metrics_file.flush();
+}
+
 void petrinet_phenotype(PhysiCell::Cell* cell, PhysiCell::Phenotype& phenotype,
                         double dt_minutes) {
     if (!integration_enabled || phenotype.death.dead) return;
     CellPetriNetState* state = state_for(cell, false);
     if (!state) return;
-    const double window_end = (PhysiCell::PhysiCell_globals.current_time + dt_minutes) * 60.0;
+    // PhysiCell calls this callback at the end of the elapsed phenotype
+    // interval. Synchronize to the public clock; do not advance one interval
+    // into the future.
+    const double window_end = PhysiCell::PhysiCell_globals.current_time * 60.0;
     WindowResult result = engine.advance(*state, window_end);
     cell->custom_data["pn_active"] = state->active ? 1.0 : 0.0;
     cell->custom_data["intracellular_bacteria"] = result.intracellular_bacteria;

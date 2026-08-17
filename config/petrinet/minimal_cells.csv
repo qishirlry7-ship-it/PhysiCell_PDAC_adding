@@ -1,0 +1,5 @@
+x,y,z,type
+-30,0,0,PD-L1lo_tumor
+30,0,0,PD-L1lo_tumor
+0,-30,0,PD-L1hi_tumor
+0,30,0,PD-L1hi_tumor

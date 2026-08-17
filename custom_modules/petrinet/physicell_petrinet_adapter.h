@@ -8,7 +8,9 @@ namespace xenophagy {
 bool is_target_tumor_cell(const PhysiCell::Cell* cell);
 void register_petrinet_custom_data();
 void setup_petrinet_integration();
+void inject_hardcoded_demo_event();
 void process_bacterial_entry_schedule(double current_time_minutes);
+void write_petrinet_metrics(double current_time_minutes);
 void cleanup_petrinet_states();
 
 void enqueue_bacterial_entry(PhysiCell::Cell* cell, double time_minutes,
