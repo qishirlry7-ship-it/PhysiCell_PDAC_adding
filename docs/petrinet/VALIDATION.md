@@ -21,10 +21,10 @@ Measured 8-hour minimal-demo evidence:
 - 4 initial cells, one division, and 5 cells present at 480 min;
 - 373 metric rows across 0–480 min at 6 min intervals;
 - all four cells contain exactly 50 bacteria at `t=0`;
-- maximum observed xenophagy activity: 9;
-- maximum observed surface pMHC: 16.8972;
-- final intracellular bacterial burdens: 45, 68, 84, 72, and 46;
-- PhysiCell simulation runtime: 8.11 s in the recorded WSL base run;
+- maximum observed xenophagy activity: 17;
+- maximum observed surface pMHC: 28.8291;
+- final intracellular bacterial burdens: 37, 80, 74, 76, and 47;
+- PhysiCell simulation runtime: 8.69 s in the recorded WSL base run;
 - generated SVG is non-empty and parses as valid XML;
 - `scripts/run_minimal_petrinet_demo.sh` exits successfully with `PASS`.
 
@@ -33,8 +33,22 @@ type names under WSL, creating zero cells and causing a baseline MultiCellDS
 null dereference. The smoke test used an ignored LF-normalized copy; the shared
 CSV was not modified.
 
-The 1,000-cell Python/C++ statistical comparison remains a calibration run:
-this implementation intentionally replaces Python's post-event Bernoulli
-checks with strict continuous-time XenoSig and death hazards. Acceptance remains
-10% for key means/medians, 5 percentage points for survival, and no systematic
-quantile drift; individual trajectories need not match.
+Python parity correction and 100-cell calibration completed on the 8-hour
+single-cell baseline (no division, initial `SalVac=50`). The correction fixed
+`Syn10` to use Python's `LC3` place and made Python's post-reaction Bernoulli
+`XenoSig` rule the default. Mean relative differences were:
+
+| Metric | Python mean | C++ mean | Relative difference |
+|---|---:|---:|---:|
+| ordinary SSA steps | 3171.85 | 3126.93 | 1.42% |
+| final bacterial burden | 73.14 | 74.20 | 1.45% |
+| peak xenophagy activity | 17.29 | 17.54 | 1.45% |
+| final xenophagy activity | 3.30 | 3.22 | 2.42% |
+| final `XenoSig` | 1887.18 | 1863.83 | 1.24% |
+| peak surface pMHC | 25.3121 | 24.8544 | 1.81% |
+| final surface pMHC | 25.3121 | 24.8540 | 1.81% |
+
+All reported means pass the 10% criterion. This establishes statistical
+PetriNet and MHC alignment for the locked baseline; it does not establish
+seed-by-seed identity or parity after PhysiCell division. The formal 1,000-cell
+acceptance run remains to be recorded before release.

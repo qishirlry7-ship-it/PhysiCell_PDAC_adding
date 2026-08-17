@@ -111,6 +111,7 @@ void PetriNetEngine::integrate_interval(CellPetriNetState& state, double dt_seco
     result.integrated_death_hazard += death_rate * dt_seconds;
 
     const double phi = xenophagy_activity(state.marking);
+    result.peak_xenophagy_activity = std::max(result.peak_xenophagy_activity, phi);
     result.antigen_flux += phi * dt_seconds / 3600.0;
     const int steps = std::max(1, static_cast<int>(std::ceil(dt_seconds / 60.0)));
     const double dh = dt_seconds / 3600.0 / steps;
@@ -121,6 +122,7 @@ void PetriNetEngine::integrate_interval(CellPetriNetState& state, double dt_seco
         state.mhc.M = std::max(0.0, old.M + dh * (config_.mhc.S_M - config_.mhc.d_M * old.M - load));
         state.mhc.C = std::max(0.0, old.C + dh * (load - (config_.mhc.k_T + config_.mhc.d_C) * old.C));
         state.mhc.P = std::max(0.0, old.P + dh * (config_.mhc.k_T * old.C - config_.mhc.d_P * old.P));
+        result.peak_surface_pMHC = std::max(result.peak_surface_pMHC, state.mhc.P);
     }
 }
 
@@ -128,6 +130,8 @@ WindowResult PetriNetEngine::advance(CellPetriNetState& state, double end) const
     if (!std::isfinite(end) || end < state.internal_time_seconds)
         throw std::invalid_argument("window end must not precede cell time");
     WindowResult result;
+    result.peak_xenophagy_activity = xenophagy_activity(state.marking);
+    result.peak_surface_pMHC = state.mhc.P;
     while (state.internal_time_seconds < end) {
         while (!state.entries.empty() && state.entries.front().time_seconds <= state.internal_time_seconds + 1e-12) {
             apply_entry(state, state.entries.front());
@@ -139,14 +143,19 @@ WindowResult PetriNetEngine::advance(CellPetriNetState& state, double end) const
             continue;
         }
         std::vector<double> props(transitions.size(), 0.0);
-        double a0 = sigmoid_propensity(state);
+        double ordinary_a0 = 0.0;
         for (std::size_t i = 0; i < transitions.size(); ++i) {
             props[i] = propensity(i, state.marking);
-            a0 += props[i];
+            ordinary_a0 += props[i];
         }
-        const double reaction_time = a0 > 0.0
-            ? state.internal_time_seconds - std::log(unit_open(state.rng)) / a0
+        const bool continuous_signal = config_.xeno_signal_mode ==
+            EngineConfig::XenoSignalMode::ContinuousCompetingHazard;
+        const double signal_a = continuous_signal ? sigmoid_propensity(state) : 0.0;
+        const double a0 = ordinary_a0 + signal_a;
+        const double reaction_dt = a0 > 0.0
+            ? -std::log(unit_open(state.rng)) / a0
             : std::numeric_limits<double>::infinity();
+        const double reaction_time = state.internal_time_seconds + reaction_dt;
         const double entry_time = state.entries.empty()
             ? std::numeric_limits<double>::infinity() : state.entries.front().time_seconds;
         const double next = std::min(end, std::min(reaction_time, entry_time));
@@ -165,7 +174,18 @@ WindowResult PetriNetEngine::advance(CellPetriNetState& state, double end) const
                 break;
             }
         }
-        if (!fired) state.marking[XenoSig] += 1;
+        if (!fired) {
+            // Optional strict continuous-time formulation retained for future
+            // mechanistic runs. It is not the Python reproduction mode.
+            state.marking[XenoSig] += 1;
+        } else if (!continuous_signal) {
+            // agent_core.py performs this Bernoulli check once, immediately
+            // after each ordinary SSA reaction, using that reaction's dt.
+            const double probability = sigmoid_propensity(state) * reaction_dt;
+            if (unit_open(state.rng) < probability) state.marking[XenoSig] += 1;
+        }
+        result.peak_xenophagy_activity = std::max(
+            result.peak_xenophagy_activity, xenophagy_activity(state.marking));
         ++result.reactions_fired;
     }
     while (!state.entries.empty() && state.entries.front().time_seconds <= end + 1e-12) {

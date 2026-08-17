@@ -171,10 +171,10 @@ PhysiCell_geometry.o: ./modules/PhysiCell_geometry.cpp
 custom.o: ./custom_modules/custom.cpp
 	$(COMPILE_COMMAND) -c ./custom_modules/custom.cpp
 
-petrinet_engine.o: ./custom_modules/petrinet/petrinet_engine.cpp ./custom_modules/generated/xenophagy_model_generated.h
+petrinet_engine.o: ./custom_modules/petrinet/petrinet_engine.cpp ./custom_modules/petrinet/petrinet_engine.h ./custom_modules/generated/xenophagy_model_generated.h
 	$(COMPILE_COMMAND) -c ./custom_modules/petrinet/petrinet_engine.cpp
 
-physicell_petrinet_adapter.o: ./custom_modules/petrinet/physicell_petrinet_adapter.cpp
+physicell_petrinet_adapter.o: ./custom_modules/petrinet/physicell_petrinet_adapter.cpp ./custom_modules/petrinet/physicell_petrinet_adapter.h ./custom_modules/petrinet/petrinet_engine.h ./custom_modules/generated/xenophagy_model_generated.h
 	$(COMPILE_COMMAND) -c ./custom_modules/petrinet/physicell_petrinet_adapter.cpp
 
 xenophagy_model_generated.o: ./custom_modules/generated/xenophagy_model_generated.cpp

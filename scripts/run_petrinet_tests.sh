@@ -9,3 +9,9 @@ g++ -std=c++11 -O2 \
   custom_modules/generated/xenophagy_model_generated.cpp \
   -o /tmp/petrinet_engine_test
 /tmp/petrinet_engine_test
+g++ -std=c++11 -O2 \
+  tests/petrinet_parity_driver.cpp \
+  custom_modules/petrinet/petrinet_engine.cpp \
+  custom_modules/generated/xenophagy_model_generated.cpp \
+  -o /tmp/petrinet_parity_driver
+echo "parity driver: /tmp/petrinet_parity_driver"

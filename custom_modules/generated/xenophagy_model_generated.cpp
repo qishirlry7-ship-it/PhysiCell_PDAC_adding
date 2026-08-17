@@ -1,5 +1,5 @@
 // Generated file. Do not edit.
-// generator=1.0.0 model_sha256=beaafd39036a29aab6eb846082b6d4f2ceef830d7c2d83594d976bd681b5c305 integration_sha256=0f63f40a98aacf1b6aa376275a2670fd506bb0a3a5d07b20dbd11428eb7949f1
+// generator=1.0.0 model_sha256=beaafd39036a29aab6eb846082b6d4f2ceef830d7c2d83594d976bd681b5c305 integration_sha256=bd61f9887e1a99fb71f565198db4ac1b067c82492139f2a7194463b9236cbdf8
 #include "xenophagy_model_generated.h"
 #include <algorithm>
 #include <cmath>
@@ -222,7 +222,7 @@ double expression_propensity(std::size_t i, const Marking& m) {
     case 23: return ((0.001 * 200.0) / (200.0 + static_cast<double>(m[TBK1])));
     case 24: return ((0.001 * 200.0) / (200.0 + static_cast<double>(m[mTORC1_ULK1comp])));
     case 74: return (0.01 * std::max((static_cast<double>(m[XenoSig]) - 200.0), 0.0));
-    case 75: return ((0.001 * 200.0) / (200.0 + static_cast<double>(m[LC3_GABARAP])));
+    case 75: return ((0.001 * 200.0) / (200.0 + static_cast<double>(m[LC3])));
     case 77: return (((((0.001 * static_cast<double>(m[SalCyt])) * std::min(static_cast<double>(m[Gal8]), 1.0)) * std::min(static_cast<double>(m[E3_ligase]), 1.0)) * std::max((static_cast<double>(m[XenoSig]) - 200.0), 0.0)) / (300.0 + std::max((static_cast<double>(m[XenoSig]) - 200.0), 0.0)));
     case 78: return (((((0.001 * static_cast<double>(m[AdapSalCyt])) * std::min(static_cast<double>(m[Gal8]), 1.0)) * std::min(static_cast<double>(m[E3_ligase]), 1.0)) * std::max((static_cast<double>(m[XenoSig]) - 200.0), 0.0)) / (300.0 + std::max((static_cast<double>(m[XenoSig]) - 200.0), 0.0)));
     case 79: return (0.01 * std::max((static_cast<double>(m[XenoSig]) - 200.0), 0.0));

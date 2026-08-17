@@ -50,3 +50,16 @@ Outputs are intentionally ignored runtime artifacts:
 The script asserts that the generated model and unit tests pass, both output
 artifacts are non-empty, and the hard-coded injection was reported by the
 PhysiCell executable.
+
+## Python parity check
+
+`run_petrinet_tests.sh` also compiles `/tmp/petrinet_parity_driver`. Compare
+the locked 8-hour, non-dividing, initial-`SalVac=50` baseline with:
+
+```bash
+python scripts/compare_python_cpp_parity.py \
+  --cpp /tmp/petrinet_parity_driver --samples 100
+```
+
+If numerical Python runs on Windows while the driver runs in WSL, redirect the
+driver output to CSV and use `--cpp-csv <path>`.

@@ -53,13 +53,21 @@ struct WindowResult {
     double death_probability = 0.0;
     double antigen_flux = 0.0;
     double xenophagy_activity = 0.0;
+    double peak_xenophagy_activity = 0.0;
+    double peak_surface_pMHC = 0.0;
     int intracellular_bacteria = 0;
     std::uint64_t reactions_fired = 0;
 };
 
 struct EngineConfig {
+    enum class XenoSignalMode {
+        PythonPostReactionBernoulli,
+        ContinuousCompetingHazard
+    };
+
     ModelParameters model;
     MHCParameters mhc;
+    XenoSignalMode xeno_signal_mode = XenoSignalMode::PythonPostReactionBernoulli;
 };
 
 class PetriNetEngine {

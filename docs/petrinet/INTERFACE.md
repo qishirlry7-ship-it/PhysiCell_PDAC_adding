@@ -57,11 +57,18 @@ void PetriNetEngine::enqueue(CellPetriNetState&, const EntryEvent&) const;
 WindowResult PetriNetEngine::advance(CellPetriNetState&, double window_end_seconds) const;
 ```
 
-`advance` interleaves external entries with exact SSA reactions and returns
+`advance` interleaves external entries with SSA reactions and returns
 intracellular burden, xenophagy signal, antigen flux, integrated death hazard,
 and death probability. Events at a window endpoint are applied before return.
 Past events and negative counts are rejected. Broadcasts are expanded at
 dispatch time, so daughters existing at that time are included.
+
+The default `EngineConfig::XenoSignalMode` reproduces `agent_core.py`: the
+exponential waiting time is sampled from ordinary Petri-net propensities, an
+ordinary transition fires, and then at most one `XenoSig` token is added with
+the Python probability `sigmoid(t, burden) * dt`. The alternative
+`ContinuousCompetingHazard` mode treats the sigmoid as an independent
+continuous-time event; it is intentionally not used for Python parity.
 
 For piecewise-constant bacterial burden,
 
@@ -106,3 +113,12 @@ time_min,cell_id,cell_type,intracellular_bacteria,xenophagy_activity,surface_pMH
 MultiCellDS custom data exposes
 `pn_state_index`, `pn_active`, `intracellular_bacteria`,
 `xenophagy_activity`, `surface_pMHC`, and `pn_death_probability`.
+
+## Python parity condition
+
+The reproducibility baseline is one non-dividing cell for 8 hours with 50
+tokens placed directly in `SalVac` at time zero, `k_death=1e-7`, IFN-gamma 5,
+immature `d_P=0.069`, and no further bacterial input. Direct initialization is
+required because Python's function-input strategy is sampled only after its
+first ordinary SSA reaction. Random engines differ, so acceptance is
+distributional rather than seed-by-seed.
