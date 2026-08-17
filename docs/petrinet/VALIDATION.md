@@ -74,3 +74,26 @@ former integration JSON and C++ MHC defaults into `parameters.xml`, the
 All 101 lines (header plus 100 cells) were identical. The complete 8-hour
 PhysiCell demo also passed with 5 observed PetriNet states, 373 metric rows,
 and zero deaths.
+
+## 24-hour, 100-cell, 150-bacterium stress run
+
+An independent ignored output directory was generated with 100 initial cancer
+cells, `SalVac=150` per cell at time zero, 24 hours, seed 42, 6-minute
+phenotype/metrics windows, division enabled, and the current unified XML model
+parameters, including `mhc_r_pep=5`.
+
+- all 100 cells had exactly 150 intracellular bacteria at time zero;
+- 112 PetriNet states were observed (12 daughters);
+- 25,453 metric rows were written through 1,440 minutes;
+- all 112 observed states entered death: 7 PetriNet-triggered and 105 from
+  independent PhysiCell death mechanisms;
+- median PetriNet death time was 216 min (range 12–846 min);
+- median other-PhysiCell death time was 444 min (range 48–1,338 min);
+- at 24 h, 100 agents remained in the container and all were marked dead;
+- maxima were bacterial burden 517, Gal8 Ap tokens 22, Ub Ap tokens 22, and
+  surface pMHC 246.367;
+- full wall time was 25.05 s with 4 OpenMP threads.
+
+The dominant death source is PhysiCell (105/112), not the PetriNet hazard
+(7/112). Biological interpretation of total survival requires a separate
+control with PhysiCell-native death disabled or calibrated.

@@ -22,3 +22,14 @@ The one-minute full PhysiCell correctness smoke run with 1,724 cells took
 4.57 s. It is not an on/off overhead comparison. The controlled disabled,
 enabled-idle, and 1%/10%/100% infection matrix remains pending a normalized
 production initial-cell file. Raw benchmark CSV files are intentionally ignored.
+
+Full PhysiCell 24-hour stress scenario, WSL base, 4 OpenMP threads, 100 initial
+tumor cells, and 150 vacuolar bacteria per initial cell:
+
+| Initial cells | Observed PetriNet states | Simulated | Wall time | Metrics rows |
+|---:|---:|---:|---:|---:|
+| 100 | 112 | 24 h | 25.05 s | 25,453 |
+
+The 112 states comprise 100 initial cells and 12 daughters. This timing
+includes PhysiCell microenvironment/cell updates and per-cell CSV metrics, not
+only standalone SSA execution.

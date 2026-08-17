@@ -58,6 +58,19 @@ The SVG contains separate Gal8-pathway and Ub-pathway autophagosome-token
 panels for every active cell/PetriNet, plus a cumulative cell-death panel. The
 death CSV reports death source/time and the two pathway peaks per cell.
 
+Generate a larger independent experiment without changing the 8-hour baseline:
+
+```bash
+python scripts/make_minimal_petrinet_config.py \
+  --output-name petrinet_24h_100 --duration-min 1440 \
+  --bacteria 150 --cells 100
+./project outputs/petrinet_24h_100/PhysiCell_settings.xml
+python scripts/plot_xenophagy_metrics.py \
+  --input outputs/petrinet_24h_100/xenophagy_metrics.csv \
+  --output outputs/petrinet_24h_100/xenophagy_metrics.svg \
+  --death-summary outputs/petrinet_24h_100/death_statistics.csv
+```
+
 ## Python parity check
 
 `run_petrinet_tests.sh` also compiles `/tmp/petrinet_parity_driver`. Compare

@@ -64,11 +64,12 @@ def main() -> int:
     if t_max <= t_min: t_max = t_min + 1.0
     dead_count = sum(row["is_dead"] for row in death_rows)
     pn_dead_count = sum(row["death_source"] == "petrinet" for row in death_rows)
+    duration_h = (t_max - t_min) / 60.0
     svg = [
         f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" viewBox="0 0 {width} {height}">',
         '<rect width="100%" height="100%" fill="#ffffff"/>',
         '<style>text{font-family:Arial,sans-serif;fill:#172033}.axis{stroke:#334155;stroke-width:1}.grid{stroke:#cbd5e1;stroke-width:1;opacity:.65}.series{fill:none;stroke-width:2}.death{fill:none;stroke:#111827;stroke-width:3}</style>',
-        f'<text x="{width/2}" y="32" text-anchor="middle" font-size="22" font-weight="bold">8 h per-cell PetriNet: Gal8 / Ub autophagosome tokens and death</text>',
+        f'<text x="{width/2}" y="32" text-anchor="middle" font-size="22" font-weight="bold">{duration_h:g} h per-cell PetriNet: Gal8 / Ub autophagosome tokens and death</text>',
         f'<text x="{width/2}" y="58" text-anchor="middle" font-size="14">Observed PetriNets: {len(cells)}; deaths: {dead_count}; PetriNet-triggered deaths: {pn_dead_count}</text>',
     ]
 
@@ -109,7 +110,7 @@ def main() -> int:
         points.append(f"{x:.2f},{y:.2f}")
     svg.append(f'<polyline class="death" points="{" ".join(points)}"/>')
     if not death_times:
-        svg.append(f'<text x="{left+plot_width/2}" y="{death_y0+panel_height/2}" text-anchor="middle" font-size="18">No cell deaths observed during 8 h</text>')
+        svg.append(f'<text x="{left+plot_width/2}" y="{death_y0+panel_height/2}" text-anchor="middle" font-size="18">No cell deaths observed during {duration_h:g} h</text>')
 
     base_y = death_y0 + panel_height
     for tick in range(9):
@@ -117,12 +118,15 @@ def main() -> int:
         svg.append(f'<text x="{x:.2f}" y="{base_y+22}" text-anchor="middle" font-size="12">{value:.0f}</text>')
     svg.append(f'<text x="{left+plot_width/2}" y="{base_y+47}" text-anchor="middle" font-size="14">PhysiCell time (min)</text>')
     legend_y = height - 45
-    for index, (cell_id, rows) in enumerate(sorted_cells):
+    legend_cells = sorted_cells if len(sorted_cells) <= 12 else []
+    for index, (cell_id, rows) in enumerate(legend_cells):
         column, row_index = index % 3, index // 3
         x, y = left + column * 340, legend_y + row_index * 20
         label = f"cell {cell_id} ({rows[0]['type']})"
         svg.append(f'<line x1="{x}" y1="{y-4}" x2="{x+24}" y2="{y-4}" stroke="{colors[index % len(colors)]}" stroke-width="3"/>')
         svg.append(f'<text x="{x+30}" y="{y}" font-size="12">{escape(label)}</text>')
+    if not legend_cells:
+        svg.append(f'<text x="{left}" y="{legend_y}" font-size="12">{len(sorted_cells)} per-cell trajectories shown; legend omitted for readability.</text>')
     svg.append('</svg>')
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text("\n".join(svg), encoding="utf-8")
