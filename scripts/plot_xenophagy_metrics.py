@@ -3,6 +3,7 @@
 
 import argparse
 import csv
+import statistics
 from collections import defaultdict
 from html import escape
 from pathlib import Path
@@ -33,6 +34,11 @@ def main() -> int:
     for rows in cells.values():
         rows.sort(key=lambda row: row["time"])
     sorted_cells = sorted(cells.items())
+    population = defaultdict(list)
+    for rows in cells.values():
+        for row in rows:
+            if not row["is_dead"]:
+                population[row["time"]].append(row)
 
     death_rows = []
     for cell_id, rows in sorted_cells:
@@ -58,8 +64,8 @@ def main() -> int:
               ("ap_gal8", "Gal8-pathway Ap tokens"),
               ("ap_ub", "Ub-pathway Ap tokens"),
               ("pmhc", "Surface pMHC"))
-    colors = ("#2563eb", "#dc2626", "#059669", "#9333ea", "#ea580c", "#0891b2")
     all_times = [row["time"] for rows in cells.values() for row in rows]
+    sample_times = sorted(set(all_times))
     t_min, t_max = min(all_times), max(all_times)
     if t_max <= t_min: t_max = t_min + 1.0
     dead_count = sum(row["is_dead"] for row in death_rows)
@@ -68,8 +74,8 @@ def main() -> int:
     svg = [
         f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" viewBox="0 0 {width} {height}">',
         '<rect width="100%" height="100%" fill="#ffffff"/>',
-        '<style>text{font-family:Arial,sans-serif;fill:#172033}.axis{stroke:#334155;stroke-width:1}.grid{stroke:#cbd5e1;stroke-width:1;opacity:.65}.series{fill:none;stroke-width:2}.death{fill:none;stroke:#111827;stroke-width:3}</style>',
-        f'<text x="{width/2}" y="32" text-anchor="middle" font-size="22" font-weight="bold">{duration_h:g} h per-cell PetriNet: Gal8 / Ub autophagosome tokens and death</text>',
+        '<style>text{font-family:Arial,sans-serif;fill:#172033}.axis{stroke:#334155;stroke-width:1}.grid{stroke:#cbd5e1;stroke-width:1;opacity:.65}.median{fill:none;stroke:#1d4ed8;stroke-width:3}.sigma{fill:#60a5fa;fill-opacity:.28;stroke:none}.death{fill:none;stroke:#111827;stroke-width:3}.alive{fill:none;stroke:#059669;stroke-width:3}</style>',
+        f'<text x="{width/2}" y="32" text-anchor="middle" font-size="22" font-weight="bold">{duration_h:g} h population PetriNet summary: median and sigma</text>',
         f'<text x="{width/2}" y="58" text-anchor="middle" font-size="14">Observed PetriNets: {len(cells)}; deaths: {dead_count}; PetriNet-triggered deaths: {pn_dead_count}</text>',
     ]
 
@@ -85,20 +91,33 @@ def main() -> int:
 
     for panel, (field, ylabel) in enumerate(fields):
         y0 = top + panel * (panel_height + gap)
-        values = [row[field] for rows in cells.values() for row in rows]
-        v_min, v_max = min(0.0, min(values)), max(values)
+        summaries = []
+        for time in sample_times:
+            values = [row[field] for row in population.get(time, [])]
+            if not values:
+                continue
+            summaries.append((time, statistics.median(values), statistics.pstdev(values)))
+        if not summaries:
+            raise SystemExit(f"no living-cell observations available for {field}")
+        v_min = min(0.0, min(median - sigma for _, median, sigma in summaries))
+        v_max = max(median + sigma for _, median, sigma in summaries)
         if v_max <= v_min: v_max = v_min + 1.0
         axes(y0, v_min, v_max, ylabel)
-        for index, (_, rows) in enumerate(sorted_cells):
-            points = []
-            for row in rows:
-                x = left + (row["time"] - t_min) / (t_max - t_min) * plot_width
-                y = y0 + panel_height - (row[field] - v_min) / (v_max - v_min) * panel_height
-                points.append(f"{x:.2f},{y:.2f}")
-            svg.append(f'<polyline class="series" stroke="{colors[index % len(colors)]}" points="{" ".join(points)}"/>')
+        upper, lower, median_points = [], [], []
+        for time, median, sigma in summaries:
+            x = left + (time - t_min) / (t_max - t_min) * plot_width
+            y_median = y0 + panel_height - (median - v_min) / (v_max - v_min) * panel_height
+            y_upper = y0 + panel_height - (median + sigma - v_min) / (v_max - v_min) * panel_height
+            y_lower = y0 + panel_height - (median - sigma - v_min) / (v_max - v_min) * panel_height
+            median_points.append(f"{x:.2f},{y_median:.2f}")
+            upper.append(f"{x:.2f},{y_upper:.2f}")
+            lower.append(f"{x:.2f},{y_lower:.2f}")
+        band = upper + list(reversed(lower))
+        svg.append(f'<polygon class="sigma" points="{" ".join(band)}"/>')
+        svg.append(f'<polyline class="median" points="{" ".join(median_points)}"/>')
 
     death_y0 = top + len(fields) * (panel_height + gap)
-    death_max = max(1, dead_count); axes(death_y0, 0.0, float(death_max), "Cumulative dead cells")
+    death_max = max(1, len(cells)); axes(death_y0, 0.0, float(death_max), "Cell count")
     death_times = sorted(row["death_time_min"] for row in death_rows if row["is_dead"])
     step_points, count = [(t_min, 0)], 0
     for death_time in death_times:
@@ -109,6 +128,12 @@ def main() -> int:
         y = death_y0 + panel_height - value / death_max * panel_height
         points.append(f"{x:.2f},{y:.2f}")
     svg.append(f'<polyline class="death" points="{" ".join(points)}"/>')
+    alive_points = []
+    for time in sample_times:
+        x = left + (time - t_min) / (t_max - t_min) * plot_width
+        y = death_y0 + panel_height - len(population.get(time, [])) / death_max * panel_height
+        alive_points.append(f"{x:.2f},{y:.2f}")
+    svg.append(f'<polyline class="alive" points="{" ".join(alive_points)}"/>')
     if not death_times:
         svg.append(f'<text x="{left+plot_width/2}" y="{death_y0+panel_height/2}" text-anchor="middle" font-size="18">No cell deaths observed during {duration_h:g} h</text>')
 
@@ -118,15 +143,13 @@ def main() -> int:
         svg.append(f'<text x="{x:.2f}" y="{base_y+22}" text-anchor="middle" font-size="12">{value:.0f}</text>')
     svg.append(f'<text x="{left+plot_width/2}" y="{base_y+47}" text-anchor="middle" font-size="14">PhysiCell time (min)</text>')
     legend_y = height - 45
-    legend_cells = sorted_cells if len(sorted_cells) <= 12 else []
-    for index, (cell_id, rows) in enumerate(legend_cells):
-        column, row_index = index % 3, index // 3
-        x, y = left + column * 340, legend_y + row_index * 20
-        label = f"cell {cell_id} ({rows[0]['type']})"
-        svg.append(f'<line x1="{x}" y1="{y-4}" x2="{x+24}" y2="{y-4}" stroke="{colors[index % len(colors)]}" stroke-width="3"/>')
-        svg.append(f'<text x="{x+30}" y="{y}" font-size="12">{escape(label)}</text>')
-    if not legend_cells:
-        svg.append(f'<text x="{left}" y="{legend_y}" font-size="12">{len(sorted_cells)} per-cell trajectories shown; legend omitted for readability.</text>')
+    svg.append(f'<rect x="{left}" y="{legend_y-14}" width="28" height="12" class="sigma"/>')
+    svg.append(f'<line x1="{left}" y1="{legend_y-8}" x2="{left+28}" y2="{legend_y-8}" class="median"/>')
+    svg.append(f'<text x="{left+36}" y="{legend_y-3}" font-size="12">living-cell median ± population sigma</text>')
+    svg.append(f'<line x1="{left+360}" y1="{legend_y-8}" x2="{left+388}" y2="{legend_y-8}" class="alive"/>')
+    svg.append(f'<text x="{left+396}" y="{legend_y-3}" font-size="12">living cells included</text>')
+    svg.append(f'<line x1="{left+650}" y1="{legend_y-8}" x2="{left+678}" y2="{legend_y-8}" class="death"/>')
+    svg.append(f'<text x="{left+686}" y="{legend_y-3}" font-size="12">cumulative deaths</text>')
     svg.append('</svg>')
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text("\n".join(svg), encoding="utf-8")

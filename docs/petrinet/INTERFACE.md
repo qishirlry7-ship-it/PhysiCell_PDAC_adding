@@ -127,6 +127,12 @@ Ub-pathway time series. `death_time_min=-1` means no death has been observed;
 `petrinet_death_triggered=1` distinguishes the PetriNet hazard from independent
 PhysiCell death mechanisms.
 
+Population visualization groups rows by `time_min` and filters to
+`is_dead=0` before computing each point. The center is the median and the band
+is median plus/minus the population standard deviation (`pstdev`, denominator
+N). If no living cells remain at a time point, no molecular summary is drawn;
+the living-cell count is still drawn as zero.
+
 MultiCellDS custom data exposes
 `pn_state_index`, `pn_active`, `intracellular_bacteria`,
 `ap_gal8_tokens`, `ap_ub_tokens`, `xenophagy_activity`, `surface_pMHC`, and

@@ -54,9 +54,11 @@ The script asserts that the generated model and unit tests pass, both output
 artifacts are non-empty, and the hard-coded injection was reported by the
 PhysiCell executable.
 
-The SVG contains separate Gal8-pathway and Ub-pathway autophagosome-token
-panels for every active cell/PetriNet, plus a cumulative cell-death panel. The
-death CSV reports death source/time and the two pathway peaks per cell.
+The SVG is population-oriented. At each sample time it excludes rows with
+`is_dead=1`, then draws the living-cell median and `median ± population sigma`
+for bacterial burden, Gal8-pathway Ap tokens, Ub-pathway Ap tokens, and pMHC.
+The final panel shows living cells included in the statistics and cumulative
+deaths. The death CSV still reports source/time and pathway peaks per cell.
 
 Generate a larger independent experiment without changing the 8-hour baseline:
 

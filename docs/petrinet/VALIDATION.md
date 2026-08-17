@@ -97,3 +97,10 @@ parameters, including `mhc_r_pep=5`.
 The dominant death source is PhysiCell (105/112), not the PetriNet hazard
 (7/112). Biological interpretation of total survival requires a separate
 control with PhysiCell-native death disabled or calibrated.
+
+The 24-hour output was re-rendered with population statistics. Living cells
+included at 0/240/480/720/960/1200/1440 min were respectively
+100/98/42/18/6/1/0. The bacterial-burden medians at the first six non-empty
+points were 150/130/130/140/144/147. The 1,440-minute molecular point is absent
+because no living cell remains, while the living-count curve correctly reaches
+zero. PhysiCell apoptosis/necrosis parameters were not changed.
