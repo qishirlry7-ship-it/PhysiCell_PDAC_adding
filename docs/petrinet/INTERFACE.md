@@ -50,9 +50,18 @@ cells selected by the adapter. Events for one cell at one time are merged.
 
 ## Window API and output
 
-`advance(state, window_end_seconds, entries)` advances one cell by exact SSA,
-interleaving external entries with reactions. It returns intracellular burden,
-xenophagy signal, antigen flux, integrated death hazard, and death probability.
+Queued entries are stored on `CellPetriNetState`; the implemented engine API is:
+
+```cpp
+void PetriNetEngine::enqueue(CellPetriNetState&, const EntryEvent&) const;
+WindowResult PetriNetEngine::advance(CellPetriNetState&, double window_end_seconds) const;
+```
+
+`advance` interleaves external entries with exact SSA reactions and returns
+intracellular burden, xenophagy signal, antigen flux, integrated death hazard,
+and death probability. Events at a window endpoint are applied before return.
+Past events and negative counts are rejected. Broadcasts are expanded at
+dispatch time, so daughters existing at that time are included.
 
 For piecewise-constant bacterial burden,
 
@@ -77,3 +86,10 @@ CapVac = max(0, cap_vac_initial - SalVac - AdapSalVac)
 
 MHC molecule counts are partitioned by the same volume fraction. Parent and
 child keep the same physical time and receive distinct random streams.
+
+## Runtime configuration and observables
+
+XML parameters are `petrinet_enabled` (bool), `petrinet_global_seed` (int), and
+`petrinet_entry_csv` (string). MultiCellDS custom data exposes
+`pn_state_index`, `pn_active`, `intracellular_bacteria`,
+`xenophagy_activity`, `surface_pMHC`, and `pn_death_probability`.

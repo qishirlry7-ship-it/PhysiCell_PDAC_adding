@@ -11,8 +11,8 @@ From the PhysiCell repository in the WSL base environment:
 ```bash
 python3 scripts/generate_petrinet_cpp.py
 python3 scripts/generate_petrinet_cpp.py --check
-make
-make petrinet-test
+bash scripts/run_petrinet_tests.sh
+make -j4
 ```
 
 The checked-in generated source lets collaborators compile without running the
@@ -20,3 +20,13 @@ generator. `--check` is the required stale-model check before review.
 
 See [INTERFACE.md](INTERFACE.md) for the stable interface and
 [ARCHITECTURE.md](ARCHITECTURE.md) for ownership and data flow.
+
+Enable the runtime through `petrinet_enabled`, `petrinet_entry_csv`, and
+`petrinet_global_seed` in the PhysiCell XML. Use
+`config/petrinet/manual_entries.example.csv` as the schedule template. Pressure
+tests are available in `scripts/run_petrinet_benchmark_quick.sh` and
+`scripts/run_petrinet_benchmark.sh`.
+
+Do not edit generated files manually. Update `INTERFACE.md` before changing a
+public JSON, CSV, or C++ contract; regenerate and commit the model snapshot,
+integration configuration, generated pair, and version hashes together.

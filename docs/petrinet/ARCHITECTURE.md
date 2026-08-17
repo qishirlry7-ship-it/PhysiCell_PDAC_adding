@@ -16,3 +16,12 @@ PhysiCell's `cell_division_function(parent, child)` partitions state without
 modifying PhysiCell core. The network is read-only under OpenMP; state is owned
 per cell and pool allocation is synchronized. Observable values are mirrored
 to custom data for MultiCellDS output.
+
+Custom fields are registered on `cell_defaults` before XML inheritance. Target
+tumor definitions then receive the PetriNet phenotype and division callbacks.
+The main loop dispatches scheduled inputs before cell updates and reclaims
+removed-cell state slots afterward.
+
+Random streams derive from the global seed and cell ID; daughters derive a new
+stream from their own ID. Network data is immutable, and each OpenMP worker
+only mutates the state belonging to its current cell.
