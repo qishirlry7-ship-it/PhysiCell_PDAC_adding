@@ -45,11 +45,16 @@ Outputs are intentionally ignored runtime artifacts:
 
 - `outputs/petrinet_minimal/xenophagy_metrics.csv`
 - `outputs/petrinet_minimal/xenophagy_metrics.svg`
+- `outputs/petrinet_minimal/death_statistics.csv`
 - `outputs/petrinet_minimal/run.log`
 
 The script asserts that the generated model and unit tests pass, both output
 artifacts are non-empty, and the hard-coded injection was reported by the
 PhysiCell executable.
+
+The SVG contains separate Gal8-pathway and Ub-pathway autophagosome-token
+panels for every active cell/PetriNet, plus a cumulative cell-death panel. The
+death CSV reports death source/time and the two pathway peaks per cell.
 
 ## Python parity check
 

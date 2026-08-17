@@ -107,12 +107,20 @@ every living target tumor cell. It is independent of the scheduled CSV input.
 The metrics CSV schema is:
 
 ```text
-time_min,cell_id,cell_type,intracellular_bacteria,xenophagy_activity,surface_pMHC,death_probability
+time_min,cell_id,cell_type,intracellular_bacteria,ap_gal8_tokens,ap_ub_tokens,xenophagy_activity,surface_pMHC,death_probability,is_dead,petrinet_death_triggered,death_time_min
 ```
+
+`ap_gal8_tokens` sums `Ap_Gal8`, `Ap_Gal8_Ub`, `Ap_Gal8_Ub_OPTNp`, and
+`Ap_Gal8_Ub_N_S`. `ap_ub_tokens` sums `Ap_Ub`, `Ap_Ub_OPTNp`, and
+`Ap_Ub_N_S`. Every active cell/PetriNet therefore has separate Gal8- and
+Ub-pathway time series. `death_time_min=-1` means no death has been observed;
+`petrinet_death_triggered=1` distinguishes the PetriNet hazard from independent
+PhysiCell death mechanisms.
 
 MultiCellDS custom data exposes
 `pn_state_index`, `pn_active`, `intracellular_bacteria`,
-`xenophagy_activity`, `surface_pMHC`, and `pn_death_probability`.
+`ap_gal8_tokens`, `ap_ub_tokens`, `xenophagy_activity`, `surface_pMHC`, and
+`pn_death_probability`.
 
 ## Python parity condition
 

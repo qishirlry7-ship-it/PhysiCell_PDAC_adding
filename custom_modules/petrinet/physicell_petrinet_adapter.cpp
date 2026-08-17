@@ -87,6 +87,10 @@ void add_observables(PhysiCell::Cell_Definition* definition) {
         definition->custom_data.add_variable("intracellular_bacteria", "count", 0.0);
     if (definition->custom_data.find_variable_index("xenophagy_activity") < 0)
         definition->custom_data.add_variable("xenophagy_activity", "count", 0.0);
+    if (definition->custom_data.find_variable_index("ap_gal8_tokens") < 0)
+        definition->custom_data.add_variable("ap_gal8_tokens", "count", 0.0);
+    if (definition->custom_data.find_variable_index("ap_ub_tokens") < 0)
+        definition->custom_data.add_variable("ap_ub_tokens", "count", 0.0);
     if (definition->custom_data.find_variable_index("surface_pMHC") < 0)
         definition->custom_data.add_variable("surface_pMHC", "count", 0.0);
     if (definition->custom_data.find_variable_index("pn_death_probability") < 0)
@@ -150,7 +154,10 @@ void setup_petrinet_integration() {
     if (!metrics_path.empty()) {
         metrics_file.open(metrics_path.c_str(), std::ios::out | std::ios::trunc);
         if (!metrics_file) throw std::runtime_error("cannot open PetriNet metrics CSV: " + metrics_path);
-        metrics_file << "time_min,cell_id,cell_type,intracellular_bacteria,xenophagy_activity,surface_pMHC,death_probability\n";
+        metrics_file << "time_min,cell_id,cell_type,intracellular_bacteria,"
+                        "ap_gal8_tokens,ap_ub_tokens,xenophagy_activity,"
+                        "surface_pMHC,death_probability,is_dead,"
+                        "petrinet_death_triggered,death_time_min\n";
     }
     for (const char* name : target_names) {
         PhysiCell::Cell_Definition* definition = PhysiCell::find_cell_definition(name);
@@ -205,11 +212,18 @@ void write_petrinet_metrics(double current_time_minutes) {
         if (!is_target_tumor_cell(cell)) continue;
         CellPetriNetState* state = state_for(cell, false);
         if (!state || !state->active) continue;
+        if (cell->phenotype.death.dead && state->death_time_minutes < 0.0)
+            state->death_time_minutes = current_time_minutes;
         metrics_file << current_time_minutes << ',' << cell->ID << ',' << cell->type_name << ','
                      << cell->custom_data["intracellular_bacteria"] << ','
+                     << engine.gal8_autophagosome_tokens(state->marking) << ','
+                     << engine.ub_autophagosome_tokens(state->marking) << ','
                      << cell->custom_data["xenophagy_activity"] << ','
                      << cell->custom_data["surface_pMHC"] << ','
-                     << cell->custom_data["pn_death_probability"] << '\n';
+                     << cell->custom_data["pn_death_probability"] << ','
+                     << (cell->phenotype.death.dead ? 1 : 0) << ','
+                     << (state->petrinet_death_triggered ? 1 : 0) << ','
+                     << state->death_time_minutes << '\n';
     }
     metrics_file.flush();
 }
@@ -226,6 +240,8 @@ void petrinet_phenotype(PhysiCell::Cell* cell, PhysiCell::Phenotype& phenotype,
     WindowResult result = engine.advance(*state, window_end);
     cell->custom_data["pn_active"] = state->active ? 1.0 : 0.0;
     cell->custom_data["intracellular_bacteria"] = result.intracellular_bacteria;
+    cell->custom_data["ap_gal8_tokens"] = engine.gal8_autophagosome_tokens(state->marking);
+    cell->custom_data["ap_ub_tokens"] = engine.ub_autophagosome_tokens(state->marking);
     cell->custom_data["xenophagy_activity"] = result.xenophagy_activity;
     cell->custom_data["surface_pMHC"] = state->mhc.P;
     cell->custom_data["pn_death_probability"] = result.death_probability;
@@ -233,7 +249,11 @@ void petrinet_phenotype(PhysiCell::Cell* cell, PhysiCell::Phenotype& phenotype,
     if (draw < result.death_probability) {
         const int apoptosis = phenotype.death.find_death_model_index(
             PhysiCell::PhysiCell_constants::apoptosis_death_model);
-        if (apoptosis >= 0) cell->start_death(apoptosis);
+        if (apoptosis >= 0) {
+            state->petrinet_death_triggered = true;
+            state->death_time_minutes = PhysiCell::PhysiCell_globals.current_time;
+            cell->start_death(apoptosis);
+        }
     }
 }
 

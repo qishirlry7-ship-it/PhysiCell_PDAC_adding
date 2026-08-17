@@ -19,6 +19,8 @@ int main() {
     assert(state.marking[SalCyt] == 121);
     assert(state.marking[SalVac] == 32);
     assert(result.intracellular_bacteria == 153);
+    assert(engine.gal8_autophagosome_tokens(state.marking) == 0);
+    assert(engine.ub_autophagosome_tokens(state.marking) == 0);
 
     // With no interval after entry, hazard is zero. Over the following second,
     // its exact integral is determined by the piecewise-constant SSA path.

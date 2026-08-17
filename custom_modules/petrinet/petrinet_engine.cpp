@@ -96,10 +96,18 @@ int PetriNetEngine::bacterial_burden(const Marking& m) const {
 }
 
 double PetriNetEngine::xenophagy_activity(const Marking& m) const {
-    static const Place gal8[] = {Ap_Gal8, Ap_Gal8_Ub, Ap_Gal8_Ub_OPTNp, Ap_Gal8_Ub_N_S};
-    static const Place ub[] = {Ap_Ub, Ap_Ub_OPTNp, Ap_Ub_N_S};
-    return config_.model.mhc_alpha * count_places(m, gal8, sizeof(gal8) / sizeof(gal8[0])) +
-           config_.model.mhc_beta * count_places(m, ub, sizeof(ub) / sizeof(ub[0]));
+    return config_.model.mhc_alpha * gal8_autophagosome_tokens(m) +
+           config_.model.mhc_beta * ub_autophagosome_tokens(m);
+}
+
+int PetriNetEngine::gal8_autophagosome_tokens(const Marking& m) const {
+    static const Place places[] = {Ap_Gal8, Ap_Gal8_Ub, Ap_Gal8_Ub_OPTNp, Ap_Gal8_Ub_N_S};
+    return count_places(m, places, sizeof(places) / sizeof(places[0]));
+}
+
+int PetriNetEngine::ub_autophagosome_tokens(const Marking& m) const {
+    static const Place places[] = {Ap_Ub, Ap_Ub_OPTNp, Ap_Ub_N_S};
+    return count_places(m, places, sizeof(places) / sizeof(places[0]));
 }
 
 void PetriNetEngine::integrate_interval(CellPetriNetState& state, double dt_seconds,
@@ -211,6 +219,8 @@ void PetriNetEngine::split(CellPetriNetState& parent, CellPetriNetState& child,
     child.marking.fill(0);
     child.internal_time_seconds = parent.internal_time_seconds;
     child.active = parent.active;
+    child.petrinet_death_triggered = false;
+    child.death_time_minutes = -1.0;
     for (std::size_t i = 0; i < PLACE_COUNT; ++i) {
         if (i == CapCyt || i == CapVac) continue;
         std::binomial_distribution<int> distribution(parent.marking[i], fraction);

@@ -28,6 +28,21 @@ Measured 8-hour minimal-demo evidence:
 - generated SVG is non-empty and parses as valid XML;
 - `scripts/run_minimal_petrinet_demo.sh` exits successfully with `PASS`.
 
+Per-PetriNet Gal8/Ub observability run on the same 8-hour demo:
+
+| Cell/PetriNet | First observation (min) | Peak Gal8 Ap tokens | Peak Ub Ap tokens | Dead |
+|---:|---:|---:|---:|---:|
+| 0 | 0 | 8 | 4 | no |
+| 1 | 0 | 11 | 6 | no |
+| 2 | 0 | 10 | 9 | no |
+| 3 | 0 | 12 | 7 | no |
+| 28 (daughter) | 192 | 7 | 4 | no |
+
+No deaths occurred among the five observed PetriNet states. This is expected
+for this realization because the initial vacuolar burden is 50 while the
+PetriNet death threshold is 100. The SVG nevertheless includes the cumulative
+death panel, and `death_statistics.csv` records one row per observed cell.
+
 The tracked initial-cell CSV uses CRLF. Its loader retains the trailing `\r` in
 type names under WSL, creating zero cells and causing a baseline MultiCellDS
 null dereference. The smoke test used an ignored LF-normalized copy; the shared

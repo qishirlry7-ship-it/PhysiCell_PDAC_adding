@@ -13,7 +13,11 @@ python3 scripts/plot_xenophagy_metrics.py
 
 test -s outputs/petrinet_minimal/xenophagy_metrics.csv
 test -s outputs/petrinet_minimal/xenophagy_metrics.svg
+test -s outputs/petrinet_minimal/death_statistics.csv
+head -n 1 outputs/petrinet_minimal/xenophagy_metrics.csv | grep -q "ap_gal8_tokens,ap_ub_tokens"
+head -n 1 outputs/petrinet_minimal/xenophagy_metrics.csv | grep -q "is_dead,petrinet_death_triggered,death_time_min"
 grep -q "\[PetriNet demo\] injected 50" outputs/petrinet_minimal/run.log
 echo "minimal PetriNet+PhysiCell demo: PASS"
 echo "  metrics: outputs/petrinet_minimal/xenophagy_metrics.csv"
 echo "  figure:  outputs/petrinet_minimal/xenophagy_metrics.svg"
+echo "  deaths:  outputs/petrinet_minimal/death_statistics.csv"

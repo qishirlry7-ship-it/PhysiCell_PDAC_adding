@@ -41,6 +41,8 @@ struct CellPetriNetState {
     std::uint64_t cell_seed = 0;
     std::uint64_t update_index = 0;
     bool active = false;
+    bool petrinet_death_triggered = false;
+    double death_time_minutes = -1.0;
     MHCState mhc;
     std::deque<EntryEvent> entries;
     std::mt19937_64 rng;
@@ -81,6 +83,8 @@ public:
 
     double propensity(std::size_t transition_index, const Marking& marking) const;
     int bacterial_burden(const Marking& marking) const;
+    int gal8_autophagosome_tokens(const Marking& marking) const;
+    int ub_autophagosome_tokens(const Marking& marking) const;
     double xenophagy_activity(const Marking& marking) const;
 
 private:
