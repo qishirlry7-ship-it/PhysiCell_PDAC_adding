@@ -24,7 +24,7 @@
     <parameter name="mhc_V_M_IFN" value="4000" units="molecule/h"/>
     <parameter name="mhc_K_M_IFN" value="0.5" units="ng/mL"/>
     <parameter name="mhc_ifn_gamma" value="5" units="ng/mL"/>
-    <parameter name="mhc_r_pep" value="1" units="dimensionless"/>
+    <parameter name="mhc_r_pep" value="5" units="dimensionless"/>
     <parameter name="mhc_max_step_seconds" value="60" units="s"/>
     <parameter name="mhc_X0" value="0" units="molecules"/>
     <parameter name="mhc_M0" value="10000" units="molecules"/>
