@@ -27,7 +27,7 @@ def main() -> int:
     if not cells:
         raise SystemExit("metrics CSV contains no active PetriNet cells")
 
-    width, height = 1100, 900
+    width, height = 1100, 980
     left, right, top = 105, 35, 70
     panel_height, gap = 235, 35
     plot_width = width - left - right
