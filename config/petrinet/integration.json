@@ -1,0 +1,34 @@
+{
+  "interface_version": 1,
+  "disable": ["EnteringCyt", "StayingVac"],
+  "parameters": {
+    "k_death": 1e-7,
+    "death_threshold": 100.0,
+    "cap_cyt_initial": 700,
+    "cap_vac_initial": 150,
+    "sigmoid_k": 5e-5,
+    "sigmoid_mid_base": 1800.0,
+    "sigmoid_mid_slope": 200.0,
+    "mhc_alpha": 1.0,
+    "mhc_beta": 1.0
+  },
+  "override": {
+    "Bridge": "0.01 * max(XenoSig - 200, 0)",
+    "XenoFail": "0.01 * max(XenoSig - 200, 0)",
+    "XenoDeg": "0.0001 * SalCyt * 100 / (100 + XenoSig)",
+    "XenoDeg2": "0.0001 * AdapSalCyt * 100 / (100 + XenoSig)",
+    "XenoDeg3": "0.001 * SalCyt * min(Gal8, 1) * min(E3_ligase, 1) * max(XenoSig - 200, 0) / (300 + max(XenoSig - 200, 0))",
+    "XenoDeg4": "0.001 * AdapSalCyt * min(Gal8, 1) * min(E3_ligase, 1) * max(XenoSig - 200, 0) / (300 + max(XenoSig - 200, 0))",
+    "ProSalCyt": "0.000105 * AdapSalCyt * (1 - AdapSalCyt / 700.0)",
+    "ProSalVac": "0.000105 * AdapSalVac * (1 - AdapSalVac / 150.0)",
+    "Syn1": "0.001 * 200 / (200 + Gal8)",
+    "Syn2": "0.001 * 200 / (200 + E3_ligase)",
+    "Syn4": "0.001 * 200 / (200 + p62)",
+    "Syn5": "0.001 * 200 / (200 + NDP52)",
+    "Syn6": "0.001 * 200 / (200 + OPTN)",
+    "Syn7": "0.001 * 200 / (200 + N_S)",
+    "Syn8": "0.001 * 200 / (200 + TBK1)",
+    "Syn9": "0.001 * 200 / (200 + mTORC1_ULK1comp)",
+    "Syn10": "0.001 * 200 / (200 + LC3_GABARAP)"
+  }
+}

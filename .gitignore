@@ -7,3 +7,6 @@ output/*
 !output/empty.txt
 outputs/
 .DS_Store
+__pycache__/
+benchmark-results/*.csv
+benchmark-results/*.json
