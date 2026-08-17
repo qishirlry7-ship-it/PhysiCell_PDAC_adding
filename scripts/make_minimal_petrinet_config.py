@@ -11,7 +11,7 @@ target = output_dir / "PhysiCell_settings.xml"
 
 text = source.read_text(encoding="utf-8")
 replacements = {
-    '<max_time units="min">21600</max_time>': '<max_time units="min">120</max_time>',
+    '<max_time units="min">21600</max_time>': '<max_time units="min">480</max_time>',
     '<dt_diffusion units="min">0.01</dt_diffusion>': '<dt_diffusion units="min">0.1</dt_diffusion>',
     '<omp_num_threads>12</omp_num_threads>': '<omp_num_threads>4</omp_num_threads>',
     '<folder>outputs/pdac_therapy</folder>': '<folder>outputs/petrinet_minimal</folder>',

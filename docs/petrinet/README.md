@@ -33,8 +33,8 @@ integration configuration, generated pair, and version hashes together.
 
 ## Verified minimal demo
 
-The following single command builds and runs four tumor cells for 120 minutes,
-injects 50 vacuolar bacteria into every cell at `t=0`, exports per-cell
+The following single command starts four tumor cells and runs for 8 hours,
+injects 50 vacuolar bacteria into every initial cell at `t=0`, exports per-cell
 xenophagy trajectories, and renders a dependency-free SVG:
 
 ```bash
