@@ -20,6 +20,16 @@ make -j4
 The checked-in generated source lets collaborators compile without running the
 generator. `--check` is the required stale-model check before review.
 
+Before opening or merging a PR, also verify that the default-disabled
+integration leaves the baseline PhysiCell run operational:
+
+```bash
+bash scripts/run_petrinet_disabled_smoke.sh
+```
+
+This one-minute smoke run asserts that PhysiCell exits normally while no
+PetriNet state metrics or demo injection are produced.
+
 See [INTERFACE.md](INTERFACE.md) for the stable interface and
 [ARCHITECTURE.md](ARCHITECTURE.md) for ownership and data flow.
 

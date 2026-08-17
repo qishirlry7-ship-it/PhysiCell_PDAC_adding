@@ -10,6 +10,11 @@ parser.add_argument("--output-name", default="petrinet_minimal")
 parser.add_argument("--duration-min", type=int, default=480)
 parser.add_argument("--bacteria", type=int, default=50)
 parser.add_argument("--cells", type=int, default=4)
+parser.add_argument(
+    "--disable-petrinet",
+    action="store_true",
+    help="leave the PetriNet runtime disabled for a baseline smoke test",
+)
 args = parser.parse_args()
 if args.duration_min <= 0 or args.bacteria < 0 or args.cells <= 0:
     raise SystemExit("duration/cells must be positive and bacteria non-negative")
@@ -28,10 +33,11 @@ replacements = {
     '<folder>outputs/pdac_therapy</folder>': f'<folder>outputs/{args.output_name}</folder>',
     '<folder>./config/ic_cells</folder>': f'<folder>./outputs/{args.output_name}/input</folder>',
     '<filename>PDAC_TISSUE_1_hybrid.csv</filename>': '<filename>initial_cells.csv</filename>',
-    '>false</petrinet_enabled>': '>true</petrinet_enabled>',
     '>0</petrinet_demo_vacuolar_bacteria>': f'>{args.bacteria}</petrinet_demo_vacuolar_bacteria>',
     '></petrinet_metrics_csv>': f'>outputs/{args.output_name}/xenophagy_metrics.csv</petrinet_metrics_csv>',
 }
+if not args.disable_petrinet:
+    replacements['>false</petrinet_enabled>'] = '>true</petrinet_enabled>'
 for old, new in replacements.items():
     if old not in text:
         raise SystemExit(f"expected XML fragment not found: {old}")
