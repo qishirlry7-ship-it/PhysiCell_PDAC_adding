@@ -74,7 +74,7 @@ def main() -> int:
     svg = [
         f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" viewBox="0 0 {width} {height}">',
         '<rect width="100%" height="100%" fill="#ffffff"/>',
-        '<style>text{font-family:Arial,sans-serif;fill:#172033}.axis{stroke:#334155;stroke-width:1}.grid{stroke:#cbd5e1;stroke-width:1;opacity:.65}.median{fill:none;stroke:#1d4ed8;stroke-width:3}.sigma{fill:#60a5fa;fill-opacity:.28;stroke:none}.death{fill:none;stroke:#111827;stroke-width:3}.alive{fill:none;stroke:#059669;stroke-width:3}</style>',
+        '<style>text{font-family:Arial,sans-serif;fill:#172033}.axis{stroke:#334155;stroke-width:1}.grid{stroke:#cbd5e1;stroke-width:1;opacity:.65}.median{fill:none;stroke:#1d4ed8;stroke-width:3}.sigma{fill:#60a5fa;fill-opacity:.28;stroke:none}.death{fill:none;stroke:#111827;stroke-width:3}.pn-death{fill:none;stroke:#dc2626;stroke-width:3;stroke-dasharray:8 5}.alive{fill:none;stroke:#059669;stroke-width:3}</style>',
         f'<text x="{width/2}" y="32" text-anchor="middle" font-size="22" font-weight="bold">{duration_h:g} h population PetriNet summary: median and sigma</text>',
         f'<text x="{width/2}" y="58" text-anchor="middle" font-size="14">Observed PetriNets: {len(cells)}; deaths: {dead_count}; PetriNet-triggered deaths: {pn_dead_count}</text>',
     ]
@@ -128,6 +128,20 @@ def main() -> int:
         y = death_y0 + panel_height - value / death_max * panel_height
         points.append(f"{x:.2f},{y:.2f}")
     svg.append(f'<polyline class="death" points="{" ".join(points)}"/>')
+    pn_death_times = sorted(
+        row["death_time_min"] for row in death_rows
+        if row["death_source"] == "petrinet")
+    pn_step_points, pn_count = [(t_min, 0)], 0
+    for death_time in pn_death_times:
+        pn_step_points.extend(((death_time, pn_count), (death_time, pn_count + 1)))
+        pn_count += 1
+    pn_step_points.append((t_max, pn_count))
+    pn_points = []
+    for time, value in pn_step_points:
+        x = left + (time - t_min) / (t_max - t_min) * plot_width
+        y = death_y0 + panel_height - value / death_max * panel_height
+        pn_points.append(f"{x:.2f},{y:.2f}")
+    svg.append(f'<polyline class="pn-death" points="{" ".join(pn_points)}"/>')
     alive_points = []
     for time in sample_times:
         x = left + (time - t_min) / (t_max - t_min) * plot_width
@@ -148,8 +162,10 @@ def main() -> int:
     svg.append(f'<text x="{left+36}" y="{legend_y-3}" font-size="12">living-cell median ± population sigma</text>')
     svg.append(f'<line x1="{left+360}" y1="{legend_y-8}" x2="{left+388}" y2="{legend_y-8}" class="alive"/>')
     svg.append(f'<text x="{left+396}" y="{legend_y-3}" font-size="12">living cells included</text>')
-    svg.append(f'<line x1="{left+650}" y1="{legend_y-8}" x2="{left+678}" y2="{legend_y-8}" class="death"/>')
-    svg.append(f'<text x="{left+686}" y="{legend_y-3}" font-size="12">cumulative deaths</text>')
+    svg.append(f'<line x1="{left+610}" y1="{legend_y-8}" x2="{left+638}" y2="{legend_y-8}" class="death"/>')
+    svg.append(f'<text x="{left+646}" y="{legend_y-3}" font-size="12">all deaths</text>')
+    svg.append(f'<line x1="{left+790}" y1="{legend_y-8}" x2="{left+818}" y2="{legend_y-8}" class="pn-death"/>')
+    svg.append(f'<text x="{left+826}" y="{legend_y-3}" font-size="12">PetriNet deaths</text>')
     svg.append('</svg>')
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text("\n".join(svg), encoding="utf-8")

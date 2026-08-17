@@ -57,8 +57,10 @@ PhysiCell executable.
 The SVG is population-oriented. At each sample time it excludes rows with
 `is_dead=1`, then draws the living-cell median and `median ± population sigma`
 for bacterial burden, Gal8-pathway Ap tokens, Ub-pathway Ap tokens, and pMHC.
-The final panel shows living cells included in the statistics and cumulative
-deaths. The death CSV still reports source/time and pathway peaks per cell.
+The final panel shows living cells included, all cumulative deaths, and the
+PetriNet-triggered subset as a separate red dashed curve. Their difference is
+death attributed to other PhysiCell mechanisms. The death CSV still reports
+source/time and pathway peaks per cell.
 
 Generate a larger independent experiment without changing the 8-hour baseline:
 
