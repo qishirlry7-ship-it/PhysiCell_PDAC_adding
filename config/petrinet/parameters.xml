@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<petrinet_parameters interface_version="1">
+<petrinet_parameters interface_version="2">
   <engine>
     <parameter name="k_death" value="1e-7" units="1/s/bacterium"/>
     <parameter name="death_threshold" value="100" units="bacteria"/>
@@ -31,8 +31,14 @@
     <parameter name="mhc_C0" value="0" units="molecules"/>
     <parameter name="mhc_P0" value="0" units="molecules"/>
   </mhc>
+  <coupling>
+    <parameter name="bacterial_input_mode" value="0" units="0=manual,1=agent,2=hybrid"/>
+    <parameter name="bacterial_uptake_rate" value="0.01" units="1/min"/>
+    <parameter name="bacterial_uptake_interval" value="1" units="min"/>
+    <parameter name="bacterial_uptake_distance" value="20" units="micron"/>
+  </coupling>
   <initial_marking>
-    <place id="SalRuffle" tokens="150"/>
+    <place id="SalRuffle" tokens="0"/>
     <place id="CapCyt" tokens="700"/>
     <place id="CapVac" tokens="150"/>
     <place id="Gal8" tokens="200"/>
@@ -47,8 +53,6 @@
     <place id="AA" tokens="1"/>
   </initial_marking>
   <transitions>
-    <disable id="EnteringCyt"/>
-    <disable id="StayingVac"/>
     <override id="Bridge">0.01 * max(XenoSig - 200, 0)</override>
     <override id="XenoFail">0.01 * max(XenoSig - 200, 0)</override>
     <override id="XenoDeg">0.0001 * SalCyt * 100 / (100 + XenoSig)</override>

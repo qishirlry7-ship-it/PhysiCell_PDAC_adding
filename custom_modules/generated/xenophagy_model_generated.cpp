@@ -1,5 +1,5 @@
 // Generated file. Do not edit.
-// generator=2.0.0 model_sha256=beaafd39036a29aab6eb846082b6d4f2ceef830d7c2d83594d976bd681b5c305 parameters_sha256=2493ea429e8c7a0194d42a2b376ea7340aff1f173b88ee392c4e21abc7aa8e33
+// generator=2.1.0 model_sha256=beaafd39036a29aab6eb846082b6d4f2ceef830d7c2d83594d976bd681b5c305 parameters_sha256=8a6deb8b30616dcb55add8ceb21047cbb07e4dfed650c77eda4357aeb64c4b7c
 #include "xenophagy_model_generated.h"
 #include <algorithm>
 #include <cmath>
@@ -65,8 +65,8 @@ const std::array<const char*, PLACE_COUNT> place_names = {{
   "XenoStart",
 }};
 const std::array<Transition, 80> transitions = {{
-  {"StayingVac", 0.006, false, false, {{SalRuffle, 1}}, {{SalVac, 1}}},
-  {"EnteringCyt", 0.004, false, false, {{SalRuffle, 1}}, {{SalCyt, 1}}},
+  {"StayingVac", 0.006, false, true, {{SalRuffle, 1}}, {{SalVac, 1}}},
+  {"EnteringCyt", 0.004, false, true, {{SalRuffle, 1}}, {{SalCyt, 1}}},
   {"ProSalVac", 0.0001, true, true, {{AdapSalVac, 1}, {CapVac, 1}}, {{SalVac, 2}}},
   {"ProSalCyt", 0.0001, true, true, {{AdapSalCyt, 1}, {CapCyt, 1}}, {{SalCyt, 2}}},
   {"AdaptingCyt", 0.0167, false, true, {{SalCyt, 1}}, {{AdapSalCyt, 1}}},
@@ -148,7 +148,7 @@ const std::array<Transition, 80> transitions = {{
 }};
 Marking initial_marking() {
   Marking m{};
-  m[SalRuffle] = 150;
+  m[SalRuffle] = 0;
   m[SalVac] = 0;
   m[SalCyt] = 0;
   m[AdapSalCyt] = 0;
