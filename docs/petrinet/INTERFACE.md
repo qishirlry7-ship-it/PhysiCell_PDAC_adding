@@ -1,4 +1,4 @@
-# PetriNet–PhysiCell interface v1
+# PetriNet–PhysiCell interface v2
 
 ## Upstream JSON
 
@@ -24,11 +24,13 @@ parameters, all MHC parameters and initial conditions, initial Petri-net
 marking, signal mode, MHC integration step, division fraction, disabled
 transitions, and transition expression overrides. The build
 generator validates it and compiles it into the checked-in C++ pair.
-`EnteringCyt` and `StayingVac` are disabled because entry is external. There
-are no independent C++ numeric defaults that override this XML.
+Agent-based uptake enters through `SalRuffle`; `EnteringCyt` and `StayingVac`
+remain enabled and decide the intracellular compartment through ordinary SSA
+competition. There are no independent C++ numeric defaults that override this
+XML.
 
 The XML root is `petrinet_parameters`. Scalars are `<parameter>` nodes under
-`engine` or `mhc`; marking uses `<place id="..." tokens="..."/>`; transition
+`engine`, `mhc`, or `coupling`; marking uses `<place id="..." tokens="..."/>`; transition
 rules use `<disable id="..."/>` and `<override id="...">expression`. Names
 must be unique and values finite. Renaming/removing a required parameter or
 changing its meaning requires an interface version increment.
@@ -39,7 +41,32 @@ changing its meaning requires an interface version increment.
 - Petri-net internal time and rates: seconds.
 - MHC rates in `parameters.xml`: hours; conversion occurs inside the engine.
 
-External input API:
+`bacterial_input_mode` selects the source: `0=manual`, `1=agent`, and
+`2=hybrid`. Manual is the compatibility default. In agent or hybrid mode, one
+extracellular `Bifidobacterium_longum` agent maps to exactly one `SalRuffle`
+token through:
+
+```cpp
+void enqueue_bacterial_uptake(
+    PhysiCell::Cell* tumor,
+    double time_minutes,
+    int bacteria_count = 1);
+```
+
+This API does not select cytosol versus vacuole and does not inspect capacity.
+`CapCyt` and `CapVac` constrain proliferation only. For the nearest living
+target tumor within `bacterial_uptake_distance`, uptake over one bridge update
+has probability
+
+\[
+P_{uptake}=1-\exp(-k_{uptake}\Delta t).
+\]
+
+The bridge collects decisions before mutation, sorts by bacterial ID, then
+enqueues one token and removes one extracellular agent. Exact distance ties
+are resolved by tumor cell ID.
+
+The stable manual input API is:
 
 ```cpp
 void enqueue_bacterial_entry(
@@ -108,7 +135,8 @@ child keep the same physical time and receive distinct random streams.
 
 XML parameters are `petrinet_enabled` (bool), `petrinet_global_seed` (int),
 `petrinet_entry_csv` (string), `petrinet_demo_vacuolar_bacteria` (int),
-`petrinet_metrics_csv` (string), and `petrinet_metrics_interval` (minutes).
+`petrinet_metrics_csv` (string), `petrinet_uptake_csv` (string), and
+`petrinet_metrics_interval` (minutes).
 
 `petrinet_demo_vacuolar_bacteria > 0` is a minimal-test-only hard-coded event:
 after tissue creation at `t=0`, that many bacteria are added to `SalVac` for
@@ -117,7 +145,17 @@ every living target tumor cell. It is independent of the scheduled CSV input.
 The metrics CSV schema is:
 
 ```text
-time_min,cell_id,cell_type,intracellular_bacteria,ap_gal8_tokens,ap_ub_tokens,xenophagy_activity,surface_pMHC,death_probability,is_dead,petrinet_death_triggered,death_time_min
+time_min,cell_id,cell_type,intracellular_bacteria,sal_ruffle_tokens,uptaken_bacteria,ap_gal8_tokens,ap_ub_tokens,xenophagy_activity,surface_pMHC,death_probability,is_dead,petrinet_death_triggered,death_time_min
+```
+
+`intracellular_bacteria` retains its existing definition and excludes
+`SalRuffle`; `uptaken_bacteria` includes it. The pending token is visible for
+conservation audits but does not contribute to death hazard.
+
+The optional uptake audit CSV schema is:
+
+```text
+time_min,bacteria_id,tumor_id,tokens,entry_place,result
 ```
 
 `ap_gal8_tokens` sums `Ap_Gal8`, `Ap_Gal8_Ub`, `Ap_Gal8_Ub_OPTNp`, and
@@ -135,6 +173,7 @@ the living-cell count is still drawn as zero.
 
 MultiCellDS custom data exposes
 `pn_state_index`, `pn_active`, `intracellular_bacteria`,
+`sal_ruffle_tokens`, `uptaken_bacteria`,
 `ap_gal8_tokens`, `ap_ub_tokens`, `xenophagy_activity`, `surface_pMHC`, and
 `pn_death_probability`.
 

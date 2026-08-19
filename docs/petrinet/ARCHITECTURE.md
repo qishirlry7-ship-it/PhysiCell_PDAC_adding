@@ -31,3 +31,17 @@ vacuolar entry event. The phenotype callback advances each PetriNet to the
 current PhysiCell clock—not one phenotype interval into the future. After cell
 updates, the main thread samples active-cell observables at the configured
 interval and writes one CSV, avoiding concurrent file output from OpenMP.
+
+## Extracellular bacterial uptake
+
+The bridge runs after the PhysiCell cell update on an independent,
+low-frequency clock. For each living `Bifidobacterium_longum`, it scans the
+current mechanics voxel and adjacent Moore voxels, filters by squared distance,
+and selects at most one living target tumor. It never performs a global
+bacteria-by-tumor search.
+
+Uptake uses a serial two-phase commit for deterministic ownership and safe
+container mutation: collect decisions, sort by bacterial ID, enqueue one
+`SalRuffle` token, then delete each accepted extracellular agent. The
+`StayingVac` and `EnteringCyt` transitions subsequently choose the compartment.
+Manual direct-to-compartment events remain available for Python parity.
