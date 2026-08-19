@@ -10,7 +10,7 @@ int main() {
     PetriNetEngine engine;
 
     CellPetriNetState state(42);
-    assert(state.marking[SalRuffle] == 150);
+    assert(state.marking[SalRuffle] == 0);
     assert(state.marking[CapCyt] == 700);
     engine.enqueue(state, EntryEvent{10.0, 120, 30});
     engine.enqueue(state, EntryEvent{10.0, 1, 2});
@@ -21,6 +21,27 @@ int main() {
     assert(result.intracellular_bacteria == 153);
     assert(engine.gal8_autophagosome_tokens(state.marking) == 0);
     assert(engine.ub_autophagosome_tokens(state.marking) == 0);
+
+    // Agent uptake is one-to-one at SalRuffle. Compartment choice remains an
+    // enabled SSA competition with the rates from the upstream JSON.
+    CellPetriNetState uptake(7);
+    engine.enqueue(uptake, EntryEvent{0.0, 1, 0, 0});
+    engine.enqueue(uptake, EntryEvent{0.0, 1, 0, 0});
+    WindowResult uptake_result = engine.advance(uptake, 0.0);
+    assert(uptake.marking[SalRuffle] == 2);
+    assert(uptake_result.sal_ruffle_tokens == 2);
+    assert(uptake_result.intracellular_bacteria == 0);
+    assert(uptake_result.uptaken_bacteria == 2);
+    std::size_t staying = transitions.size();
+    std::size_t entering = transitions.size();
+    for (std::size_t i = 0; i < transitions.size(); ++i) {
+        if (std::string(transitions[i].id) == "StayingVac") staying = i;
+        if (std::string(transitions[i].id) == "EnteringCyt") entering = i;
+    }
+    assert(staying < transitions.size() && entering < transitions.size());
+    assert(transitions[staying].enabled && transitions[entering].enabled);
+    assert(std::fabs(engine.propensity(staying, uptake.marking) - 0.012) < 1e-12);
+    assert(std::fabs(engine.propensity(entering, uptake.marking) - 0.008) < 1e-12);
 
     // With no interval after entry, hazard is zero. Over the following second,
     // its exact integral is determined by the piecewise-constant SSA path.
@@ -40,6 +61,10 @@ int main() {
 
     bool rejected = false;
     try { engine.enqueue(state, EntryEvent{-1.0, 1, 0}); }
+    catch (const std::invalid_argument&) { rejected = true; }
+    assert(rejected);
+    rejected = false;
+    try { engine.enqueue(uptake, EntryEvent{1.0, -1, 0, 0}); }
     catch (const std::invalid_argument&) { rejected = true; }
     assert(rejected);
 

@@ -1,5 +1,26 @@
 # Validation
 
+## Extracellular uptake invariants
+
+Interface v2 adds a one-agent/one-token `SalRuffle` entry. The engine test
+locks the zero initial ruffle marking, same-time event merging, separate
+pending versus compartment burden, and enabled `StayingVac` / `EnteringCyt`
+propensities (0.006 and 0.004 per ruffle token). Spatial acceptance must also
+preserve the audit invariant: every `accepted` row corresponds to one removed
+`Bifidobacterium_longum` agent and one queued `SalRuffle` token. The uptake
+rate and distance are integration parameters, not biologically calibrated
+values.
+
+The C++ end-to-end uptake smoke run used one tumor, four extracellular agents
+at 5 microns, a one-minute bridge interval, and a temporary rate of 100/min to
+make acceptance deterministic for the test. At minute 1 the audit contained
+four unique accepted bacterial IDs targeting the tumor. At minute 6 the tumor
+reported `sal_ruffle_tokens=0`, `intracellular_bacteria=4`, and
+`uptaken_bacteria=4`: all four physical agents were consumed exactly once and
+the enabled compartment transitions preserved their total. The committed
+parameter file was then restored to manual mode and 0.01/min before generation
+and build checks.
+
 Validation uses the WSL base environment. The C++ and Python implementations
 are compared statistically, not event-for-event, because their random-number
 engines differ. The acceptance run uses at least 1,000 cells and records the

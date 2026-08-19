@@ -39,6 +39,14 @@ Enable the runtime through `petrinet_enabled`, `petrinet_entry_csv`, and
 tests are available in `scripts/run_petrinet_benchmark_quick.sh` and
 `scripts/run_petrinet_benchmark.sh`.
 
+The unified parameter XML selects bacterial input with
+`bacterial_input_mode`: `0` keeps the current manual demo/CSV workflow, `1`
+uses one-to-one uptake of extracellular `Bifidobacterium_longum` agents, and
+`2` enables both intentionally. Agent uptake enters `SalRuffle`; the Petri-net
+then chooses vacuole versus cytosol. Changing this build-time mode requires
+regeneration and recompilation. Set `petrinet_uptake_csv` in the PhysiCell run
+XML when a conservation audit log is required.
+
 Do not edit generated files manually. Update `INTERFACE.md` before changing a
 public JSON, XML, CSV, or C++ contract; regenerate and commit the model
 snapshot, unified parameter XML, generated pair, and version hashes together.
@@ -84,6 +92,19 @@ python scripts/plot_xenophagy_metrics.py \
   --output outputs/petrinet_24h_100/xenophagy_metrics.svg \
   --death-summary outputs/petrinet_24h_100/death_statistics.csv
 ```
+
+For an agent-input experiment, first set `bacterial_input_mode=1`, regenerate
+and rebuild, then create nearby physical bacteria without a manual bolus:
+
+```bash
+python3 scripts/make_minimal_petrinet_config.py \
+  --output-name petrinet_uptake --duration-min 60 --bacteria 0 --cells 1 \
+  --extracellular-bacteria 20
+./project outputs/petrinet_uptake/PhysiCell_settings.xml
+```
+
+The corresponding one-agent/one-token audit is written to
+`outputs/petrinet_uptake/bacterial_uptake.csv`.
 
 ## Python parity check
 

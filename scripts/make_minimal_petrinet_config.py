@@ -10,14 +10,16 @@ parser.add_argument("--output-name", default="petrinet_minimal")
 parser.add_argument("--duration-min", type=int, default=480)
 parser.add_argument("--bacteria", type=int, default=50)
 parser.add_argument("--cells", type=int, default=4)
+parser.add_argument("--extracellular-bacteria", type=int, default=0)
 parser.add_argument(
     "--disable-petrinet",
     action="store_true",
     help="leave the PetriNet runtime disabled for a baseline smoke test",
 )
 args = parser.parse_args()
-if args.duration_min <= 0 or args.bacteria < 0 or args.cells <= 0:
-    raise SystemExit("duration/cells must be positive and bacteria non-negative")
+if (args.duration_min <= 0 or args.bacteria < 0 or args.cells <= 0 or
+        args.extracellular_bacteria < 0):
+    raise SystemExit("duration/cells must be positive and bacterial counts non-negative")
 
 root = Path(__file__).resolve().parents[1]
 source = root / "config" / "PhysiCell_settings.xml"
@@ -35,6 +37,7 @@ replacements = {
     '<filename>PDAC_TISSUE_1_hybrid.csv</filename>': '<filename>initial_cells.csv</filename>',
     '>0</petrinet_demo_vacuolar_bacteria>': f'>{args.bacteria}</petrinet_demo_vacuolar_bacteria>',
     '></petrinet_metrics_csv>': f'>outputs/{args.output_name}/xenophagy_metrics.csv</petrinet_metrics_csv>',
+    '></petrinet_uptake_csv>': f'>outputs/{args.output_name}/bacterial_uptake.csv</petrinet_uptake_csv>',
 }
 if not args.disable_petrinet:
     replacements['>false</petrinet_enabled>'] = '>true</petrinet_enabled>'
@@ -64,6 +67,9 @@ for index in range(args.cells):
     row, column = divmod(index, side)
     cell_type = "PD-L1lo_tumor" if index % 2 == 0 else "PD-L1hi_tumor"
     rows.append(f"{column * spacing - offset:g},{row * spacing - offset:g},0,{cell_type}")
+for index in range(args.extracellular_bacteria):
+    angle = 2.0 * math.pi * index / max(1, args.extracellular_bacteria)
+    rows.append(f"{5.0 * math.cos(angle):g},{5.0 * math.sin(angle):g},0,Bifidobacterium_longum")
 input_dir = output_dir / "input"
 input_dir.mkdir(parents=True, exist_ok=True)
 (input_dir / "initial_cells.csv").write_text(
