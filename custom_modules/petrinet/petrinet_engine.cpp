@@ -39,12 +39,13 @@ PetriNetEngine::PetriNetEngine(const EngineConfig& config) : config_(config) {}
 void PetriNetEngine::enqueue(CellPetriNetState& state, const EntryEvent& event) const {
     if (!std::isfinite(event.time_seconds) || event.time_seconds < state.internal_time_seconds)
         throw std::invalid_argument("entry time must be finite and not precede cell time");
-    if (event.to_cytosol < 0 || event.to_vacuole < 0)
+    if (event.to_ruffle < 0 || event.to_cytosol < 0 || event.to_vacuole < 0)
         throw std::invalid_argument("entry counts must be non-negative");
-    if (event.to_cytosol == 0 && event.to_vacuole == 0) return;
+    if (event.to_ruffle == 0 && event.to_cytosol == 0 && event.to_vacuole == 0) return;
     auto it = std::lower_bound(state.entries.begin(), state.entries.end(), event.time_seconds,
         [](const EntryEvent& lhs, double time) { return lhs.time_seconds < time; });
     if (it != state.entries.end() && std::fabs(it->time_seconds - event.time_seconds) < 1e-12) {
+        it->to_ruffle += event.to_ruffle;
         it->to_cytosol += event.to_cytosol;
         it->to_vacuole += event.to_vacuole;
     } else {
@@ -85,6 +86,7 @@ void PetriNetEngine::fire(std::size_t i, Marking& m) const {
 }
 
 void PetriNetEngine::apply_entry(CellPetriNetState& state, const EntryEvent& event) const {
+    state.marking[SalRuffle] += event.to_ruffle;
     state.marking[SalCyt] += event.to_cytosol;
     state.marking[SalVac] += event.to_vacuole;
     state.active = true;
@@ -93,6 +95,10 @@ void PetriNetEngine::apply_entry(CellPetriNetState& state, const EntryEvent& eve
 int PetriNetEngine::bacterial_burden(const Marking& m) const {
     static const Place bacterial[] = {SalCyt, AdapSalCyt, SalVac, AdapSalVac};
     return count_places(m, bacterial, sizeof(bacterial) / sizeof(bacterial[0]));
+}
+
+int PetriNetEngine::uptaken_bacterial_burden(const Marking& m) const {
+    return m[SalRuffle] + bacterial_burden(m);
 }
 
 double PetriNetEngine::xenophagy_activity(const Marking& m) const {
@@ -203,6 +209,8 @@ WindowResult PetriNetEngine::advance(CellPetriNetState& state, double end) const
     }
     ++state.update_index;
     result.intracellular_bacteria = bacterial_burden(state.marking);
+    result.sal_ruffle_tokens = state.marking[SalRuffle];
+    result.uptaken_bacteria = uptaken_bacterial_burden(state.marking);
     result.xenophagy_activity = xenophagy_activity(state.marking);
     result.death_probability = -std::expm1(-result.integrated_death_hazard);
     return result;

@@ -218,6 +218,7 @@ int main(int argc, char *argv[])
 
 			// run PhysiCell
 			((Cell_Container *)microenvironment.agent_container)->update_all_cells(PhysiCell_globals.current_time);
+			xenophagy::process_extracellular_bacterial_uptake(PhysiCell_globals.current_time);
 			xenophagy::write_petrinet_metrics(PhysiCell_globals.current_time);
 
 			/*

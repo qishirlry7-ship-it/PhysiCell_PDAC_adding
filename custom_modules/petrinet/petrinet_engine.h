@@ -10,12 +10,16 @@ namespace xenophagy {
 
 struct EntryEvent {
     double time_seconds = 0.0;
+    int to_ruffle = 0;
     int to_cytosol = 0;
     int to_vacuole = 0;
 
     EntryEvent() = default;
     EntryEvent(double time, int cytosol, int vacuole)
         : time_seconds(time), to_cytosol(cytosol), to_vacuole(vacuole) {}
+    EntryEvent(double time, int ruffle, int cytosol, int vacuole)
+        : time_seconds(time), to_ruffle(ruffle), to_cytosol(cytosol),
+          to_vacuole(vacuole) {}
 };
 
 struct MHCState {
@@ -65,6 +69,8 @@ struct WindowResult {
     double peak_xenophagy_activity = 0.0;
     double peak_surface_pMHC = 0.0;
     int intracellular_bacteria = 0;
+    int sal_ruffle_tokens = 0;
+    int uptaken_bacteria = 0;
     std::uint64_t reactions_fired = 0;
 };
 
@@ -92,6 +98,7 @@ public:
 
     double propensity(std::size_t transition_index, const Marking& marking) const;
     int bacterial_burden(const Marking& marking) const;
+    int uptaken_bacterial_burden(const Marking& marking) const;
     int gal8_autophagosome_tokens(const Marking& marking) const;
     int ub_autophagosome_tokens(const Marking& marking) const;
     double xenophagy_activity(const Marking& marking) const;

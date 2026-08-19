@@ -1,10 +1,12 @@
 #include "physicell_petrinet_adapter.h"
 
 #include <algorithm>
+#include <cmath>
 #include <cstdint>
 #include <fstream>
 #include <iostream>
 #include <memory>
+#include <limits>
 #include <mutex>
 #include <sstream>
 #include <stdexcept>
@@ -38,8 +40,24 @@ std::size_t next_schedule = 0;
 std::uint64_t global_seed = 0;
 bool integration_enabled = false;
 std::ofstream metrics_file;
+std::ofstream uptake_file;
 double metrics_interval_minutes = 0.0;
 double next_metrics_time_minutes = 0.0;
+double next_uptake_time_minutes = 0.0;
+std::mt19937_64 uptake_rng;
+
+enum class BacterialInputMode { Manual = 0, Agent = 1, Hybrid = 2 };
+BacterialInputMode input_mode = BacterialInputMode::Manual;
+
+bool manual_input_enabled() {
+    return input_mode == BacterialInputMode::Manual ||
+           input_mode == BacterialInputMode::Hybrid;
+}
+
+bool agent_input_enabled() {
+    return input_mode == BacterialInputMode::Agent ||
+           input_mode == BacterialInputMode::Hybrid;
+}
 
 std::uint64_t mix_seed(std::uint64_t value) {
     value += 0x9e3779b97f4a7c15ULL;
@@ -85,6 +103,10 @@ void add_observables(PhysiCell::Cell_Definition* definition) {
         definition->custom_data.add_variable("pn_active", "dimensionless", 0.0);
     if (definition->custom_data.find_variable_index("intracellular_bacteria") < 0)
         definition->custom_data.add_variable("intracellular_bacteria", "count", 0.0);
+    if (definition->custom_data.find_variable_index("sal_ruffle_tokens") < 0)
+        definition->custom_data.add_variable("sal_ruffle_tokens", "count", 0.0);
+    if (definition->custom_data.find_variable_index("uptaken_bacteria") < 0)
+        definition->custom_data.add_variable("uptaken_bacteria", "count", 0.0);
     if (definition->custom_data.find_variable_index("xenophagy_activity") < 0)
         definition->custom_data.add_variable("xenophagy_activity", "count", 0.0);
     if (definition->custom_data.find_variable_index("ap_gal8_tokens") < 0)
@@ -148,16 +170,30 @@ void setup_petrinet_integration() {
     integration_enabled = PhysiCell::parameters.bools("petrinet_enabled");
     if (!integration_enabled) return;
     global_seed = static_cast<std::uint64_t>(PhysiCell::parameters.ints("petrinet_global_seed"));
-    load_schedule(PhysiCell::parameters.strings("petrinet_entry_csv"));
+    input_mode = static_cast<BacterialInputMode>(
+        static_cast<int>(parameters.bacterial_input_mode));
+    uptake_rng.seed(mix_seed(global_seed ^ 0x42555054414b45ULL));
+    next_uptake_time_minutes = parameters.bacterial_uptake_interval;
+    if (manual_input_enabled())
+        load_schedule(PhysiCell::parameters.strings("petrinet_entry_csv"));
     metrics_interval_minutes = PhysiCell::parameters.doubles("petrinet_metrics_interval");
     const std::string metrics_path = PhysiCell::parameters.strings("petrinet_metrics_csv");
     if (!metrics_path.empty()) {
         metrics_file.open(metrics_path.c_str(), std::ios::out | std::ios::trunc);
         if (!metrics_file) throw std::runtime_error("cannot open PetriNet metrics CSV: " + metrics_path);
         metrics_file << "time_min,cell_id,cell_type,intracellular_bacteria,"
+                        "sal_ruffle_tokens,uptaken_bacteria,"
                         "ap_gal8_tokens,ap_ub_tokens,xenophagy_activity,"
                         "surface_pMHC,death_probability,is_dead,"
                         "petrinet_death_triggered,death_time_min\n";
+    }
+    if (agent_input_enabled()) {
+        const std::string uptake_path = PhysiCell::parameters.strings("petrinet_uptake_csv");
+        if (!uptake_path.empty()) {
+            uptake_file.open(uptake_path.c_str(), std::ios::out | std::ios::trunc);
+            if (!uptake_file) throw std::runtime_error("cannot open PetriNet uptake CSV: " + uptake_path);
+            uptake_file << "time_min,bacteria_id,tumor_id,tokens,entry_place,result\n";
+        }
     }
     for (const char* name : target_names) {
         PhysiCell::Cell_Definition* definition = PhysiCell::find_cell_definition(name);
@@ -168,7 +204,7 @@ void setup_petrinet_integration() {
 }
 
 void inject_hardcoded_demo_event() {
-    if (!integration_enabled) return;
+    if (!integration_enabled || !manual_input_enabled()) return;
     const int bacteria = PhysiCell::parameters.ints("petrinet_demo_vacuolar_bacteria");
     if (bacteria <= 0) return;
     for (PhysiCell::Cell* cell : *PhysiCell::all_cells) {
@@ -186,8 +222,17 @@ void enqueue_bacterial_entry(PhysiCell::Cell* cell, double time_minutes,
     engine.enqueue(*state, EntryEvent(time_minutes * 60.0, to_cytosol, to_vacuole));
 }
 
+void enqueue_bacterial_uptake(PhysiCell::Cell* cell, double time_minutes,
+                               int bacteria_count) {
+    if (!integration_enabled || !cell || !is_target_tumor_cell(cell)) return;
+    if (bacteria_count < 0) throw std::invalid_argument("bacterial uptake count must be non-negative");
+    if (bacteria_count == 0) return;
+    CellPetriNetState* state = state_for(cell, true);
+    engine.enqueue(*state, EntryEvent(time_minutes * 60.0, bacteria_count, 0, 0));
+}
+
 void process_bacterial_entry_schedule(double current_time_minutes) {
-    if (!integration_enabled) return;
+    if (!integration_enabled || !manual_input_enabled()) return;
     while (next_schedule < schedule.size() && schedule[next_schedule].time_minutes <= current_time_minutes + 1e-12) {
         const ScheduledEntry& event = schedule[next_schedule++];
         bool delivered = false;
@@ -200,6 +245,83 @@ void process_bacterial_entry_schedule(double current_time_minutes) {
         }
         if (!delivered && event.cell_id != -1)
             std::cerr << "[PetriNet] entry target cell " << event.cell_id << " was not found\n";
+    }
+}
+
+void process_extracellular_bacterial_uptake(double current_time_minutes) {
+    if (!integration_enabled || !agent_input_enabled()) return;
+    const double interval = parameters.bacterial_uptake_interval;
+    if (current_time_minutes + 1e-9 < next_uptake_time_minutes) return;
+
+    struct Decision {
+        PhysiCell::Cell* bacterium;
+        PhysiCell::Cell* tumor;
+        double event_time;
+    };
+
+    while (next_uptake_time_minutes <= current_time_minutes + 1e-9) {
+        std::vector<PhysiCell::Cell*> bacteria;
+        for (PhysiCell::Cell* cell : *PhysiCell::all_cells) {
+            if (!cell->phenotype.death.dead && !cell->phenotype.flagged_for_removal &&
+                cell->type_name == "Bifidobacterium_longum")
+                bacteria.push_back(cell);
+        }
+        std::sort(bacteria.begin(), bacteria.end(), [](const PhysiCell::Cell* a, const PhysiCell::Cell* b) {
+            return a->ID < b->ID;
+        });
+
+        std::vector<Decision> decisions;
+        const double radius2 = parameters.bacterial_uptake_distance *
+                               parameters.bacterial_uptake_distance;
+        const double probability = -std::expm1(
+            -parameters.bacterial_uptake_rate * interval);
+
+        for (PhysiCell::Cell* bacterium : bacteria) {
+            const int voxel = bacterium->get_current_mechanics_voxel_index();
+            if (voxel < 0) continue;
+            PhysiCell::Cell* nearest = nullptr;
+            double nearest_d2 = std::numeric_limits<double>::infinity();
+            std::vector<int> voxels(1, voxel);
+            const std::vector<int>& adjacent = bacterium->get_container()->underlying_mesh
+                .moore_connected_voxel_indices[voxel];
+            voxels.insert(voxels.end(), adjacent.begin(), adjacent.end());
+            for (int candidate_voxel : voxels) {
+                for (PhysiCell::Cell* candidate : bacterium->get_container()->agent_grid[candidate_voxel]) {
+                    if (candidate->phenotype.death.dead || candidate->phenotype.flagged_for_removal ||
+                        !is_target_tumor_cell(candidate)) continue;
+                    const double dx = bacterium->position[0] - candidate->position[0];
+                    const double dy = bacterium->position[1] - candidate->position[1];
+                    const double dz = bacterium->position[2] - candidate->position[2];
+                    const double d2 = dx * dx + dy * dy + dz * dz;
+                    if (d2 > radius2) continue;
+                    if (!nearest || d2 < nearest_d2 - 1e-12 ||
+                        (std::fabs(d2 - nearest_d2) <= 1e-12 && candidate->ID < nearest->ID)) {
+                        nearest = candidate;
+                        nearest_d2 = d2;
+                    }
+                }
+            }
+            if (nearest && std::generate_canonical<double, 53>(uptake_rng) < probability)
+                // Use the public clock, not the idealized scheduler boundary:
+                // a lazily-created state starts at current_time and must never
+                // receive an event a few floating-point ticks in its past.
+                decisions.push_back(Decision{bacterium, nearest, current_time_minutes});
+        }
+
+        std::sort(decisions.begin(), decisions.end(), [](const Decision& a, const Decision& b) {
+            return a.bacterium->ID < b.bacterium->ID;
+        });
+        for (const Decision& decision : decisions) {
+            const unsigned int bacteria_id = decision.bacterium->ID;
+            const unsigned int tumor_id = decision.tumor->ID;
+            enqueue_bacterial_uptake(decision.tumor, decision.event_time, 1);
+            if (uptake_file.is_open())
+                uptake_file << decision.event_time << ',' << bacteria_id << ',' << tumor_id
+                            << ",1,SalRuffle,accepted\n";
+            PhysiCell::delete_cell(decision.bacterium);
+        }
+        if (uptake_file.is_open()) uptake_file.flush();
+        next_uptake_time_minutes += interval;
     }
 }
 
@@ -216,6 +338,8 @@ void write_petrinet_metrics(double current_time_minutes) {
             state->death_time_minutes = current_time_minutes;
         metrics_file << current_time_minutes << ',' << cell->ID << ',' << cell->type_name << ','
                      << cell->custom_data["intracellular_bacteria"] << ','
+                     << state->marking[SalRuffle] << ','
+                     << engine.uptaken_bacterial_burden(state->marking) << ','
                      << engine.gal8_autophagosome_tokens(state->marking) << ','
                      << engine.ub_autophagosome_tokens(state->marking) << ','
                      << cell->custom_data["xenophagy_activity"] << ','
@@ -240,6 +364,8 @@ void petrinet_phenotype(PhysiCell::Cell* cell, PhysiCell::Phenotype& phenotype,
     WindowResult result = engine.advance(*state, window_end);
     cell->custom_data["pn_active"] = state->active ? 1.0 : 0.0;
     cell->custom_data["intracellular_bacteria"] = result.intracellular_bacteria;
+    cell->custom_data["sal_ruffle_tokens"] = result.sal_ruffle_tokens;
+    cell->custom_data["uptaken_bacteria"] = result.uptaken_bacteria;
     cell->custom_data["ap_gal8_tokens"] = engine.gal8_autophagosome_tokens(state->marking);
     cell->custom_data["ap_ub_tokens"] = engine.ub_autophagosome_tokens(state->marking);
     cell->custom_data["xenophagy_activity"] = result.xenophagy_activity;
