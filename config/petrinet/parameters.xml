@@ -32,7 +32,7 @@
     <parameter name="mhc_P0" value="0" units="molecules"/>
   </mhc>
   <coupling>
-    <parameter name="bacterial_uptake_rate" value="0.01" units="1/min"/>
+    <parameter name="bacterial_uptake_rate" value="0.02" units="1/min"/>
     <parameter name="bacterial_uptake_interval" value="1" units="min"/>
     <parameter name="bacterial_uptake_distance" value="20" units="micron"/>
     <parameter name="mhcii_cd4_attack_max" value="0.15" units="1/min"/>

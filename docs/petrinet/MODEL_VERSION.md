@@ -9,7 +9,7 @@ page with the validation commit whenever a new upstream snapshot is published.
 - Unified non-PhysiCell parameters: `config/petrinet/parameters.xml`
 - Places / transitions: 57 / 80
 - Model SHA-256: `beaafd39036a29aab6eb846082b6d4f2ceef830d7c2d83594d976bd681b5c305`
-- Parameters SHA-256: `b9d12d24a2a46fbb2c8bc5ff2afaf2935fffa9fbf64dd5ee6360a5d3fa177d36`
+- Parameters SHA-256: `2a32bf28b0e1e7b6fdb39272defbb2ddba358be091794c5cf87dffd0d370a904`
 - Generator: `scripts/generate_petrinet_cpp.py` 2.2.0
 
 Run `python3 scripts/generate_petrinet_cpp.py --check` before review and update

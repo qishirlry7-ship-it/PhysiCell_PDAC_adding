@@ -1,5 +1,19 @@
 # Validation
 
+The current exploratory global uptake rate is `0.02/min`, applied uniformly to
+all eligible target tumor cells within the configured uptake distance. This is
+an uncalibrated two-fold sensitivity step from the prior `0.01/min` value; it
+does not distinguish vessel or tumor subtypes.
+
+A 10-day full-main WSL run with 1,724 initial agents, `bacteria_entry_lambda =
+0.003/min/vessel`, and the global `0.02/min` uptake rate completed in 21 min
+59.7 s. It produced 198 accepted uptake events involving 128 original target
+IDs and 182 tracked PetriNets. Maximum pMHC-II recognition was 0.80714 and 27
+tracked cells accumulated positive PhysiCell damage (maximum 54.3). Ten deaths
+were PetriNet-triggered; 79 were classified as other PhysiCell deaths, of which
+9 had positive damage histories. The latter are damage-associated, not a
+strict causal attribution to CD4 without a matched treatment-off control.
+
 ## MHC-II–CD4 coupling smoke test
 
 A 12-hour isolated run used one `PD-L1lo_tumor`, six adjacent CD4 cells, and a
