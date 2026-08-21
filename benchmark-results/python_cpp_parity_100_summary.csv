@@ -1,0 +1,8 @@
+metric,python_mean,cpp_mean,relative_difference,python_median,cpp_median
+steps,3171.85,3126.93,0.0141621,3166.5,3135.5
+burden_final,73.14,74.2,0.0144928,74,76
+activity_peak,17.29,17.54,0.0144592,17,17
+activity_final,3.3,3.22,0.0242424,3,3
+xenosig_final,1887.18,1863.83,0.012373,1878.5,1860.5
+pmhc_peak,25.312098,24.85443,0.018081,25.427067,24.72345
+pmhc_final,25.312098,24.854014,0.0180974,25.427067,24.72345

@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<petrinet_parameters interface_version="2">
+  <engine>
+    <parameter name="k_death" value="1e-7" units="1/s/bacterium"/>
+    <parameter name="death_threshold" value="100" units="bacteria"/>
+    <parameter name="cap_cyt_initial" value="700" units="tokens"/>
+    <parameter name="cap_vac_initial" value="150" units="tokens"/>
+    <parameter name="sigmoid_k" value="5e-5" units="1/s"/>
+    <parameter name="sigmoid_mid_base" value="1800" units="s"/>
+    <parameter name="sigmoid_mid_slope" value="200" units="tokens"/>
+    <parameter name="mhc_alpha" value="1" units="dimensionless"/>
+    <parameter name="mhc_beta" value="1" units="dimensionless"/>
+    <parameter name="xeno_signal_mode" value="0" units="0=python_compatible,1=continuous"/>
+    <parameter name="division_daughter_fraction" value="0.5" units="dimensionless"/>
+  </engine>
+  <mhc>
+    <parameter name="mhc_d_X" value="0.2" units="1/h"/>
+    <parameter name="mhc_d_M" value="0.07" units="1/h"/>
+    <parameter name="mhc_k_T" value="1" units="1/h"/>
+    <parameter name="mhc_d_C" value="0.03" units="1/h"/>
+    <parameter name="mhc_d_P" value="0.069" units="1/h"/>
+    <parameter name="mhc_k_load" value="0.0001" units="1/h/molecule"/>
+    <parameter name="mhc_S_M_base" value="200" units="molecule/h"/>
+    <parameter name="mhc_V_M_IFN" value="4000" units="molecule/h"/>
+    <parameter name="mhc_K_M_IFN" value="0.5" units="ng/mL"/>
+    <parameter name="mhc_ifn_gamma" value="5" units="ng/mL"/>
+    <parameter name="mhc_r_pep" value="5" units="dimensionless"/>
+    <parameter name="mhc_max_step_seconds" value="60" units="s"/>
+    <parameter name="mhc_X0" value="0" units="molecules"/>
+    <parameter name="mhc_M0" value="10000" units="molecules"/>
+    <parameter name="mhc_C0" value="0" units="molecules"/>
+    <parameter name="mhc_P0" value="0" units="molecules"/>
+  </mhc>
+  <coupling>
+    <parameter name="bacterial_input_mode" value="0" units="0=manual,1=agent,2=hybrid"/>
+    <parameter name="bacterial_uptake_rate" value="0.01" units="1/min"/>
+    <parameter name="bacterial_uptake_interval" value="1" units="min"/>
+    <parameter name="bacterial_uptake_distance" value="20" units="micron"/>
+  </coupling>
+  <initial_marking>
+    <place id="SalRuffle" tokens="0"/>
+    <place id="CapCyt" tokens="700"/>
+    <place id="CapVac" tokens="150"/>
+    <place id="Gal8" tokens="200"/>
+    <place id="NDP52" tokens="200"/>
+    <place id="p62" tokens="200"/>
+    <place id="OPTN" tokens="200"/>
+    <place id="TBK1" tokens="200"/>
+    <place id="LC3_GABARAP" tokens="200"/>
+    <place id="E3_ligase" tokens="200"/>
+    <place id="N_S" tokens="200"/>
+    <place id="mTORC1_ULK1comp" tokens="200"/>
+    <place id="AA" tokens="1"/>
+  </initial_marking>
+  <transitions>
+    <override id="Bridge">0.01 * max(XenoSig - 200, 0)</override>
+    <override id="XenoFail">0.01 * max(XenoSig - 200, 0)</override>
+    <override id="XenoDeg">0.0001 * SalCyt * 100 / (100 + XenoSig)</override>
+    <override id="XenoDeg2">0.0001 * AdapSalCyt * 100 / (100 + XenoSig)</override>
+    <override id="XenoDeg3">0.001 * SalCyt * min(Gal8, 1) * min(E3_ligase, 1) * max(XenoSig - 200, 0) / (300 + max(XenoSig - 200, 0))</override>
+    <override id="XenoDeg4">0.001 * AdapSalCyt * min(Gal8, 1) * min(E3_ligase, 1) * max(XenoSig - 200, 0) / (300 + max(XenoSig - 200, 0))</override>
+    <override id="ProSalCyt">0.000105 * AdapSalCyt * (1 - AdapSalCyt / 700.0)</override>
+    <override id="ProSalVac">0.000105 * AdapSalVac * (1 - AdapSalVac / 150.0)</override>
+    <override id="Syn1">0.001 * 200 / (200 + Gal8)</override>
+    <override id="Syn2">0.001 * 200 / (200 + E3_ligase)</override>
+    <override id="Syn4">0.001 * 200 / (200 + p62)</override>
+    <override id="Syn5">0.001 * 200 / (200 + NDP52)</override>
+    <override id="Syn6">0.001 * 200 / (200 + OPTN)</override>
+    <override id="Syn7">0.001 * 200 / (200 + N_S)</override>
+    <override id="Syn8">0.001 * 200 / (200 + TBK1)</override>
+    <override id="Syn9">0.001 * 200 / (200 + mTORC1_ULK1comp)</override>
+    <override id="Syn10">0.001 * 200 / (200 + LC3)</override>
+  </transitions>
+</petrinet_parameters>
