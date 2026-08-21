@@ -1,5 +1,16 @@
 # Validation
 
+## MHC-II–CD4 coupling smoke test
+
+A 12-hour isolated run used one `PD-L1lo_tumor`, six adjacent CD4 cells, and a
+manual 50-bacterium input (below the configured PetriNet death threshold). The
+target reached `surface_pMHC=151.6`, `mhcii_cd4_recognition=0.834802`, and
+ordinary PhysiCell damage `7.3`. No PetriNet death or other death occurred.
+Damage first became non-zero after pMHC-II recognition rose above zero, which
+confirms that the standard PhysiCell contact-attack path consumes the new
+target-specific immunogenicity. The run completed at 720 minutes in 12.6
+seconds under WSL.
+
 ## Extracellular uptake invariants
 
 Interface v2 adds a one-agent/one-token `SalRuffle` entry. The engine test

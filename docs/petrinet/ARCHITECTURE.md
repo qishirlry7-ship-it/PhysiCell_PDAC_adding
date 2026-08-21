@@ -45,3 +45,14 @@ container mutation: collect decisions, sort by bacterial ID, enqueue one
 `SalRuffle` token, then delete each accepted extracellular agent. The
 `StayingVac` and `EnteringCyt` transitions subsequently choose the compartment.
 Manual direct-to-compartment events remain available for Python parity.
+
+## MHC-II immune coupling
+
+The adapter sets CD4 attack rates once on the two CD4 definitions and keeps
+uninfected target definitions at zero CD4 immunogenicity. Each active tumor's
+phenotype callback maps its own `surface_pMHC` through the configured Hill
+response and writes the result to that cell's CD4 immunogenicity entries.
+PhysiCell's existing contact attack path then multiplies attacker rate by this
+target-specific value, accumulates ordinary damage, and leaves apoptosis to the
+existing damage rule. No PhysiCell core modification or tumor state conversion
+is required.

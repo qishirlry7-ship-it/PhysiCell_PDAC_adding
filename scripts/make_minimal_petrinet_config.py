@@ -40,7 +40,6 @@ def replace_tag_value(document, tag, value):
     return updated
 
 replacements = {
-    '<max_time units="min">21600</max_time>': f'<max_time units="min">{args.duration_min}</max_time>',
     '<dt_diffusion units="min">0.01</dt_diffusion>': '<dt_diffusion units="min">0.1</dt_diffusion>',
     '<omp_num_threads>12</omp_num_threads>': '<omp_num_threads>4</omp_num_threads>',
     '<folder>outputs/pdac_therapy</folder>': f'<folder>outputs/{args.output_name}</folder>',
@@ -52,6 +51,7 @@ for old, new in replacements.items():
         raise SystemExit(f"expected XML fragment not found: {old}")
     text = text.replace(old, new, 1)
 
+text = replace_tag_value(text, "max_time", args.duration_min)
 text = replace_tag_value(text, "petrinet_enabled", "false" if args.disable_petrinet else "true")
 text = replace_tag_value(text, "petrinet_input_mode", input_mode)
 text = replace_tag_value(text, "petrinet_demo_vacuolar_bacteria", args.bacteria)

@@ -13,7 +13,7 @@ import sys
 import xml.etree.ElementTree as ET
 from pathlib import Path
 
-VERSION = "2.1.0"
+VERSION = "2.2.0"
 ALLOWED_FUNCS = {"min", "max", "abs", "sqrt", "exp", "log"}
 REQUIRED_PARAMETERS = {
     "k_death", "death_threshold", "cap_cyt_initial", "cap_vac_initial",
@@ -24,7 +24,8 @@ REQUIRED_PARAMETERS = {
     "mhc_K_M_IFN", "mhc_ifn_gamma", "mhc_r_pep", "mhc_X0", "mhc_M0",
     "mhc_C0", "mhc_P0", "mhc_max_step_seconds",
     "bacterial_uptake_rate", "bacterial_uptake_interval",
-    "bacterial_uptake_distance",
+    "bacterial_uptake_distance", "mhcii_cd4_attack_max",
+    "mhcii_cd4_half_max", "mhcii_cd4_hill",
 }
 
 
@@ -69,6 +70,12 @@ def load_parameters(path: Path) -> dict:
         raise GenerationError("bacterial_uptake_interval must be positive")
     if values["bacterial_uptake_distance"] < 0.0:
         raise GenerationError("bacterial_uptake_distance must be non-negative")
+    if values["mhcii_cd4_attack_max"] < 0.0:
+        raise GenerationError("mhcii_cd4_attack_max must be non-negative")
+    if values["mhcii_cd4_half_max"] <= 0.0:
+        raise GenerationError("mhcii_cd4_half_max must be positive")
+    if values["mhcii_cd4_hill"] <= 0.0:
+        raise GenerationError("mhcii_cd4_hill must be positive")
     marking = {}
     for node in root.findall("./initial_marking/place"):
         name, raw = node.get("id"), node.get("tokens")

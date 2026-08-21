@@ -1,4 +1,4 @@
-# PetriNet–PhysiCell interface v2
+# PetriNet–PhysiCell interface v3
 
 ## Upstream JSON
 
@@ -118,6 +118,24 @@ PhysiCell performs exactly one Bernoulli draw from this probability per
 phenotype window and calls `Cell::start_death`. The same hazard must not also be
 written to a PhysiCell death rate.
 
+## MHC-II to CD4 coupling
+
+`surface_pMHC` is the antigen-specific MHC-II complex count on each target
+tumor. It replaces the former discrete requirement that CD4 cells only attack
+`*_tumor_xenophagy`. For a target with surface count `P`, its immunogenicity to
+both configured CD4 types is
+
+\[
+I_{CD4}(P)=\frac{P^n}{K^n+P^n}.
+\]
+
+`mhcii_cd4_attack_max` is installed as the CD4 attack rate against every target
+tumor type; `mhcii_cd4_half_max` is `K`, and `mhcii_cd4_hill` is `n`. PhysiCell's
+standard interaction probability remains `attack_rate * target_immunogenicity
+* dt`. Uninfected tumors have zero CD4 immunogenicity. The old fixed xenophagy
+attack is therefore not added a second time. CD8 behavior is unchanged because
+this interface represents MHC-II, not MHC-I.
+
 ## Division
 
 Ordinary discrete places use binomial partitioning. `CapCyt` and `CapVac` are
@@ -146,7 +164,7 @@ every living target tumor cell. It is independent of the scheduled CSV input.
 The metrics CSV schema is:
 
 ```text
-time_min,cell_id,cell_type,intracellular_bacteria,sal_ruffle_tokens,uptaken_bacteria,ap_gal8_tokens,ap_ub_tokens,xenophagy_activity,surface_pMHC,death_probability,is_dead,petrinet_death_triggered,death_time_min
+time_min,cell_id,cell_type,intracellular_bacteria,sal_ruffle_tokens,uptaken_bacteria,ap_gal8_tokens,ap_ub_tokens,xenophagy_activity,surface_pMHC,mhcii_cd4_recognition,physicell_damage,death_probability,is_dead,petrinet_death_triggered,death_time_min
 ```
 
 `intracellular_bacteria` retains its existing definition and excludes
@@ -166,6 +184,10 @@ Ub-pathway time series. `death_time_min=-1` means no death has been observed;
 `petrinet_death_triggered=1` distinguishes the PetriNet hazard from independent
 PhysiCell death mechanisms.
 
+`mhcii_cd4_recognition` is the bounded target immunogenicity used by the
+standard PhysiCell attack sampler. `physicell_damage` exposes damage accumulated
+from immune attack and other PhysiCell mechanisms; it is not PetriNet hazard.
+
 Population visualization groups rows by `time_min` and filters to
 `is_dead=0` before computing each point. The center is the median and the band
 is median plus/minus the population standard deviation (`pstdev`, denominator
@@ -176,7 +198,7 @@ MultiCellDS custom data exposes
 `pn_state_index`, `pn_active`, `intracellular_bacteria`,
 `sal_ruffle_tokens`, `uptaken_bacteria`,
 `ap_gal8_tokens`, `ap_ub_tokens`, `xenophagy_activity`, `surface_pMHC`, and
-`pn_death_probability`.
+`mhcii_cd4_recognition`, and `pn_death_probability`.
 
 ## Python parity condition
 
