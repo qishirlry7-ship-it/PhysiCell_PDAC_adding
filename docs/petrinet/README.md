@@ -20,15 +20,16 @@ make -j4
 The checked-in generated source lets collaborators compile without running the
 generator. `--check` is the required stale-model check before review.
 
-Before opening or merging a PR, also verify that the default-disabled
-integration leaves the baseline PhysiCell run operational:
+Before opening or merging a PR, also derive a disabled-mode configuration and
+verify that the baseline PhysiCell run remains operational:
 
 ```bash
 bash scripts/run_petrinet_disabled_smoke.sh
 ```
 
-This one-minute smoke run asserts that PhysiCell exits normally while no
-PetriNet state metrics or demo injection are produced.
+This one-minute smoke run explicitly disables the integration and asserts that
+PhysiCell exits normally while no PetriNet state metrics or demo injection are
+produced.
 
 See [INTERFACE.md](INTERFACE.md) for the stable interface and
 [ARCHITECTURE.md](ARCHITECTURE.md) for ownership and data flow.
@@ -38,6 +39,12 @@ Enable the runtime through `petrinet_enabled`, `petrinet_entry_csv`, and
 `config/petrinet/manual_entries.example.csv` as the schedule template. Pressure
 tests are available in `scripts/run_petrinet_benchmark_quick.sh` and
 `scripts/run_petrinet_benchmark.sh`.
+
+The production `config/PhysiCell_settings.xml` now enables the PetriNet in
+agent mode. Vessel-derived `Bifidobacterium_longum` agents can therefore enter
+nearby tumor cells through `SalRuffle`; there is no production manual bolus.
+Production metrics and the uptake audit are written under
+`outputs/pdac_therapy/`.
 
 Each PhysiCell run XML selects bacterial input with
 `petrinet_input_mode`: `0` keeps the current manual demo/CSV workflow, `1`

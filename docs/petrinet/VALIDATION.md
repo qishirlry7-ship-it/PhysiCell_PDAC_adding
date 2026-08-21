@@ -19,8 +19,15 @@ reported `sal_ruffle_tokens=0`, `intracellular_bacteria=4`, and
 `uptaken_bacteria=4`: all four physical agents were consumed exactly once and
 the enabled compartment transitions preserved their total. The committed
 uptake rate was then restored to 0.01/min before generation and build checks.
-Input mode is a per-run XML switch: production remains manual while the
-isolated simulation test selects agent input.
+Input mode is a per-run XML switch. Production and the isolated simulation
+test now select agent input; manual mode remains available for locked demos.
+
+Production-main activation was checked with a 30-minute configuration derived
+from `config/PhysiCell_settings.xml`: 25 tumor cells, 50 extracellular agents,
+no manual bolus, and `petrinet_input_mode=1`. The root `project` executable
+completed with 12 accepted rows, 12 unique bacterial IDs, and 14 per-cell
+metric rows. This confirms that uptake is active through the real root
+`main.cpp`, not only through its testing copy.
 
 Validation uses the WSL base environment. The C++ and Python implementations
 are compared statistically, not event-for-event, because their random-number
