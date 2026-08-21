@@ -1,5 +1,5 @@
 // Generated file. Do not edit.
-// generator=2.1.0 model_sha256=beaafd39036a29aab6eb846082b6d4f2ceef830d7c2d83594d976bd681b5c305 parameters_sha256=8a6deb8b30616dcb55add8ceb21047cbb07e4dfed650c77eda4357aeb64c4b7c
+// generator=2.1.0 model_sha256=beaafd39036a29aab6eb846082b6d4f2ceef830d7c2d83594d976bd681b5c305 parameters_sha256=4d89588e48ef5b4c1e07d87e8ded59a0c5e22639117e19f133e8fcc93b602e68
 #pragma once
 #include <array>
 #include <cstddef>
@@ -95,7 +95,6 @@ struct ModelParameters {
   double mhc_M0 = 10000.0;
   double mhc_C0 = 0.0;
   double mhc_P0 = 0.0;
-  double bacterial_input_mode = 0.0;
   double bacterial_uptake_rate = 0.01;
   double bacterial_uptake_interval = 1.0;
   double bacterial_uptake_distance = 20.0;

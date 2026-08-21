@@ -41,7 +41,7 @@ changing its meaning requires an interface version increment.
 - Petri-net internal time and rates: seconds.
 - MHC rates in `parameters.xml`: hours; conversion occurs inside the engine.
 
-`bacterial_input_mode` selects the source: `0=manual`, `1=agent`, and
+`petrinet_input_mode` in the PhysiCell run XML selects the source: `0=manual`, `1=agent`, and
 `2=hybrid`. Manual is the compatibility default. In agent or hybrid mode, one
 extracellular `Bifidobacterium_longum` agent maps to exactly one `SalRuffle`
 token through:
@@ -133,7 +133,8 @@ child keep the same physical time and receive distinct random streams.
 
 ## Runtime configuration and observables
 
-XML parameters are `petrinet_enabled` (bool), `petrinet_global_seed` (int),
+XML parameters are `petrinet_enabled` (bool), `petrinet_input_mode` (int),
+`petrinet_global_seed` (int),
 `petrinet_entry_csv` (string), `petrinet_demo_vacuolar_bacteria` (int),
 `petrinet_metrics_csv` (string), `petrinet_uptake_csv` (string), and
 `petrinet_metrics_interval` (minutes).

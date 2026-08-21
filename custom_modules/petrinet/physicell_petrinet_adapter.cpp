@@ -170,8 +170,10 @@ void setup_petrinet_integration() {
     integration_enabled = PhysiCell::parameters.bools("petrinet_enabled");
     if (!integration_enabled) return;
     global_seed = static_cast<std::uint64_t>(PhysiCell::parameters.ints("petrinet_global_seed"));
-    input_mode = static_cast<BacterialInputMode>(
-        static_cast<int>(parameters.bacterial_input_mode));
+    const int configured_mode = PhysiCell::parameters.ints("petrinet_input_mode");
+    if (configured_mode < 0 || configured_mode > 2)
+        throw std::runtime_error("petrinet_input_mode must be 0, 1, or 2");
+    input_mode = static_cast<BacterialInputMode>(configured_mode);
     uptake_rng.seed(mix_seed(global_seed ^ 0x42555054414b45ULL));
     next_uptake_time_minutes = parameters.bacterial_uptake_interval;
     if (manual_input_enabled())

@@ -23,8 +23,8 @@ REQUIRED_PARAMETERS = {
     "mhc_d_P", "mhc_k_load", "mhc_S_M_base", "mhc_V_M_IFN",
     "mhc_K_M_IFN", "mhc_ifn_gamma", "mhc_r_pep", "mhc_X0", "mhc_M0",
     "mhc_C0", "mhc_P0", "mhc_max_step_seconds",
-    "bacterial_input_mode", "bacterial_uptake_rate",
-    "bacterial_uptake_interval", "bacterial_uptake_distance",
+    "bacterial_uptake_rate", "bacterial_uptake_interval",
+    "bacterial_uptake_distance",
 }
 
 
@@ -63,8 +63,6 @@ def load_parameters(path: Path) -> dict:
         raise GenerationError("division_daughter_fraction must be in [0,1]")
     if values["mhc_max_step_seconds"] <= 0.0:
         raise GenerationError("mhc_max_step_seconds must be positive")
-    if values["bacterial_input_mode"] not in (0.0, 1.0, 2.0):
-        raise GenerationError("bacterial_input_mode must be 0, 1, or 2")
     if values["bacterial_uptake_rate"] < 0.0:
         raise GenerationError("bacterial_uptake_rate must be non-negative")
     if values["bacterial_uptake_interval"] <= 0.0:

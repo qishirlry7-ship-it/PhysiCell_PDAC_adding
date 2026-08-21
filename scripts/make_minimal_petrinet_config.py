@@ -11,6 +11,7 @@ parser.add_argument("--duration-min", type=int, default=480)
 parser.add_argument("--bacteria", type=int, default=50)
 parser.add_argument("--cells", type=int, default=4)
 parser.add_argument("--extracellular-bacteria", type=int, default=0)
+parser.add_argument("--input-mode", choices=("manual", "agent", "hybrid"), default="manual")
 parser.add_argument(
     "--disable-petrinet",
     action="store_true",
@@ -28,6 +29,7 @@ output_dir.mkdir(parents=True, exist_ok=True)
 target = output_dir / "PhysiCell_settings.xml"
 
 text = source.read_text(encoding="utf-8")
+input_mode = {"manual": 0, "agent": 1, "hybrid": 2}[args.input_mode]
 replacements = {
     '<max_time units="min">21600</max_time>': f'<max_time units="min">{args.duration_min}</max_time>',
     '<dt_diffusion units="min">0.01</dt_diffusion>': '<dt_diffusion units="min">0.1</dt_diffusion>',
@@ -36,6 +38,7 @@ replacements = {
     '<folder>./config/ic_cells</folder>': f'<folder>./outputs/{args.output_name}/input</folder>',
     '<filename>PDAC_TISSUE_1_hybrid.csv</filename>': '<filename>initial_cells.csv</filename>',
     '>0</petrinet_demo_vacuolar_bacteria>': f'>{args.bacteria}</petrinet_demo_vacuolar_bacteria>',
+    '>0</petrinet_input_mode>': f'>{input_mode}</petrinet_input_mode>',
     '></petrinet_metrics_csv>': f'>outputs/{args.output_name}/xenophagy_metrics.csv</petrinet_metrics_csv>',
     '></petrinet_uptake_csv>': f'>outputs/{args.output_name}/bacterial_uptake.csv</petrinet_uptake_csv>',
 }

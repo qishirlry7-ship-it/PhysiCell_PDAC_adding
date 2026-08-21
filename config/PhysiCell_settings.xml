@@ -3967,6 +3967,7 @@
     <user_parameters>
         <bacteria_entry_lambda type="double" units="1/min" description="per-vessel probability rate of a new Bifidobacterium longum entering nearby (Poisson process); no literature value found, kept deliberately low and adjustable">0.0003</bacteria_entry_lambda>
         <petrinet_enabled type="bool" description="enable generated intracellular xenophagy Petri-net">false</petrinet_enabled>
+        <petrinet_input_mode type="int" description="bacterial input source: 0=manual, 1=extracellular agents, 2=hybrid">0</petrinet_input_mode>
         <petrinet_global_seed type="int" description="base seed for deterministic per-cell Petri-net streams">42</petrinet_global_seed>
         <petrinet_entry_csv type="string" description="manual bacterial entry schedule; empty disables scheduled input"></petrinet_entry_csv>
         <petrinet_demo_vacuolar_bacteria type="int" description="hard-coded t=0 vacuolar entry per target tumor cell; zero disables">0</petrinet_demo_vacuolar_bacteria>
