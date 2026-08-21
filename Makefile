@@ -71,6 +71,9 @@ all: main.cpp $(ALL_OBJECTS)
 	$(COMPILE_COMMAND) -o $(PROGRAM_NAME) $(ALL_OBJECTS) main.cpp
 	make name
 
+petrinet-uptake-test-build: tests/bacterial_uptake_simulation/main.cpp $(ALL_OBJECTS)
+	$(COMPILE_COMMAND) -I. -o project_petrinet_uptake_test $(ALL_OBJECTS) tests/bacterial_uptake_simulation/main.cpp
+
 name:
 	@echo ""
 	@echo "Executable name is" $(PROGRAM_NAME)

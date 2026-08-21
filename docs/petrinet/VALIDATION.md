@@ -18,8 +18,9 @@ four unique accepted bacterial IDs targeting the tumor. At minute 6 the tumor
 reported `sal_ruffle_tokens=0`, `intracellular_bacteria=4`, and
 `uptaken_bacteria=4`: all four physical agents were consumed exactly once and
 the enabled compartment transitions preserved their total. The committed
-parameter file was then restored to manual mode and 0.01/min before generation
-and build checks.
+uptake rate was then restored to 0.01/min before generation and build checks.
+Input mode is a per-run XML switch: production remains manual while the
+isolated simulation test selects agent input.
 
 Validation uses the WSL base environment. The C++ and Python implementations
 are compared statistically, not event-for-event, because their random-number
