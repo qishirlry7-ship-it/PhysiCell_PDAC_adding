@@ -31,8 +31,12 @@ This one-minute smoke run explicitly disables the integration and asserts that
 PhysiCell exits normally while no PetriNet state metrics or demo injection are
 produced.
 
-See [INTERFACE.md](INTERFACE.md) for the stable interface and
-[ARCHITECTURE.md](ARCHITECTURE.md) for ownership and data flow.
+The documentation set is intentionally small:
+
+- [INTERFACE.md](INTERFACE.md): stable JSON, XML, CSV and C++ contracts;
+- [DESIGN.md](DESIGN.md): runtime architecture and planned IFN-gamma/vessel work;
+- [VALIDATION.md](VALIDATION.md): verified experiments and performance evidence;
+- [HANDOFF.md](HANDOFF.md): current status, findings, manifest and next actions.
 
 Enable the runtime through `petrinet_enabled`, `petrinet_entry_csv`, and
 `petrinet_global_seed` in the PhysiCell XML. Use
@@ -57,6 +61,10 @@ when a conservation audit log is required.
 Do not edit generated files manually. Update `INTERFACE.md` before changing a
 public JSON, XML, CSV, or C++ contract; regenerate and commit the model
 snapshot, unified parameter XML, generated pair, and version hashes together.
+
+Important current limitation: the MHC-II ODE uses a fixed IFN-gamma value from
+`parameters.xml`; it does not yet consume the local PhysiCell `IFN_gamma`
+field. See `DESIGN.md` before interpreting spatial MHC-II results.
 
 ## Verified minimal demo
 

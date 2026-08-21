@@ -158,3 +158,22 @@ included at 0/240/480/720/960/1200/1440 min were respectively
 points were 150/130/130/140/144/147. The 1,440-minute molecular point is absent
 because no living cell remains, while the living-count curve correctly reaches
 zero. PhysiCell apoptosis/necrosis parameters were not changed.
+
+## Standalone SSA performance
+
+Measured in WSL base with g++ 13, `-O3 -march=native -fopenmp`, commit
+`ec78337`, and 50 initial vacuolar bacteria per cell:
+
+| Cells | Simulated | Threads | Wall time | Reactions | Throughput |
+|---:|---:|---:|---:|---:|---:|
+| 1 | 1 h | 1 | 0.00048 s | 2,204 | 4.59 M/s |
+| 10 | 1 h | 1 | 0.00486 s | 22,589 | 4.65 M/s |
+| 100 | 1 h | 1 | 0.0467 s | 226,548 | 4.85 M/s |
+| 100 | 1 h | 4 | 0.0124 s | 226,548 | 18.27 M/s |
+| 1,000 | 24 h | 4 | 4.71 s | 76,164,221 | 16.16 M/s |
+| 10,000 | 1 h | 4 | 1.44 s | 22,531,966 | 15.64 M/s |
+| 10,000 | 24 h | 8 | 28.76 s | 761,534,412 | 26.48 M/s |
+
+The controlled disabled, enabled-idle, and 1%/10%/100% infection overhead
+matrix remains pending. These numbers establish SSA feasibility but do not
+replace full PhysiCell profiling.

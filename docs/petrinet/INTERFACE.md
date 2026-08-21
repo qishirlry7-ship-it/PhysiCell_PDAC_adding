@@ -136,6 +136,13 @@ standard interaction probability remains `attack_rate * target_immunogenicity
 attack is therefore not added a second time. CD8 behavior is unchanged because
 this interface represents MHC-II, not MHC-I.
 
+The present MHC-II synthesis input is the fixed scalar `mhc_ifn_gamma` in
+`config/petrinet/parameters.xml`. Despite the matching name, it is not yet
+connected to the local PhysiCell `IFN_gamma` substrate. Any future dynamic
+coupling must define an explicit concentration unit or conversion factor and
+increment the interface version if the `advance()` contract changes. The
+planned design is documented in `DESIGN.md`.
+
 ## Division
 
 Ordinary discrete places use binomial partitioning. `CapCyt` and `CapVac` are
