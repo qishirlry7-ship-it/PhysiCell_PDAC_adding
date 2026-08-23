@@ -341,7 +341,7 @@
                 </cycle>
                 <death>
                     <model code="100" name="apoptosis">
-                        <death_rate units="1/min">7.2e-5</death_rate>
+                        <death_rate units="1/min">3.6e-5</death_rate>
                         <phase_durations units="min">
                             <duration index="0" fixed_duration="true">516</duration>
                         </phase_durations>
@@ -522,7 +522,7 @@
                 </cycle>
                 <death>
                     <model code="100" name="apoptosis">
-                        <death_rate units="1/min">7.2e-5</death_rate>
+                        <death_rate units="1/min">3.6e-5</death_rate>
                         <phase_durations units="min">
                             <duration index="0" fixed_duration="true">516</duration>
                         </phase_durations>
@@ -3342,7 +3342,7 @@
                 </cycle>
                 <death>
                     <model code="100" name="apoptosis">
-                        <death_rate units="1/min">7.2e-5</death_rate>
+                        <death_rate units="1/min">3.6e-5</death_rate>
                         <phase_durations units="min">
                             <duration index="0" fixed_duration="true">516</duration>
                         </phase_durations>
@@ -3498,7 +3498,7 @@
                 </cycle>
                 <death>
                     <model code="100" name="apoptosis">
-                        <death_rate units="1/min">7.2e-5</death_rate>
+                        <death_rate units="1/min">3.6e-5</death_rate>
                         <phase_durations units="min">
                             <duration index="0" fixed_duration="true">516</duration>
                         </phase_durations>
@@ -3653,7 +3653,7 @@
                 </cycle>
                 <death>
                     <model code="100" name="apoptosis">
-                        <death_rate units="1/min">7.2e-5</death_rate>
+                        <death_rate units="1/min">3.6e-5</death_rate>
                         <phase_durations units="min">
                             <duration index="0" fixed_duration="true">516</duration>
                         </phase_durations>
@@ -3809,7 +3809,7 @@
                 </cycle>
                 <death>
                     <model code="100" name="apoptosis">
-                        <death_rate units="1/min">7.2e-5</death_rate>
+                        <death_rate units="1/min">3.6e-5</death_rate>
                         <phase_durations units="min">
                             <duration index="0" fixed_duration="true">516</duration>
                         </phase_durations>
