@@ -1758,7 +1758,7 @@ x,y,z,type
 176.766856,182.223732,0.0,fixed_vessel_source_compressed
 117.447076,148.831403,0.0,fixed_vessel_source_compressed
 -211.436683,-252.059474,0.0,fixed_vessel_source_compressed
-394.504739,164.249038,0.0,fixed_vessel_source
+261.853680,109.020782,0.0,fixed_vessel_source_compressed
 -200.145398,-428.120041,0.0,fixed_vessel_source
 -408.633368,-243.616328,0.0,fixed_vessel_source
 139.267436,-486.432537,0.0,fixed_vessel_source
@@ -1818,3 +1818,4 @@ x,y,z,type
 -328.211585,-1.765122,0.0,fixed_vessel_source
 -289.717219,-45.994152,0.0,fixed_vessel_source
 -83.676898,463.590260,0.0,fixed_vessel_source
+401.601515,-357.695502,0.0,fixed_vessel_source
