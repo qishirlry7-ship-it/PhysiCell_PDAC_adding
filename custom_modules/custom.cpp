@@ -269,6 +269,72 @@ void recruit_bacteria( double dt )
 	return;
 }
 
+// ---------------------------------------------------------------------------
+// recruit_cd8_cells -- probabilistic CD8 T cell extravasation near vessels.
+// Same Poisson-per-vessel-per-timestep pattern as recruit_bacteria, but the
+// per-vessel rate is not constant: it is a Hill/Michaelis-Menten function of
+// the current living-tumor-cell count,
+//     lambda(N) = lambda_floor + (lambda_max - lambda_floor) * N/(N+K),
+// so recruitment tapers toward a low ("persistent surveillance") floor as
+// the tumor shrinks instead of staying fixed while a shrinking tumor faces
+// an unchanging CD8 army -- addressing the literature-documented pattern
+// that lymphoid content and tumor burden are coupled (e.g. "Tumor Size
+// Matters", PMC7140082) and that antigen clearance drives ~90-95% effector
+// T cell contraction within about a week (Nat. Immunol., Badovinac/Harty).
+// lambda_max, lambda_floor, and K (the half-max tumor count) have no
+// literature-measured values for this specific system -- they are adjustable
+// placeholders chosen to be the same order of magnitude as bacteria_entry_
+// lambda and the model's initial tumor/CD8 populations, not calibrated
+// numbers.
+// ---------------------------------------------------------------------------
+
+void recruit_cd8_cells( double dt )
+{
+	static Cell_Definition* pCD8Def = find_cell_definition( "PD-1lo_CD137lo_CD8_Tcell" );
+	static double lambda_max = parameters.doubles("cd8_recruitment_lambda_max");
+	static double lambda_floor = parameters.doubles("cd8_recruitment_lambda_floor");
+	static double K = parameters.doubles("cd8_recruitment_tumor_halfmax");
+	static std::vector<std::string> tumor_type_names = {
+		"PD-L1lo_tumor", "PD-L1hi_tumor",
+		"PD-L1lo_tumor_infected", "PD-L1lo_tumor_xenophagy",
+		"PD-L1hi_tumor_infected", "PD-L1hi_tumor_xenophagy"
+	};
+
+	int n_tumor = 0;
+	std::vector<Cell*> vessels;
+	for( int i=0; i < (*all_cells).size(); i++ )
+	{
+		Cell* pC = (*all_cells)[i];
+		if( pC->phenotype.death.dead == true )
+		{ continue; }
+		if( pC->type_name == "fixed_vessel_source" || pC->type_name == "fixed_vessel_source_compressed" )
+		{ vessels.push_back(pC); continue; }
+		for( int k=0; k < (int)tumor_type_names.size(); k++ )
+		{
+			if( pC->type_name == tumor_type_names[k] )
+			{ n_tumor++; break; }
+		}
+	}
+
+	double lambda = lambda_floor + (lambda_max - lambda_floor) *
+		(double)n_tumor / ( (double)n_tumor + K );
+
+	for( int i=0; i < vessels.size(); i++ )
+	{
+		if( UniformRandom() < lambda*dt )
+		{
+			Cell* pNew = create_cell( *pCD8Def );
+			double angle = UniformRandom() * 6.283185307;
+			double r = UniformRandom() * 30.0;
+			std::vector<double> pos = vessels[i]->position;
+			pos[0] += r*cos(angle);
+			pos[1] += r*sin(angle);
+			pNew->assign_position(pos);
+		}
+	}
+	return;
+}
+
 void phenotype_function(Cell *pCell, Phenotype &phenotype, double dt)
 {
 	xenophagy::petrinet_phenotype(pCell, phenotype, dt);
