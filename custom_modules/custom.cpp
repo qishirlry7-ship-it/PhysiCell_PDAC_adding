@@ -316,8 +316,18 @@ void recruit_cd8_cells( double dt )
 		}
 	}
 
-	double lambda = lambda_floor + (lambda_max - lambda_floor) *
+	// lambda_max/lambda_floor are total (aggregate, across all vessels)
+	// recruitment probability rates, not per-vessel ones -- unlike
+	// recruit_bacteria, where more vessel points should mean more entry
+	// (that was the point of the vessel-geometry redesign), CD8
+	// recruitment has no reason to scale with vessel POINT count, which
+	// is a geometry detail, not an immunology one. Dividing by vessel
+	// count here keeps the total recruited-CD8 flux governed only by
+	// tumor burden, regardless of how many vessel points the current
+	// vessel geometry happens to expand into.
+	double lambda_total = lambda_floor + (lambda_max - lambda_floor) *
 		(double)n_tumor / ( (double)n_tumor + K );
+	double lambda = vessels.empty() ? 0.0 : lambda_total / (double)vessels.size();
 
 	for( int i=0; i < vessels.size(); i++ )
 	{
