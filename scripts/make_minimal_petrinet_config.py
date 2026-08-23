@@ -3,6 +3,7 @@
 
 import argparse
 import math
+import re
 from pathlib import Path
 
 parser = argparse.ArgumentParser()
@@ -11,6 +12,7 @@ parser.add_argument("--duration-min", type=int, default=480)
 parser.add_argument("--bacteria", type=int, default=50)
 parser.add_argument("--cells", type=int, default=4)
 parser.add_argument("--extracellular-bacteria", type=int, default=0)
+parser.add_argument("--input-mode", choices=("manual", "agent", "hybrid"), default="manual")
 parser.add_argument(
     "--disable-petrinet",
     action="store_true",
@@ -28,23 +30,35 @@ output_dir.mkdir(parents=True, exist_ok=True)
 target = output_dir / "PhysiCell_settings.xml"
 
 text = source.read_text(encoding="utf-8")
+input_mode = {"manual": 0, "agent": 1, "hybrid": 2}[args.input_mode]
+
+def replace_tag_value(document, tag, value):
+    pattern = rf"(<{tag}\b[^>]*>).*?(</{tag}>)"
+    updated, count = re.subn(pattern, rf"\g<1>{value}\g<2>", document, count=1)
+    if count != 1:
+        raise SystemExit(f"expected XML tag not found: {tag}")
+    return updated
+
 replacements = {
-    '<max_time units="min">21600</max_time>': f'<max_time units="min">{args.duration_min}</max_time>',
     '<dt_diffusion units="min">0.01</dt_diffusion>': '<dt_diffusion units="min">0.1</dt_diffusion>',
     '<omp_num_threads>12</omp_num_threads>': '<omp_num_threads>4</omp_num_threads>',
     '<folder>outputs/pdac_therapy</folder>': f'<folder>outputs/{args.output_name}</folder>',
     '<folder>./config/ic_cells</folder>': f'<folder>./outputs/{args.output_name}/input</folder>',
     '<filename>PDAC_TISSUE_1_hybrid.csv</filename>': '<filename>initial_cells.csv</filename>',
-    '>0</petrinet_demo_vacuolar_bacteria>': f'>{args.bacteria}</petrinet_demo_vacuolar_bacteria>',
-    '></petrinet_metrics_csv>': f'>outputs/{args.output_name}/xenophagy_metrics.csv</petrinet_metrics_csv>',
-    '></petrinet_uptake_csv>': f'>outputs/{args.output_name}/bacterial_uptake.csv</petrinet_uptake_csv>',
 }
-if not args.disable_petrinet:
-    replacements['>false</petrinet_enabled>'] = '>true</petrinet_enabled>'
 for old, new in replacements.items():
     if old not in text:
         raise SystemExit(f"expected XML fragment not found: {old}")
     text = text.replace(old, new, 1)
+
+text = replace_tag_value(text, "max_time", args.duration_min)
+text = replace_tag_value(text, "petrinet_enabled", "false" if args.disable_petrinet else "true")
+text = replace_tag_value(text, "petrinet_input_mode", input_mode)
+text = replace_tag_value(text, "petrinet_demo_vacuolar_bacteria", args.bacteria)
+text = replace_tag_value(text, "petrinet_metrics_csv",
+                         f"outputs/{args.output_name}/xenophagy_metrics.csv")
+text = replace_tag_value(text, "petrinet_uptake_csv",
+                         f"outputs/{args.output_name}/bacterial_uptake.csv")
 
 # Metrics CSV is the authoritative demo output; disable periodic heavy saves.
 text = text.replace(

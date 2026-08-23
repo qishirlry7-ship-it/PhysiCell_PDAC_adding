@@ -1,5 +1,30 @@
 # Validation
 
+The current exploratory global uptake rate is `0.02/min`, applied uniformly to
+all eligible target tumor cells within the configured uptake distance. This is
+an uncalibrated two-fold sensitivity step from the prior `0.01/min` value; it
+does not distinguish vessel or tumor subtypes.
+
+A 10-day full-main WSL run with 1,724 initial agents, `bacteria_entry_lambda =
+0.003/min/vessel`, and the global `0.02/min` uptake rate completed in 21 min
+59.7 s. It produced 198 accepted uptake events involving 128 original target
+IDs and 182 tracked PetriNets. Maximum pMHC-II recognition was 0.80714 and 27
+tracked cells accumulated positive PhysiCell damage (maximum 54.3). Ten deaths
+were PetriNet-triggered; 79 were classified as other PhysiCell deaths, of which
+9 had positive damage histories. The latter are damage-associated, not a
+strict causal attribution to CD4 without a matched treatment-off control.
+
+## MHC-II–CD4 coupling smoke test
+
+A 12-hour isolated run used one `PD-L1lo_tumor`, six adjacent CD4 cells, and a
+manual 50-bacterium input (below the configured PetriNet death threshold). The
+target reached `surface_pMHC=151.6`, `mhcii_cd4_recognition=0.834802`, and
+ordinary PhysiCell damage `7.3`. No PetriNet death or other death occurred.
+Damage first became non-zero after pMHC-II recognition rose above zero, which
+confirms that the standard PhysiCell contact-attack path consumes the new
+target-specific immunogenicity. The run completed at 720 minutes in 12.6
+seconds under WSL.
+
 ## Extracellular uptake invariants
 
 Interface v2 adds a one-agent/one-token `SalRuffle` entry. The engine test
@@ -18,8 +43,16 @@ four unique accepted bacterial IDs targeting the tumor. At minute 6 the tumor
 reported `sal_ruffle_tokens=0`, `intracellular_bacteria=4`, and
 `uptaken_bacteria=4`: all four physical agents were consumed exactly once and
 the enabled compartment transitions preserved their total. The committed
-parameter file was then restored to manual mode and 0.01/min before generation
-and build checks.
+uptake rate was then restored to 0.01/min before generation and build checks.
+Input mode is a per-run XML switch. Production and the isolated simulation
+test now select agent input; manual mode remains available for locked demos.
+
+Production-main activation was checked with a 30-minute configuration derived
+from `config/PhysiCell_settings.xml`: 25 tumor cells, 50 extracellular agents,
+no manual bolus, and `petrinet_input_mode=1`. The root `project` executable
+completed with 12 accepted rows, 12 unique bacterial IDs, and 14 per-cell
+metric rows. This confirms that uptake is active through the real root
+`main.cpp`, not only through its testing copy.
 
 Validation uses the WSL base environment. The C++ and Python implementations
 are compared statistically, not event-for-event, because their random-number
@@ -125,3 +158,22 @@ included at 0/240/480/720/960/1200/1440 min were respectively
 points were 150/130/130/140/144/147. The 1,440-minute molecular point is absent
 because no living cell remains, while the living-count curve correctly reaches
 zero. PhysiCell apoptosis/necrosis parameters were not changed.
+
+## Standalone SSA performance
+
+Measured in WSL base with g++ 13, `-O3 -march=native -fopenmp`, commit
+`ec78337`, and 50 initial vacuolar bacteria per cell:
+
+| Cells | Simulated | Threads | Wall time | Reactions | Throughput |
+|---:|---:|---:|---:|---:|---:|
+| 1 | 1 h | 1 | 0.00048 s | 2,204 | 4.59 M/s |
+| 10 | 1 h | 1 | 0.00486 s | 22,589 | 4.65 M/s |
+| 100 | 1 h | 1 | 0.0467 s | 226,548 | 4.85 M/s |
+| 100 | 1 h | 4 | 0.0124 s | 226,548 | 18.27 M/s |
+| 1,000 | 24 h | 4 | 4.71 s | 76,164,221 | 16.16 M/s |
+| 10,000 | 1 h | 4 | 1.44 s | 22,531,966 | 15.64 M/s |
+| 10,000 | 24 h | 8 | 28.76 s | 761,534,412 | 26.48 M/s |
+
+The controlled disabled, enabled-idle, and 1%/10%/100% infection overhead
+matrix remains pending. These numbers establish SSA feasibility but do not
+replace full PhysiCell profiling.

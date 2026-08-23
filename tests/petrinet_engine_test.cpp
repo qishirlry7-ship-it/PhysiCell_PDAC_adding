@@ -1,4 +1,5 @@
 #include "../custom_modules/petrinet/petrinet_engine.h"
+#include "../custom_modules/petrinet/mhcii_cd4_coupling.h"
 
 #include <cassert>
 #include <cmath>
@@ -7,6 +8,11 @@
 using namespace xenophagy;
 
 int main() {
+    assert(mhcii_cd4_recognition(0.0, 30.0, 1.0) == 0.0);
+    assert(std::fabs(mhcii_cd4_recognition(30.0, 30.0, 1.0) - 0.5) < 1e-12);
+    assert(std::fabs(mhcii_cd4_recognition(90.0, 30.0, 1.0) - 0.75) < 1e-12);
+    assert(mhcii_cd4_recognition(1e300, 30.0, 2.0) == 1.0);
+
     PetriNetEngine engine;
 
     CellPetriNetState state(42);

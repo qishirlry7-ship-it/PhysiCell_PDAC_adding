@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<petrinet_parameters interface_version="2">
+<petrinet_parameters interface_version="3">
   <engine>
     <parameter name="k_death" value="1e-7" units="1/s/bacterium"/>
     <parameter name="death_threshold" value="100" units="bacteria"/>
@@ -32,10 +32,12 @@
     <parameter name="mhc_P0" value="0" units="molecules"/>
   </mhc>
   <coupling>
-    <parameter name="bacterial_input_mode" value="0" units="0=manual,1=agent,2=hybrid"/>
-    <parameter name="bacterial_uptake_rate" value="0.01" units="1/min"/>
+    <parameter name="bacterial_uptake_rate" value="0.02" units="1/min"/>
     <parameter name="bacterial_uptake_interval" value="1" units="min"/>
     <parameter name="bacterial_uptake_distance" value="20" units="micron"/>
+    <parameter name="mhcii_cd4_attack_max" value="0.15" units="1/min"/>
+    <parameter name="mhcii_cd4_half_max" value="30" units="pMHC count"/>
+    <parameter name="mhcii_cd4_hill" value="1" units="dimensionless"/>
   </coupling>
   <initial_marking>
     <place id="SalRuffle" tokens="0"/>

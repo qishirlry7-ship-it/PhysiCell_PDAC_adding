@@ -20,18 +20,23 @@ make -j4
 The checked-in generated source lets collaborators compile without running the
 generator. `--check` is the required stale-model check before review.
 
-Before opening or merging a PR, also verify that the default-disabled
-integration leaves the baseline PhysiCell run operational:
+Before opening or merging a PR, also derive a disabled-mode configuration and
+verify that the baseline PhysiCell run remains operational:
 
 ```bash
 bash scripts/run_petrinet_disabled_smoke.sh
 ```
 
-This one-minute smoke run asserts that PhysiCell exits normally while no
-PetriNet state metrics or demo injection are produced.
+This one-minute smoke run explicitly disables the integration and asserts that
+PhysiCell exits normally while no PetriNet state metrics or demo injection are
+produced.
 
-See [INTERFACE.md](INTERFACE.md) for the stable interface and
-[ARCHITECTURE.md](ARCHITECTURE.md) for ownership and data flow.
+The documentation set is intentionally small:
+
+- [INTERFACE.md](INTERFACE.md): stable JSON, XML, CSV and C++ contracts;
+- [DESIGN.md](DESIGN.md): runtime architecture and planned IFN-gamma/vessel work;
+- [VALIDATION.md](VALIDATION.md): verified experiments and performance evidence;
+- [HANDOFF.md](HANDOFF.md): current status, findings, manifest and next actions.
 
 Enable the runtime through `petrinet_enabled`, `petrinet_entry_csv`, and
 `petrinet_global_seed` in the PhysiCell XML. Use
@@ -39,17 +44,27 @@ Enable the runtime through `petrinet_enabled`, `petrinet_entry_csv`, and
 tests are available in `scripts/run_petrinet_benchmark_quick.sh` and
 `scripts/run_petrinet_benchmark.sh`.
 
-The unified parameter XML selects bacterial input with
-`bacterial_input_mode`: `0` keeps the current manual demo/CSV workflow, `1`
+The production `config/PhysiCell_settings.xml` now enables the PetriNet in
+agent mode. Vessel-derived `Bifidobacterium_longum` agents can therefore enter
+nearby tumor cells through `SalRuffle`; there is no production manual bolus.
+Production metrics and the uptake audit are written under
+`outputs/pdac_therapy/`.
+
+Each PhysiCell run XML selects bacterial input with
+`petrinet_input_mode`: `0` keeps the current manual demo/CSV workflow, `1`
 uses one-to-one uptake of extracellular `Bifidobacterium_longum` agents, and
 `2` enables both intentionally. Agent uptake enters `SalRuffle`; the Petri-net
-then chooses vacuole versus cytosol. Changing this build-time mode requires
-regeneration and recompilation. Set `petrinet_uptake_csv` in the PhysiCell run
-XML when a conservation audit log is required.
+then chooses vacuole versus cytosol. This scenario switch does not require
+regeneration or recompilation. Set `petrinet_uptake_csv` in the same run XML
+when a conservation audit log is required.
 
 Do not edit generated files manually. Update `INTERFACE.md` before changing a
 public JSON, XML, CSV, or C++ contract; regenerate and commit the model
 snapshot, unified parameter XML, generated pair, and version hashes together.
+
+Important current limitation: the MHC-II ODE uses a fixed IFN-gamma value from
+`parameters.xml`; it does not yet consume the local PhysiCell `IFN_gamma`
+field. See `DESIGN.md` before interpreting spatial MHC-II results.
 
 ## Verified minimal demo
 
@@ -93,18 +108,29 @@ python scripts/plot_xenophagy_metrics.py \
   --death-summary outputs/petrinet_24h_100/death_statistics.csv
 ```
 
-For an agent-input experiment, first set `bacterial_input_mode=1`, regenerate
-and rebuild, then create nearby physical bacteria without a manual bolus:
+For an agent-input experiment, create nearby physical bacteria without a
+manual bolus and select the mode in the generated run XML:
 
 ```bash
 python3 scripts/make_minimal_petrinet_config.py \
   --output-name petrinet_uptake --duration-min 60 --bacteria 0 --cells 1 \
-  --extracellular-bacteria 20
+  --extracellular-bacteria 20 --input-mode agent
 ./project outputs/petrinet_uptake/PhysiCell_settings.xml
 ```
 
 The corresponding one-agent/one-token audit is written to
 `outputs/petrinet_uptake/bacterial_uptake.csv`.
+
+For routine development, keep the root `main.cpp` as the production entry
+point and run the smaller copied-main scenario instead:
+
+```bash
+bash tests/bacterial_uptake_simulation/run.sh
+```
+
+That test builds `project_petrinet_uptake_test`, checks that its copied main is
+current, and runs 25 tumor cells plus 50 extracellular bacterial agents without
+changing the production XML or executable.
 
 ## Python parity check
 

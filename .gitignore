@@ -3,6 +3,7 @@
 *.err
 project
 project.exe
+project_petrinet_uptake_test
 output/*
 !output/empty.txt
 outputs/

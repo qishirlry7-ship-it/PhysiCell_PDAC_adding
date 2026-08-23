@@ -1,5 +1,5 @@
 // Generated file. Do not edit.
-// generator=2.1.0 model_sha256=beaafd39036a29aab6eb846082b6d4f2ceef830d7c2d83594d976bd681b5c305 parameters_sha256=8a6deb8b30616dcb55add8ceb21047cbb07e4dfed650c77eda4357aeb64c4b7c
+// generator=2.2.0 model_sha256=beaafd39036a29aab6eb846082b6d4f2ceef830d7c2d83594d976bd681b5c305 parameters_sha256=2a32bf28b0e1e7b6fdb39272defbb2ddba358be091794c5cf87dffd0d370a904
 #pragma once
 #include <array>
 #include <cstddef>
@@ -95,10 +95,12 @@ struct ModelParameters {
   double mhc_M0 = 10000.0;
   double mhc_C0 = 0.0;
   double mhc_P0 = 0.0;
-  double bacterial_input_mode = 0.0;
-  double bacterial_uptake_rate = 0.01;
+  double bacterial_uptake_rate = 0.02;
   double bacterial_uptake_interval = 1.0;
   double bacterial_uptake_distance = 20.0;
+  double mhcii_cd4_attack_max = 0.15;
+  double mhcii_cd4_half_max = 30.0;
+  double mhcii_cd4_hill = 1.0;
 };
 struct Arc { Place place; int weight; };
 struct Transition { const char* id; double rate; bool uses_expression; bool enabled; std::vector<Arc> input; std::vector<Arc> output; };

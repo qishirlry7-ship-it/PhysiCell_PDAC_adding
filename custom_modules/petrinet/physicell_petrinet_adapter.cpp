@@ -1,4 +1,5 @@
 #include "physicell_petrinet_adapter.h"
+#include "mhcii_cd4_coupling.h"
 
 #include <algorithm>
 #include <cmath>
@@ -22,6 +23,13 @@ const char* target_names[] = {
     "PD-L1lo_tumor_infected", "PD-L1lo_tumor_xenophagy",
     "PD-L1hi_tumor_infected", "PD-L1hi_tumor_xenophagy"
 };
+
+const char* cd4_names[] = {"PD-1hi_CD4_Tcell", "PD-1lo_CD4_Tcell"};
+
+void set_cd4_immunogenicity(PhysiCell::Cell* tumor, double value) {
+    for (const char* cd4_name : cd4_names)
+        tumor->phenotype.cell_interactions.immunogenicity(cd4_name) = value;
+}
 
 struct ScheduledEntry {
     double time_minutes;
@@ -115,6 +123,8 @@ void add_observables(PhysiCell::Cell_Definition* definition) {
         definition->custom_data.add_variable("ap_ub_tokens", "count", 0.0);
     if (definition->custom_data.find_variable_index("surface_pMHC") < 0)
         definition->custom_data.add_variable("surface_pMHC", "count", 0.0);
+    if (definition->custom_data.find_variable_index("mhcii_cd4_recognition") < 0)
+        definition->custom_data.add_variable("mhcii_cd4_recognition", "dimensionless", 0.0);
     if (definition->custom_data.find_variable_index("pn_death_probability") < 0)
         definition->custom_data.add_variable("pn_death_probability", "dimensionless", 0.0);
 }
@@ -170,8 +180,10 @@ void setup_petrinet_integration() {
     integration_enabled = PhysiCell::parameters.bools("petrinet_enabled");
     if (!integration_enabled) return;
     global_seed = static_cast<std::uint64_t>(PhysiCell::parameters.ints("petrinet_global_seed"));
-    input_mode = static_cast<BacterialInputMode>(
-        static_cast<int>(parameters.bacterial_input_mode));
+    const int configured_mode = PhysiCell::parameters.ints("petrinet_input_mode");
+    if (configured_mode < 0 || configured_mode > 2)
+        throw std::runtime_error("petrinet_input_mode must be 0, 1, or 2");
+    input_mode = static_cast<BacterialInputMode>(configured_mode);
     uptake_rng.seed(mix_seed(global_seed ^ 0x42555054414b45ULL));
     next_uptake_time_minutes = parameters.bacterial_uptake_interval;
     if (manual_input_enabled())
@@ -184,7 +196,8 @@ void setup_petrinet_integration() {
         metrics_file << "time_min,cell_id,cell_type,intracellular_bacteria,"
                         "sal_ruffle_tokens,uptaken_bacteria,"
                         "ap_gal8_tokens,ap_ub_tokens,xenophagy_activity,"
-                        "surface_pMHC,death_probability,is_dead,"
+                        "surface_pMHC,mhcii_cd4_recognition,physicell_damage,"
+                        "death_probability,is_dead,"
                         "petrinet_death_triggered,death_time_min\n";
     }
     if (agent_input_enabled()) {
@@ -200,6 +213,15 @@ void setup_petrinet_integration() {
         if (!definition) continue;
         definition->functions.update_phenotype = petrinet_phenotype;
         definition->functions.cell_division_function = petrinet_division;
+        for (const char* cd4_name : cd4_names)
+            definition->phenotype.cell_interactions.immunogenicity(cd4_name) = 0.0;
+    }
+    for (const char* cd4_name : cd4_names) {
+        PhysiCell::Cell_Definition* definition = PhysiCell::find_cell_definition(cd4_name);
+        if (!definition) continue;
+        for (const char* target_name : target_names)
+            definition->phenotype.cell_interactions.attack_rate(target_name) =
+                parameters.mhcii_cd4_attack_max;
     }
 }
 
@@ -344,6 +366,8 @@ void write_petrinet_metrics(double current_time_minutes) {
                      << engine.ub_autophagosome_tokens(state->marking) << ','
                      << cell->custom_data["xenophagy_activity"] << ','
                      << cell->custom_data["surface_pMHC"] << ','
+                     << cell->custom_data["mhcii_cd4_recognition"] << ','
+                     << cell->phenotype.cell_integrity.damage << ','
                      << cell->custom_data["pn_death_probability"] << ','
                      << (cell->phenotype.death.dead ? 1 : 0) << ','
                      << (state->petrinet_death_triggered ? 1 : 0) << ','
@@ -370,6 +394,11 @@ void petrinet_phenotype(PhysiCell::Cell* cell, PhysiCell::Phenotype& phenotype,
     cell->custom_data["ap_ub_tokens"] = engine.ub_autophagosome_tokens(state->marking);
     cell->custom_data["xenophagy_activity"] = result.xenophagy_activity;
     cell->custom_data["surface_pMHC"] = state->mhc.P;
+    const double cd4_recognition = mhcii_cd4_recognition(
+        state->mhc.P, parameters.mhcii_cd4_half_max,
+        parameters.mhcii_cd4_hill);
+    cell->custom_data["mhcii_cd4_recognition"] = cd4_recognition;
+    set_cd4_immunogenicity(cell, cd4_recognition);
     cell->custom_data["pn_death_probability"] = result.death_probability;
     const double draw = std::generate_canonical<double, 53>(state->rng);
     if (draw < result.death_probability) {
