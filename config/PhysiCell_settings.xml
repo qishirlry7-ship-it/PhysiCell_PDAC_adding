@@ -329,6 +329,22 @@
                 <boundary_value ID="zmax" enabled="False">0</boundary_value>
             </Dirichlet_options>
         </variable>
+        <variable name="Gal8_ext" units="dimensionless" ID="16">
+            <physical_parameter_set>
+                <diffusion_coefficient units="micron^2/min">1000</diffusion_coefficient>
+                <decay_rate units="1/min">0.1</decay_rate>
+            </physical_parameter_set>
+            <initial_condition units="dimensionless">0</initial_condition>
+            <Dirichlet_boundary_condition units="dimensionless" enabled="False">0</Dirichlet_boundary_condition>
+            <Dirichlet_options>
+                <boundary_value ID="xmin" enabled="False">0</boundary_value>
+                <boundary_value ID="xmax" enabled="False">0</boundary_value>
+                <boundary_value ID="ymin" enabled="False">0</boundary_value>
+                <boundary_value ID="ymax" enabled="False">0</boundary_value>
+                <boundary_value ID="zmin" enabled="False">0</boundary_value>
+                <boundary_value ID="zmax" enabled="False">0</boundary_value>
+            </Dirichlet_options>
+        </variable>
 </microenvironment_setup>
 
     <cell_definitions>
@@ -460,6 +476,12 @@
                     <substrate name="lactate">
                         <secretion_rate units="1/min">1.0</secretion_rate>
                         <secretion_target units="substrate density">10</secretion_target>
+                        <uptake_rate units="1/min">0</uptake_rate>
+                        <net_export_rate units="total substrate/min">0</net_export_rate>
+                    </substrate>
+                    <substrate name="Gal8_ext">
+                        <secretion_rate units="1/min">0.05</secretion_rate>
+                        <secretion_target units="substrate density">5</secretion_target>
                         <uptake_rate units="1/min">0</uptake_rate>
                         <net_export_rate units="total substrate/min">0</net_export_rate>
                     </substrate>
@@ -641,6 +663,12 @@
                     <substrate name="lactate">
                         <secretion_rate units="1/min">1.0</secretion_rate>
                         <secretion_target units="substrate density">10</secretion_target>
+                        <uptake_rate units="1/min">0</uptake_rate>
+                        <net_export_rate units="total substrate/min">0</net_export_rate>
+                    </substrate>
+                    <substrate name="Gal8_ext">
+                        <secretion_rate units="1/min">0.05</secretion_rate>
+                        <secretion_target units="substrate density">5</secretion_target>
                         <uptake_rate units="1/min">0</uptake_rate>
                         <net_export_rate units="total substrate/min">0</net_export_rate>
                     </substrate>
@@ -3459,6 +3487,12 @@
                         <uptake_rate units="1/min">0</uptake_rate>
                         <net_export_rate units="total substrate/min">0</net_export_rate>
                     </substrate>
+                    <substrate name="Gal8_ext">
+                        <secretion_rate units="1/min">0.05</secretion_rate>
+                        <secretion_target units="substrate density">5</secretion_target>
+                        <uptake_rate units="1/min">0</uptake_rate>
+                        <net_export_rate units="total substrate/min">0</net_export_rate>
+                    </substrate>
 </secretion>
                 <cell_interactions>
                     <apoptotic_phagocytosis_rate units="1/min">0</apoptotic_phagocytosis_rate>
@@ -3615,6 +3649,12 @@
                         <uptake_rate units="1/min">0</uptake_rate>
                         <net_export_rate units="total substrate/min">0</net_export_rate>
                     </substrate>
+                    <substrate name="Gal8_ext">
+                        <secretion_rate units="1/min">0.05</secretion_rate>
+                        <secretion_target units="substrate density">5</secretion_target>
+                        <uptake_rate units="1/min">0</uptake_rate>
+                        <net_export_rate units="total substrate/min">0</net_export_rate>
+                    </substrate>
 </secretion>
                 <cell_interactions>
                     <apoptotic_phagocytosis_rate units="1/min">0</apoptotic_phagocytosis_rate>
@@ -3767,6 +3807,12 @@
                     <substrate name="lactate">
                         <secretion_rate units="1/min">1.0</secretion_rate>
                         <secretion_target units="substrate density">10</secretion_target>
+                        <uptake_rate units="1/min">0</uptake_rate>
+                        <net_export_rate units="total substrate/min">0</net_export_rate>
+                    </substrate>
+                    <substrate name="Gal8_ext">
+                        <secretion_rate units="1/min">0.05</secretion_rate>
+                        <secretion_target units="substrate density">5</secretion_target>
                         <uptake_rate units="1/min">0</uptake_rate>
                         <net_export_rate units="total substrate/min">0</net_export_rate>
                     </substrate>
@@ -3926,6 +3972,12 @@
                         <uptake_rate units="1/min">0</uptake_rate>
                         <net_export_rate units="total substrate/min">0</net_export_rate>
                     </substrate>
+                    <substrate name="Gal8_ext">
+                        <secretion_rate units="1/min">0.05</secretion_rate>
+                        <secretion_target units="substrate density">5</secretion_target>
+                        <uptake_rate units="1/min">0</uptake_rate>
+                        <net_export_rate units="total substrate/min">0</net_export_rate>
+                    </substrate>
 </secretion>
                 <cell_interactions>
                     <apoptotic_phagocytosis_rate units="1/min">0</apoptotic_phagocytosis_rate>
@@ -3965,7 +4017,7 @@
     </initial_conditions>
 
     <user_parameters>
-        <bacteria_entry_lambda type="double" units="1/min" description="per-vessel probability rate of a new Bifidobacterium longum entering nearby (Poisson process); no literature value found, kept deliberately low and adjustable">0.0003</bacteria_entry_lambda>
+        <bacteria_entry_lambda type="double" units="1/min" description="per-vessel probability rate of a new Bifidobacterium longum entering nearby (Poisson process); no literature value found, kept deliberately low and adjustable; set to 0 for the mechanism-4-only baseline (no bacteria/therapy) test">0</bacteria_entry_lambda>
         <petrinet_enabled type="bool" description="enable generated intracellular xenophagy Petri-net">true</petrinet_enabled>
         <petrinet_input_mode type="int" description="bacterial input source: 0=manual, 1=extracellular agents, 2=hybrid">1</petrinet_input_mode>
         <petrinet_global_seed type="int" description="base seed for deterministic per-cell Petri-net streams">42</petrinet_global_seed>
@@ -3974,8 +4026,5 @@
         <petrinet_metrics_csv type="string" description="optional per-cell xenophagy time-series output path">outputs/pdac_therapy/xenophagy_metrics.csv</petrinet_metrics_csv>
         <petrinet_uptake_csv type="string" description="optional extracellular-agent uptake audit output path">outputs/pdac_therapy/bacterial_uptake.csv</petrinet_uptake_csv>
         <petrinet_metrics_interval type="double" units="min" description="xenophagy metrics sampling interval; non-positive disables">6</petrinet_metrics_interval>
-        <cd8_recruitment_lambda_max type="double" units="1/min" description="TOTAL (aggregate across all vessels, not per-vessel) CD8 extravasation probability rate when tumor burden is high; no literature value exists for this specific rate; set to reproduce the original 23-vessel calibration (0.001/vessel x 23) so it stays comparable after the vessel-geometry redesign expanded vessel point count">0.023</cd8_recruitment_lambda_max>
-        <cd8_recruitment_lambda_floor type="double" units="1/min" description="TOTAL (aggregate, not per-vessel) CD8 extravasation probability rate floor at low/near-zero tumor burden, representing persistent immune surveillance rather than zero recruitment; placeholder, scaled the same way as cd8_recruitment_lambda_max">0.0023</cd8_recruitment_lambda_floor>
-        <cd8_recruitment_tumor_halfmax type="double" units="cells" description="living tumor cell count at which recruitment rate is halfway between floor and max (Hill n=1); chosen relative to the ~1000-cell initial tumor population, not a literature-derived value">300</cd8_recruitment_tumor_halfmax>
     </user_parameters>
 </PhysiCell_settings>

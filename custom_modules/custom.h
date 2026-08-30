@@ -95,11 +95,5 @@ void contact_function(Cell *pMe, Phenotype &phenoMe, Cell *pOther, Phenotype &ph
 // per main-loop iteration from main.cpp, dt = diffusion_dt)
 void recruit_bacteria(double dt);
 
-// probabilistic CD8 T cell extravasation near vessels, rate scaled by
-// current living-tumor-cell count (Hill/MM saturating function) so immune
-// recruitment tapers as tumor burden falls instead of staying constant --
-// see custom.cpp for the literature basis and the placeholder-constant caveat.
-void recruit_cd8_cells(double dt);
-
 // Build-time generated intracellular xenophagy Petri-net integration.
 #include "petrinet/physicell_petrinet_adapter.h"

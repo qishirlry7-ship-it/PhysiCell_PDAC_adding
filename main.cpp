@@ -226,7 +226,6 @@ int main(int argc, char *argv[])
 			*/
 
 			recruit_bacteria( diffusion_dt );
-			recruit_cd8_cells( diffusion_dt );
 			xenophagy::cleanup_petrinet_states();
 
 			PhysiCell_globals.current_time += diffusion_dt;

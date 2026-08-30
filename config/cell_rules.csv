@@ -104,33 +104,35 @@ PD-L1lo_tumor_xenophagy,glucose,increases,cycle entry,7.2e-4,0.15,2,0
 PD-L1hi_tumor_infected,glucose,increases,cycle entry,7.2e-4,0.15,2,0
 PD-L1hi_tumor_xenophagy,glucose,increases,cycle entry,7.2e-4,0.15,2,0
 
-// --- Mechanism 1: hypoxic/vessel-distance niche shields tumor cells from
-// CD8 (Facciabene/Frontiers 2025: CD8 density negatively associated with
-// hypoxia in stroma). Oxygen boosts CD8 attack rate and migration speed
-// above the XML baseline near vessels/normoxic tissue; the hypoxic core
-// stays at the (already low) baseline, since PhysiCell Rules can only pull
-// a behavior UP from baseline toward a ceiling via an 'increases' signal,
-// not push it below baseline -- so the refuge effect comes from strong
-// killing at the oxygenated rim versus unboosted baseline in the core, not
-// from suppressing the core below its current (already-low) rate.
-// Only applied to the two non-exhausted (PD-1lo) CD8 substates, mirroring
-// the existing IFN_gamma-boost asymmetry already in this file.
-PD-1lo_CD137hi_CD8_Tcell,oxygen,increases,attack PD-L1hi_tumor,0.05,5,2,0
-PD-1lo_CD137hi_CD8_Tcell,oxygen,increases,attack PD-L1lo_tumor,0.05,5,2,0
-PD-1lo_CD137lo_CD8_Tcell,oxygen,increases,attack PD-L1hi_tumor,0.005,5,2,0
-PD-1lo_CD137lo_CD8_Tcell,oxygen,increases,attack PD-L1lo_tumor,0.005,5,2,0
-PD-1lo_CD137hi_CD8_Tcell,oxygen,increases,migration speed,2,5,2,0
-PD-1lo_CD137lo_CD8_Tcell,oxygen,increases,migration speed,2,5,2,0
-PD-1hi_CD137hi_CD8_Tcell,oxygen,increases,migration speed,2,5,2,0
-PD-1hi_CD137lo_CD8_Tcell,oxygen,increases,migration speed,2,5,2,0
-
-// --- Mechanism 2: sustained tumor contact (a Rules-expressible proxy for
-// 'persistent/repeated antigen stimulation', the literature-established
-// driver of T cell exhaustion -- Wherry & Kaech 2019 Nat Rev Immunol:
-// 'persistent cognate antigen stimulation during chronic infection or
-// cancer induces exhaustion') drives PD-1lo->PD-1hi transition faster than
-// the existing slow TGF_beta-only route, on top of (not replacing) it.
-PD-1lo_CD137lo_CD8_Tcell,contact with PD-L1lo_tumor,increases,transform to PD-1hi_CD137lo_CD8_Tcell,0.01,0.5,2,0
-PD-1lo_CD137lo_CD8_Tcell,contact with PD-L1hi_tumor,increases,transform to PD-1hi_CD137lo_CD8_Tcell,0.01,0.5,2,0
-PD-1lo_CD137hi_CD8_Tcell,contact with PD-L1lo_tumor,increases,transform to PD-1hi_CD137hi_CD8_Tcell,0.01,0.5,2,0
-PD-1lo_CD137hi_CD8_Tcell,contact with PD-L1hi_tumor,increases,transform to PD-1hi_CD137hi_CD8_Tcell,0.01,0.5,2,0
+// --- Extracellular Galectin-8 (Gal8_ext, secreted by tumor cells) has a
+// biphasic/dual dose-dependent effect on T cells, confirmed by literature:
+// low concentrations co-stimulate T cell activation/response (Tribulatti
+// et al.; Carabelli et al. 2018 Immunology, 'Interleukin-6 signalling
+// mediates Galectin-8 co-stimulatory activity'; Puric et al. 2024 Med Res
+// Rev, 'galectin-8 can co-stimulate the antigen-specific T-cell response at
+// very low galectin-8 concentrations'), while high concentrations are
+// pro-apoptotic (Tribulatti/Campetella, Glycobiology 2007, Gal-8 induces
+// apoptosis in CD4hiCD8hi thymocytes; Norambuena et al., 'Galectin-8 Induces
+// Apoptosis in Jurkat T Cells by Phosphatidic Acid-mediated ERK1/2
+// Activation', PMC2675996 -- a PLD/PA/ERK1/2/FasL/caspase pathway).
+// Implemented as two rows per (CD8 substate, target) sharing one signal at
+// two different half-max values -- a low half-max 'increases attack' term
+// that saturates quickly (captures low-dose costimulation) plus a much
+// higher half-max 'increases apoptosis' term that only engages once Gal8_ext
+// is far past the costimulatory range (captures high-dose pro-apoptotic
+// killing of the T cell itself, which removes its attack capacity too).
+// No literature concentration thresholds exist (reviews use only qualitative
+// 'low'/'high' language, no molar values) -- half_max=1 (low) and half_max=10
+// (high) are our own placeholder separation, not measured numbers.
+PD-1lo_CD137hi_CD8_Tcell,Gal8_ext,increases,attack PD-L1hi_tumor,0.02,1,2,0
+PD-1lo_CD137hi_CD8_Tcell,Gal8_ext,increases,attack PD-L1lo_tumor,0.02,1,2,0
+PD-1lo_CD137lo_CD8_Tcell,Gal8_ext,increases,attack PD-L1hi_tumor,0.02,1,2,0
+PD-1lo_CD137lo_CD8_Tcell,Gal8_ext,increases,attack PD-L1lo_tumor,0.02,1,2,0
+PD-1hi_CD137hi_CD8_Tcell,Gal8_ext,increases,attack PD-L1hi_tumor,0.02,1,2,0
+PD-1hi_CD137hi_CD8_Tcell,Gal8_ext,increases,attack PD-L1lo_tumor,0.02,1,2,0
+PD-1hi_CD137lo_CD8_Tcell,Gal8_ext,increases,attack PD-L1hi_tumor,0.02,1,2,0
+PD-1hi_CD137lo_CD8_Tcell,Gal8_ext,increases,attack PD-L1lo_tumor,0.02,1,2,0
+PD-1lo_CD137hi_CD8_Tcell,Gal8_ext,increases,apoptosis,0.002,10,2,0
+PD-1lo_CD137lo_CD8_Tcell,Gal8_ext,increases,apoptosis,0.002,10,2,0
+PD-1hi_CD137hi_CD8_Tcell,Gal8_ext,increases,apoptosis,0.002,10,2,0
+PD-1hi_CD137lo_CD8_Tcell,Gal8_ext,increases,apoptosis,0.002,10,2,0
