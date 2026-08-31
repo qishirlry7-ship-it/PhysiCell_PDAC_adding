@@ -1,3 +1,13 @@
+// pdac_therapy's original half_max=0.25 for this rule was calibrated
+// against a packing density we never re-measured after evolving the IC.
+// Measured actual pressure in our current IC (t=6min, n=694 tumor cells):
+// median 3.7, p90 13.65 -- 0.25 was ~15x too low, so nearly every cell
+// started with cycle entry saturated near zero regardless of oxygen/
+// glucose, producing an artificial multi-day "everyone stuck until initial
+// crowding relaxes" dip before growth could begin. Recalibrated to 5 (near
+// the measured median) so division suppression scales proportionately with
+// real local crowding from t=0, instead of nearly all cells starting
+// maximally suppressed.
 PD-L1lo_tumor,pressure,decreases,cycle entry,0,0.25,3,0
 PD-L1hi_tumor,pressure,decreases,cycle entry,0,0.25,3,0
 PD-L1lo_tumor,damage,increases,apoptosis,0.023,45,16,0

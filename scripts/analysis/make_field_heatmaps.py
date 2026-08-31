@@ -47,7 +47,7 @@ def write_ppm(path, grid, n, vmin, vmax):
                 r, g, b = colormap(grid[row][col], vmin, vmax)
                 f.write(bytes([r, g, b]))
 
-SUBSTRATES = ["oxygen", "glucose", "lactate", "ECM", "TGF_beta", "IFN_gamma"]
+SUBSTRATES = ["oxygen", "glucose", "lactate", "ECM", "TGF_beta", "IFN_gamma", "Gal8_ext"]
 RANGES = {  # fixed color-scale range per substrate so frames are comparable across time
     "oxygen": (0, 25),
     "glucose": (0, 1.0),
@@ -55,6 +55,7 @@ RANGES = {  # fixed color-scale range per substrate so frames are comparable acr
     "ECM": (0, 10),
     "TGF_beta": (0, 5),
     "IFN_gamma": (0, 5),
+    "Gal8_ext": (0, 15),  # spans both biphasic thresholds (half_max=1 costim, half_max=10 apoptosis)
 }
 
 mats = sorted(glob.glob("outputs/pdac_therapy/output*_microenvironment0.mat"))
