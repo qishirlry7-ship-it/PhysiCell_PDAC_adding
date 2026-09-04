@@ -150,12 +150,21 @@ void setup_microenvironment(void)
 {
 	// set domain parameters
 
-	// put any custom code to set non-homogeneous initial conditions or
-	// extra Dirichlet nodes here.
-
 	// initialize BioFVM
 
 	initialize_microenvironment();
+
+	// Overwrite the just-initialized uniform field with the actual saved
+	// microenvironment state from checkpoint 88 (t=5280min, 3.67 days) of
+	// the 45-day mechanism-4-only baseline run -- the population trough
+	// (894 living tumor cells, smoothed-curve minimum, confirmed by a
+	// sustained rise over the following 24h). This is real, spatially
+	// varying field data (oxygen/glucose already locally depleted, not the
+	// uniform 38/1.0 XML default), read via BioFVM's built-in
+	// read_microenvironment_from_matlab(), which requires the voxel count
+	// and substrate count/order to match exactly -- true here since this
+	// is the same model/domain, just a different starting timepoint.
+	read_microenvironment_from_matlab( "./config/ic_microenvironment/trough_microenvironment0.mat" );
 
 	return;
 }
