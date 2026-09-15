@@ -377,6 +377,22 @@
                 <boundary_value ID="zmax" enabled="False">15</boundary_value>
             </Dirichlet_options>
         </variable>
+        <variable name="CCK" units="pM" ID="19">
+            <physical_parameter_set>
+                <diffusion_coefficient units="micron^2/min">1000</diffusion_coefficient>
+                <decay_rate units="1/min">0.347</decay_rate>
+            </physical_parameter_set>
+            <initial_condition units="pM">1</initial_condition>
+            <Dirichlet_boundary_condition units="pM" enabled="False">1</Dirichlet_boundary_condition>
+            <Dirichlet_options>
+                <boundary_value ID="xmin" enabled="False">1</boundary_value>
+                <boundary_value ID="xmax" enabled="False">1</boundary_value>
+                <boundary_value ID="ymin" enabled="False">1</boundary_value>
+                <boundary_value ID="ymax" enabled="False">1</boundary_value>
+                <boundary_value ID="zmin" enabled="False">1</boundary_value>
+                <boundary_value ID="zmax" enabled="False">1</boundary_value>
+            </Dirichlet_options>
+        </variable>
 </microenvironment_setup>
 
     <cell_definitions>
@@ -4393,8 +4409,10 @@
         <insulin_peak_fold type="double" units="dimensionless" description="PLACEHOLDER -- postprandial insulin peak as a multiple of fasting baseline. Literature confirmed the qualitative pattern (rises after a meal, peaks within ~30-90min, returns to baseline within ~2-3h) but no precise fold-change number for a normal (non-diabetic, non-injected) physiological meal response was found; 5x is a commonly-cited rule-of-thumb order of magnitude, not a specific citation">5</insulin_peak_fold>
         <glp1_fasting_pM type="double" units="pM" description="fasting plasma GLP-1, literature value ~15 pmol/L">15</glp1_fasting_pM>
         <glp1_peak_fold type="double" units="dimensionless" description="postprandial GLP-1 peak / fasting, from literature values (peak ~40 pmol/L / fasting ~15 pmol/L)">2.67</glp1_peak_fold>
-        <hormone_circadian_amplitude type="double" units="dimensionless" description="PLACEHOLDER -- fractional amplitude of the ~24h circadian modulation shared by insulin and GLP1 (literature confirms both have real circadian rhythmicity, 'in phase' with each other, higher daytime/evening and lower overnight, but gave no specific amplitude number)">0.2</hormone_circadian_amplitude>
-        <hormone_secretion_rate type="double" units="1/min" description="vessel secretion_rate for insulin/GLP1. Matched to the same order of magnitude as this model's existing vessel oxygen(200)/glucose(100) secretion rates -- an initial value of 1.0/min was tested and found far too weak (domain-mean concentration collapsed to ~1-7 pM regardless of target, since diffusion+decay away from the sparse vessel points dominated); 150/min was empirically found to let the domain-mean concentration actually approach its time-varying secretion_target. Not itself a literature-calibrated number, just an engineering fix so the mechanism is numerically live">150</hormone_secretion_rate>
+        <cck_fasting_pM type="double" units="pM" description="fasting plasma CCK, literature value ~0.5-1 pmol/L">1</cck_fasting_pM>
+        <cck_peak_fold type="double" units="dimensionless" description="postprandial CCK peak / fasting, from literature values (mixed-meal peak ~3-5 pmol/L / fasting ~1 pmol/L, mid-range of the reported 3-15 pmol/L peak range across different studies/meal compositions)">5</cck_peak_fold>
+        <hormone_circadian_amplitude type="double" units="dimensionless" description="PLACEHOLDER -- fractional amplitude of the ~24h circadian modulation shared by insulin/GLP1/CCK (literature confirms real circadian rhythmicity for all three -- insulin/GLP1 'in phase' with each other, higher daytime/evening and lower overnight; CCK's acrophase instead falls in the dark/night period, opposite phase, see update_hormone_secretion() in custom.cpp -- but no specific amplitude number was found for any of them)">0.2</hormone_circadian_amplitude>
+        <hormone_secretion_rate type="double" units="1/min" description="vessel secretion_rate shared by insulin/GLP1/CCK. Matched to the same order of magnitude as this model's existing vessel oxygen(200)/glucose(100) secretion rates -- an initial value of 1.0/min was tested and found far too weak (domain-mean concentration collapsed to ~1-7 pM regardless of target, since diffusion+decay away from the sparse vessel points dominated); 150/min was empirically found to let the domain-mean concentration actually approach its time-varying secretion_target. Not itself a literature-calibrated number, just an engineering fix so the mechanism is numerically live">150</hormone_secretion_rate>
 
         <insulin_prolif_max type="double" units="1/min" description="ceiling on insulin-driven tumor cycle-entry rate (PI3K/Akt/mTOR promotes PDAC proliferation). Reuses the existing glucose-driven cycle-entry ceiling (7.2e-4) for consistency with this model's established tumor cycle-entry scale">7.2e-4</insulin_prolif_max>
         <insulin_prolif_half_max type="double" units="pM" description="half-max for insulin's proliferation/anti-apoptosis/anti-xenophagy effects; placed at the fasting baseline (insulin_fasting_pM) so the response is centered in the normal physiological range, not requiring frank hyperinsulinemia to engage">60</insulin_prolif_half_max>

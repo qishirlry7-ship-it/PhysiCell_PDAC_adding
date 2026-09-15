@@ -45,6 +45,25 @@ PD-1lo_CD137hi_CD8_Tcell,IFN_gamma,increases,attack PD-L1lo_tumor,0.1,0.1,2,0
 PD-1lo_CD137lo_CD8_Tcell,IFN_gamma,increases,attack PD-L1hi_tumor,0.01,0.1,2,0
 PD-1lo_CD137lo_CD8_Tcell,IFN_gamma,increases,attack PD-L1lo_tumor,0.01,0.1,2,0
 myCAF,TGF_beta,increases,ECM secretion,2,1,2,0
+// CCK (gut I-cell-derived, delivered via blood like insulin/GLP1): CCK-B
+// receptor is expressed on pancreatic stellate cells (the origin of
+// myCAF), and its activation drives the quiescent->activated transition --
+// proliferation, migration, and COLLAGEN PRODUCTION -- while blocking it
+// (proglumide) reverts activated fibroblasts toward quiescence and reduces
+// ECM/collagen genes (Cholecystokinin Receptor Antagonist Induces
+// Pancreatic Stellate Cell Plasticity, PMC10216345; CCK Receptor Inhibition
+// Reduces Pancreatic Tumor Fibrosis, doi:10.3390/biomedicines12051024).
+// Added as a second driver alongside TGF_beta on the SAME two myCAF
+// behaviors (ECM secretion here, cycle entry below), reusing the exact
+// same max_response ceilings for each (2 and mycaf_prolif_max) -- multiple
+// up-signals on one behavior combine via the Rules engine's own multivariate
+// Hill formula and cannot exceed that shared ceiling, so this does not
+// reopen the myCAF runaway-growth issue fixed earlier (the pressure-brake
+// still applies on top regardless). half_max=1.5pM sits between CCK's
+// literature fasting (~1pM) and postprandial peak (~5pM) levels. Not
+// applied to iCAF: the cited mechanism is specifically collagen/ECM
+// production, which is myCAF's role in this model, not iCAF's.
+myCAF,CCK,increases,ECM secretion,2,1.5,2,0
 PD-L1lo_tumor,oxygen,decreases,necrosis,0,2,4,0
 PD-L1hi_tumor,oxygen,decreases,necrosis,0,2,4,0
 PD-L1lo_tumor,glucose,decreases,necrosis,0,0.05,3,0
@@ -266,6 +285,9 @@ Treg,contact with Treg,decreases,cycle entry,0,0.1,2,0
 // used for myCAF's own TGF_beta-driven ECM secretion rule below, since both
 // represent the same TGF-beta/myofibroblast-activation axis.
 myCAF,TGF_beta,increases,cycle entry,1.7e-4,1,2,0
+// CCK second driver on myCAF proliferation, same ceiling as TGF_beta above
+// (see the ECM-secretion comment for the full citation/rationale).
+myCAF,CCK,increases,cycle entry,1.7e-4,1.5,2,0
 // myCAF negative feedback: classical contact inhibition of proliferation
 // (CIP) is well-established for fibroblasts (density-dependent growth
 // arrest via loss of focal adhesions); CAFs retain some of this (less than

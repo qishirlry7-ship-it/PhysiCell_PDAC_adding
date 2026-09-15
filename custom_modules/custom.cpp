@@ -345,32 +345,45 @@ void recruit_bacteria( double dt )
 }
 
 // ---------------------------------------------------------------------------
-// Pancreatic hormone delivery (insulin, GLP-1). Both modeled as arriving via
-// blood supply -- secreted by the same vessel points that already deliver
-// oxygen/glucose. This is not just a modeling convenience: pancreatic
-// islets are highly vascularized (~20% of arterial blood flow despite ~2%
-// of pancreatic mass) and beta cells have polarized, directed secretion
-// toward the capillary bed (see chat writeup for citations), so "arrives
-// via blood" is a physiologically accurate description of how the tumor
-// microenvironment actually encounters these hormones, not a shortcut.
+// Pancreatic/gut hormone delivery (insulin, GLP-1, CCK). All three modeled
+// as arriving via blood supply -- secreted by the same vessel points that
+// already deliver oxygen/glucose. For insulin this is not just a modeling
+// convenience: pancreatic islets are highly vascularized (~20% of arterial
+// blood flow despite ~2% of pancreatic mass) and beta cells have polarized,
+// directed secretion toward the capillary bed (see chat writeup for
+// citations), so "arrives via blood" is a physiologically accurate
+// description of how the tumor microenvironment actually encounters these
+// hormones, not a shortcut. CCK is secreted by intestinal I-cells directly
+// into the bloodstream in the same way (it is a classic circulating gut
+// hormone, not locally produced in the pancreas itself), so the same vessel-
+// delivery approach applies for the same underlying reason -- what matters
+// for the tumor tissue is the concentration arriving via its blood supply,
+// regardless of which organ made it.
 //
 // Each hormone's target local concentration (set as its vessels'
 // secretion_target, i.e. phenotype.secretion.saturation_densities -- the
 // concentration BioFVM's source term drives the local voxel toward) is:
 //   target(t) = fasting_baseline * circadian(t) * (1 + (peak_fold-1)*pulse(t))
-// circadian(t) is a mild +-hormone_circadian_amplitude sinusoid, trough at
-// 03:00, peak at 15:00 (literature: both hormones are higher daytime/
-// evening, lower overnight). pulse(t) sums 3 meal-triggered pulses/24h
-// (08:00, 13:00, 19:00), each a normalized Bateman/biexponential rise-decay
-// curve -- rise/decay time constants are hand-picked to match the
-// literature's qualitative timing (insulin: peaks ~25-30min, back near
-// baseline by ~3h; GLP-1: peaks ~20min -- much faster, matching its ~1-2min
-// plasma half-life meaning its blood level tracks secretion almost
-// immediately -- back near baseline by ~3-4h), NOT fitted to precise PK
-// rate constants (none were found in literature at this level of detail).
-// See chat writeup for the full citation list and the honest caveat that
-// insulin_peak_fold=5 is a rule-of-thumb, not a specific citation (unlike
-// GLP-1's peak_fold=2.67, which IS a literature ratio: ~40/~15 pmol/L).
+// circadian(t) is a mild +-hormone_circadian_amplitude sinusoid. For
+// insulin/GLP-1: trough at 03:00, peak at 15:00 (literature: both are
+// higher daytime/evening, lower overnight). For CCK: literature instead
+// describes its circadian acrophase (peak) as falling in the DARK/night
+// period -- the OPPOSITE phase from insulin/GLP-1 -- so CCK's circadian
+// term is phase-shifted 12h (trough at 15:00, peak at 03:00) rather than
+// reusing the same phase.
+// pulse(t) sums 3 meal-triggered pulses/24h (08:00, 13:00, 19:00), each a
+// normalized Bateman/biexponential rise-decay curve -- rise/decay time
+// constants are hand-picked to match each hormone's literature-described
+// qualitative timing (insulin: peaks ~25-30min, back near baseline by ~3h;
+// GLP-1: peaks ~20min, back to baseline by ~3-4h; CCK: peaks ~20min --
+// literature is explicit on this one, "peak within 20min" -- back near
+// baseline by ~3-5h, the longest tail of the three, consistent with CCK
+// staying elevated "until food empties from the stomach into the duodenum"),
+// NOT fitted to precise PK rate constants (none were found in literature at
+// this level of detail for any of the three). See chat writeup for the full
+// citation list and the honest caveats on which fold-change numbers are
+// direct literature ratios (GLP-1 40/15 pmol/L, CCK ~5/1 pM) vs rule-of-
+// thumb placeholders (insulin's 5x).
 // ---------------------------------------------------------------------------
 
 static double bateman_pulse( double tau, double t_rise, double t_decay )
@@ -401,21 +414,29 @@ void update_hormone_secretion( double dt )
 {
 	static int insulin_idx = microenvironment.find_density_index("insulin");
 	static int glp1_idx = microenvironment.find_density_index("GLP1");
+	static int cck_idx = microenvironment.find_density_index("CCK");
 
 	static double insulin_fasting = parameters.doubles("insulin_fasting_pM");
 	static double insulin_peak_fold = parameters.doubles("insulin_peak_fold");
 	static double glp1_fasting = parameters.doubles("glp1_fasting_pM");
 	static double glp1_peak_fold = parameters.doubles("glp1_peak_fold");
+	static double cck_fasting = parameters.doubles("cck_fasting_pM");
+	static double cck_peak_fold = parameters.doubles("cck_peak_fold");
 	static double circadian_amp = parameters.doubles("hormone_circadian_amplitude");
 	static double secretion_rate_const = parameters.doubles("hormone_secretion_rate");
 
 	double time_of_day = fmod( PhysiCell_globals.current_time, 1440.0 );
 	double circadian = 1.0 + circadian_amp * ( -cos( 6.28318530717959 * (time_of_day - 180.0) / 1440.0 ) );
+	// CCK's literature-described acrophase is in the dark/night period --
+	// the opposite phase from insulin/GLP-1 -- so shift by 12h (720 min).
+	double circadian_cck = 1.0 + circadian_amp * ( -cos( 6.28318530717959 * (time_of_day - 180.0 + 720.0) / 1440.0 ) );
 
 	double insulin_target = insulin_fasting * circadian *
 		( 1.0 + (insulin_peak_fold - 1.0) * meal_pulse_sum(time_of_day, 15.0, 60.0) );
 	double glp1_target = glp1_fasting * circadian *
 		( 1.0 + (glp1_peak_fold - 1.0) * meal_pulse_sum(time_of_day, 8.0, 45.0) );
+	double cck_target = cck_fasting * circadian_cck *
+		( 1.0 + (cck_peak_fold - 1.0) * meal_pulse_sum(time_of_day, 8.0, 55.0) );
 
 	for( int i=0; i < (*all_cells).size(); i++ )
 	{
@@ -428,6 +449,8 @@ void update_hormone_secretion( double dt )
 			pC->phenotype.secretion.saturation_densities[insulin_idx] = insulin_target;
 			pC->phenotype.secretion.secretion_rates[glp1_idx] = secretion_rate_const;
 			pC->phenotype.secretion.saturation_densities[glp1_idx] = glp1_target;
+			pC->phenotype.secretion.secretion_rates[cck_idx] = secretion_rate_const;
+			pC->phenotype.secretion.saturation_densities[cck_idx] = cck_target;
 		}
 	}
 	return;
