@@ -100,5 +100,11 @@ void recruit_bacteria(double dt);
 // main.cpp, dt = diffusion_dt)
 void update_hormone_secretion(double dt);
 
+// MHC-I -> CD8 immunogenicity interface (reads petrinet's custom_data
+// ["surface_pMHC"]/["pn_active"]; petrinet itself is not modified -- called
+// once per main-loop iteration from main.cpp, after update_all_cells() so
+// this step's surface_pMHC is fresh)
+void update_cd8_mhci_recognition(void);
+
 // Build-time generated intracellular xenophagy Petri-net integration.
 #include "petrinet/physicell_petrinet_adapter.h"

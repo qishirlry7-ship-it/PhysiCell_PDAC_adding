@@ -110,6 +110,12 @@ void create_cell_types(void)
 	// across phenotype_function() calls, not be recomputed from scratch.
 	if( cell_defaults.custom_data.find_variable_index( "gal8_exposure_time" ) < 0 )
 	{ cell_defaults.custom_data.add_variable( "gal8_exposure_time", "min", 0.0 ); }
+	// MHC-I/CD8 recognition output, tracked for the same reason/at the same
+	// scope as petrinet's own "mhcii_cd4_recognition" (see update_cd8_mhci_
+	// recognition() below) -- registered on cell_defaults for a uniform
+	// MultiCellDS layout, same as surface_pMHC/mhcii_cd4_recognition are.
+	if( cell_defaults.custom_data.find_variable_index( "mhci_cd8_recognition" ) < 0 )
+	{ cell_defaults.custom_data.add_variable( "mhci_cd8_recognition", "dimensionless", 0.0 ); }
 
 	/*
 	   This parses the cell definitions in the XML config file.
@@ -468,6 +474,83 @@ void update_hormone_secretion( double dt )
 				pC->phenotype.secretion.saturation_densities[cck_idx] = cck_target;
 			}
 		}
+	}
+	return;
+}
+
+// ---------------------------------------------------------------------------
+// MHC-I / CD8 recognition -- PhysiCell-side interface onto petrinet's MHC-I
+// output. Reads cell->custom_data["surface_pMHC"] (petrinet's mhc.P, already
+// written every step by xenophagy::petrinet_phenotype() for every target
+// tumor cell -- see physicell_petrinet_adapter.cpp) and cell->custom_data
+// ["pn_active"] (also petrinet-written; 1.0 once a cell has actually been
+// infected/had its MHC-I ODE integrated at least once, else stays 0.0
+// forever). Neither petrinet file is modified: this is a pure consumer of
+// custom_data that petrinet already publishes, plus the public
+// xenophagy::is_target_tumor_cell() declared in physicell_petrinet_
+// adapter.h, exactly mirroring how phenotype_function() already calls
+// xenophagy::petrinet_phenotype() without owning it.
+//
+// Gating rationale (judgment call, not itself literature-derived -- see
+// chat writeup): petrinet only ever integrates MHC-I for a tumor cell AFTER
+// that cell has been infected by bacteria (state_for(cell,false) returns
+// null and petrinet_phenotype() no-ops for every never-infected cell, so
+// surface_pMHC silently stays at its registered default of 0 forever for
+// them). If this function blindly Hill-mapped surface_pMHC=0 -> immunogenicity
+// =0 for every tumor cell, it would abolish CD8 killing across the ENTIRE
+// tumor (most of which may never get infected), not just on cells with
+// literature-confirmed low MHC-I -- a much larger and less-grounded change
+// than intended. So the Hill suppression is applied ONLY to cells with
+// pn_active>0 (an active, real MHC-I trajectory); never-infected cells keep
+// PhysiCell's own default immunogenicity (1.0), i.e. today's pre-existing
+// CD8 behavior, untouched.
+//
+// Literature basis for the Hill function itself (mhci_cd8_half_max=24,
+// mhci_cd8_hill=1.9, both in config/PhysiCell_settings.xml): Altan-Bonnet &
+// Germain, PLoS Biol 2005 -- EC50=24+/-4 SIINFEKL-Kb/RMA-S cell, Hill=1.9+/-
+// 0.1, from the population-level Hill fit of OT-1 CD8 T cell ERK activation
+// vs. pMHC-I copy number (mouse system; ERK activation, not literally
+// killing, but the tightest quantitative pMHC-I dose-response curve found).
+// Human-PDAC relevance of MHC-I loss driving CD8 evasion: Chen et al., Nat
+// Commun 2022 (PMC8748938, progranulin/MHCI). Extreme single-digit-pMHC-I
+// sensitivity of CD8 killing in general: Sykulev et al., Immunity 1996
+// (PMID 8673703). See chat writeup for full citations and caveats.
+// ---------------------------------------------------------------------------
+static double mhci_cd8_recognition_hill( double surface_pmhc, double half_max, double hill )
+{
+	if( surface_pmhc <= 0 )
+	{ return 0.0; }
+	double ratio = pow( surface_pmhc / half_max, hill );
+	return ratio / (1.0 + ratio);
+}
+
+void update_cd8_mhci_recognition( void )
+{
+	static bool enabled = parameters.bools("mhci_cd8_effect_enabled");
+	if( !enabled )
+	{ return; }
+
+	static double half_max = parameters.doubles("mhci_cd8_half_max");
+	static double hill = parameters.doubles("mhci_cd8_hill");
+	static const char* cd8_names[4] = {
+		"PD-1hi_CD137lo_CD8_Tcell", "PD-1lo_CD137lo_CD8_Tcell",
+		"PD-1hi_CD137hi_CD8_Tcell", "PD-1lo_CD137hi_CD8_Tcell"
+	};
+
+	for( int i=0; i < (*all_cells).size(); i++ )
+	{
+		Cell* pC = (*all_cells)[i];
+		if( pC->phenotype.death.dead == true )
+		{ continue; }
+		if( !xenophagy::is_target_tumor_cell(pC) )
+		{ continue; }
+		if( pC->custom_data["pn_active"] < 0.5 )
+		{ continue; } // no active petrinet MHC-I trajectory yet -- leave default immunogenicity (1.0) untouched
+
+		double recognition = mhci_cd8_recognition_hill( pC->custom_data["surface_pMHC"], half_max, hill );
+		pC->custom_data["mhci_cd8_recognition"] = recognition;
+		for( int j=0; j < 4; j++ )
+		{ pC->phenotype.cell_interactions.immunogenicity( cd8_names[j] ) = recognition; }
 	}
 	return;
 }
