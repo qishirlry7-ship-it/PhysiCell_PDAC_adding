@@ -424,6 +424,19 @@ void update_hormone_secretion( double dt )
 	static double cck_peak_fold = parameters.doubles("cck_peak_fold");
 	static double circadian_amp = parameters.doubles("hormone_circadian_amplitude");
 	static double secretion_rate_const = parameters.doubles("hormone_secretion_rate");
+	// CCK mechanism DISABLED by default (user request, temporary -- suspected
+	// contributor to the tumor-growth slowdown / reintroduced initial-dip
+	// issue seen after adding it; see chat writeup). Independent switch,
+	// code kept intact: with this off, vessels never secrete CCK (secretion_
+	// rate/target for it are simply never touched below, so they stay at
+	// PhysiCell's own default of 0 -- no <substrate name="CCK"> block was
+	// ever added to the vessel cell_definitions' XML secretion list), the
+	// field decays away from its 1 pM initial condition within ~20-30 min
+	// (half-life ~2min) and stays at ~0 for the rest of the run, so the
+	// myCAF,CCK,increases,... Rules in cell_rules.csv are still evaluated
+	// every step but see a signal of ~0 and contribute nothing. Insulin and
+	// GLP-1 are NOT affected by this switch.
+	static bool cck_enabled = parameters.bools("cck_enabled");
 
 	double time_of_day = fmod( PhysiCell_globals.current_time, 1440.0 );
 	double circadian = 1.0 + circadian_amp * ( -cos( 6.28318530717959 * (time_of_day - 180.0) / 1440.0 ) );
@@ -449,8 +462,11 @@ void update_hormone_secretion( double dt )
 			pC->phenotype.secretion.saturation_densities[insulin_idx] = insulin_target;
 			pC->phenotype.secretion.secretion_rates[glp1_idx] = secretion_rate_const;
 			pC->phenotype.secretion.saturation_densities[glp1_idx] = glp1_target;
-			pC->phenotype.secretion.secretion_rates[cck_idx] = secretion_rate_const;
-			pC->phenotype.secretion.saturation_densities[cck_idx] = cck_target;
+			if( cck_enabled )
+			{
+				pC->phenotype.secretion.secretion_rates[cck_idx] = secretion_rate_const;
+				pC->phenotype.secretion.saturation_densities[cck_idx] = cck_target;
+			}
 		}
 	}
 	return;
