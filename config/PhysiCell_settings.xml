@@ -345,6 +345,38 @@
                 <boundary_value ID="zmax" enabled="False">0</boundary_value>
             </Dirichlet_options>
         </variable>
+        <variable name="insulin" units="pM" ID="17">
+            <physical_parameter_set>
+                <diffusion_coefficient units="micron^2/min">1000</diffusion_coefficient>
+                <decay_rate units="1/min">0.139</decay_rate>
+            </physical_parameter_set>
+            <initial_condition units="pM">60</initial_condition>
+            <Dirichlet_boundary_condition units="pM" enabled="False">60</Dirichlet_boundary_condition>
+            <Dirichlet_options>
+                <boundary_value ID="xmin" enabled="False">60</boundary_value>
+                <boundary_value ID="xmax" enabled="False">60</boundary_value>
+                <boundary_value ID="ymin" enabled="False">60</boundary_value>
+                <boundary_value ID="ymax" enabled="False">60</boundary_value>
+                <boundary_value ID="zmin" enabled="False">60</boundary_value>
+                <boundary_value ID="zmax" enabled="False">60</boundary_value>
+            </Dirichlet_options>
+        </variable>
+        <variable name="GLP1" units="pM" ID="18">
+            <physical_parameter_set>
+                <diffusion_coefficient units="micron^2/min">1000</diffusion_coefficient>
+                <decay_rate units="1/min">0.462</decay_rate>
+            </physical_parameter_set>
+            <initial_condition units="pM">15</initial_condition>
+            <Dirichlet_boundary_condition units="pM" enabled="False">15</Dirichlet_boundary_condition>
+            <Dirichlet_options>
+                <boundary_value ID="xmin" enabled="False">15</boundary_value>
+                <boundary_value ID="xmax" enabled="False">15</boundary_value>
+                <boundary_value ID="ymin" enabled="False">15</boundary_value>
+                <boundary_value ID="ymax" enabled="False">15</boundary_value>
+                <boundary_value ID="zmin" enabled="False">15</boundary_value>
+                <boundary_value ID="zmax" enabled="False">15</boundary_value>
+            </Dirichlet_options>
+        </variable>
 </microenvironment_setup>
 
     <cell_definitions>
@@ -854,6 +886,7 @@
                         <phagocytosis_rate name="PD-L1hi_tumor" units="1/min">0</phagocytosis_rate>
                         <phagocytosis_rate name="macrophage" units="1/min">0.0</phagocytosis_rate>
                                             <phagocytosis_rate name="Bifidobacterium_longum" units="1/min">0.02</phagocytosis_rate>
+                                            <phagocytosis_rate name="Bifidobacterium_longum_Gal8" units="1/min">0.02</phagocytosis_rate>
 </live_phagocytosis_rates>
                     <attack_rates>
                         <attack_rate name="PD-1hi_CD4_Tcell" units="1/min">0</attack_rate>
@@ -2565,6 +2598,8 @@
                     <live_phagocytosis_rates>
                     </live_phagocytosis_rates>
                     <attack_rates>
+                        <attack_rate name="Bifidobacterium_longum" units="1/min">0.03</attack_rate>
+                        <attack_rate name="Bifidobacterium_longum_Gal8" units="1/min">0.03</attack_rate>
                     </attack_rates>
                     <attack_damage_rate units="1/min">1</attack_damage_rate>
                     <attack_duration units="min">0.1</attack_duration>
@@ -3084,6 +3119,7 @@
                     </live_phagocytosis_rates>
                     <attack_rates>
                                             <attack_rate name="Bifidobacterium_longum" units="1/min">0.05</attack_rate>
+                                            <attack_rate name="Bifidobacterium_longum_Gal8" units="1/min">0.05</attack_rate>
 </attack_rates>
                     <attack_damage_rate units="1/min">1</attack_damage_rate>
                     <attack_duration units="min">0.1</attack_duration>
@@ -3371,7 +3407,7 @@
             <phenotype>
                 <cycle code="5" name="live">
                     <phase_transition_rates units="1/min">
-                        <rate start_index="0" end_index="0" fixed_duration="false">1e-4</rate>
+                        <rate start_index="0" end_index="0" fixed_duration="false">4.2e-4</rate>
                     </phase_transition_rates>
                 </cycle>
                 <death>
@@ -3496,7 +3532,7 @@
             <phenotype>
                 <cycle code="5" name="live">
                     <phase_transition_rates units="1/min">
-                        <rate start_index="0" end_index="0" fixed_duration="false">1e-4</rate>
+                        <rate start_index="0" end_index="0" fixed_duration="false">4.2e-4</rate>
                     </phase_transition_rates>
                 </cycle>
                 <death>
@@ -4290,7 +4326,8 @@
              "help" (contact), per literature on CD4-derived IL-2 licensing
              CD8 clonal expansion. Both bacterium switches default false. -->
         <bifidobacterium_enabled type="bool" description="enable recruit_bacteria() spawning of the original (non-Gal8) Bifidobacterium_longum near vessels">false</bifidobacterium_enabled>
-        <bifidobacterium_gal8_enabled type="bool" description="enable recruit_bacteria() spawning of the engineered Bifidobacterium_longum_Gal8 (our own Gal-8 fusion-protein construct) near vessels">false</bifidobacterium_gal8_enabled>
+        <bifidobacterium_gal8_enabled type="bool" description="enable recruit_bacteria() spawning of the engineered Bifidobacterium_longum_Gal8 (our own Gal-8 fusion-protein construct) near vessels. Independent of gal8_cd4_effect_enabled below -- this bacterium can be spawned and carry gal8_amount with that switch off, and will simply have no effect on any T cell">false</bifidobacterium_gal8_enabled>
+        <gal8_cd4_effect_enabled type="bool" description="DISABLED by user request (default false). Independently gates whether CD4 T cells read nearby Gal-8 (sum_nearby_gal8()) and whether that reading does anything to CD4 cycle-entry/apoptosis (cd4_gal8_net_growth_rate()) -- see phenotype_function() in custom.cpp. Deliberately decoupled from bifidobacterium_gal8_enabled: with this off, Bifidobacterium_longum_Gal8 can exist and carry Gal-8 with zero effect on any T cell, however many of them are nearby. Flip to true to re-enable the mechanism -- all underlying code is intact, nothing was deleted">false</gal8_cd4_effect_enabled>
 
         <gal8_amount_fixed type="double" units="a.u." description="PLACEHOLDER -- every Bifidobacterium_longum_Gal8 carries this SAME fixed Gal-8 amount at creation (no per-bacterium distribution -- the collaborator's E_required(theta) numbers turned out to answer a different question, intracellular Gal8-NDP52 binding for the bacterium's own xenophagy evasion, not extracellular secretion to affect CD4 T cells, so they are not used here; see chat writeup). STILL a.u., not a real molecule count -- the CD4 dose-response below runs on this placeholder scale, NOT a calibrated one, until a real per-bacterium extracellular-secretion estimate is available.">1.0</gal8_amount_fixed>
         <gal8_effect_radius type="double" units="micron" description="radius within which a Bifidobacterium_longum_Gal8's carried Gal-8 contributes to a T cell's local exposure; matches the bacterial_uptake_distance convention in config/petrinet/parameters.xml (20 micron)">20</gal8_effect_radius>
@@ -4303,6 +4340,64 @@
         <cd4_cd8_help_max type="double" units="1/min" description="PLACEHOLDER ceiling on CD8 cycle-entry rate when in full contact with a PD-1lo_CD4_Tcell (the IL-2-mediated 'CD4 help' pathway; literature -- see chat -- confirms CD4-derived IL-2 drives CD8 clonal expansion in tumors, but gives no PDAC-specific rate constant). Anchored to the same order of magnitude as the macrophage/Treg/CAF proliferation ceilings below (~2-3 day doubling time under maximal engagement), pending better calibration">1.7e-4</cd4_cd8_help_max>
         <macrophage_prolif_max type="double" units="1/min" description="ceiling on macrophage cycle-entry rate when in full contact with myCAF (CSF1 proxy -- literature: CAF-induced macrophage proliferation sustains TAM number in PDAC). Back-calculated from a PDAC-specific Ki67+ macrophage fraction (~10-20%) via a rough S/G2/M-window-duration argument (~10h Ki67+ window / ~0.15 fraction =~67h doubling time) -- see chat writeup">1.7e-4</macrophage_prolif_max>
         <treg_prolif_max type="double" units="1/min" description="PLACEHOLDER ceiling on Treg cycle-entry rate driven by local TGF_beta (literature: Treg in-situ expansion in tumors is well documented and TGF-beta-dependent, but no PDAC-specific rate constant found). Anchored to the same order of magnitude as macrophage_prolif_max pending better calibration">1.7e-4</treg_prolif_max>
-        <caf_prolif_max type="double" units="1/min" description="PLACEHOLDER ceiling on myCAF/iCAF cycle-entry rate (myCAF driven by TGF_beta, iCAF by its own IL6, per the Ohlund et al. myCAF/iCAF dichotomy). Anchored to the same order of magnitude as macrophage_prolif_max pending better calibration; PDAC's extreme desmoplasia argues CAF proliferation may in reality be substantially higher than this, but no quantitative Ki67 percentage was found in literature to calibrate against">1.7e-4</caf_prolif_max>
+        <mycaf_prolif_max type="double" units="1/min" description="PLACEHOLDER ceiling on myCAF cycle-entry rate, driven by TGF_beta (Ohlund et al. myCAF/iCAF dichotomy). Anchored to the same order of magnitude as macrophage_prolif_max pending better calibration">1.7e-4</mycaf_prolif_max>
+        <icaf_prolif_max type="double" units="1/min" description="ceiling on iCAF cycle-entry rate, driven by its OWN secreted IL6 (autocrine loop). Deliberately set LOWER than mycaf_prolif_max/macrophage_prolif_max (1/3 of that value) because a full 15-day test run showed this specific autocrine loop -- unlike every other proliferation term in this model -- has no external limiting input (more iCAF directly makes more of its own driving signal), so it needs a lower ceiling to compensate even with the pressure-brake below added at the same time -- see chat writeup for the 34.7x runaway iCAF growth this fixes">5.7e-5</icaf_prolif_max>
+
+        <!-- Pressure-brake on the newly-added proliferation terms above, added
+             after a full-length test run showed iCAF/myCAF runaway growth
+             (iCAF 34.7x, myCAF 7.4x over 15 days) with no negative feedback
+             at all -- unlike the 6 tumor-lineage types, which already had
+             pressure,decreases,cycle_entry (half_max=0.25, hill=3) as their
+             brake from the start. Literature review (see chat) found this
+             brake is NOT equally appropriate for every cell type though:
+             - myCAF/iCAF (fibroblast-lineage): classical contact inhibition
+               of proliferation (CIP) is well-established for fibroblasts,
+               density-dependent growth arrest via loss of focal adhesions;
+               CAFs retain SOME of this (less than normal fibroblasts, but
+               not absent) -- pressure is a direct, literature-appropriate
+               signal here.
+             - macrophage: real literature describes a "territory model"
+               (contact-mediated spacing/repulsion between macrophages) and
+               density-dependent quorum-sensing-like cytokine feedback, not
+               classical CIP -- pressure is used here as a practical proxy
+               for that territorial constraint, not a literal match.
+             - CD8/Treg: literature is clear this is the WRONG signal for T
+               cells -- T cell population control is documented as an IL-2
+               quorum-sensing mechanism (activated T cells sense population
+               density via shared IL-2 consumption, with Tregs acting as
+               the competitive brake via their high-affinity IL-2Ralpha) --
+               NOT mechanical/pressure-based contact inhibition. So CD8/Treg
+               do NOT get a pressure rule; see the Treg-contact-based rules
+             in cell_rules.csv instead. -->
+        <stromal_myeloid_pressure_half_max type="double" units="dimensionless" description="half_max for pressure-based cycle-entry suppression on macrophage/myCAF/iCAF, reusing the exact value already established/calibrated for the 6 tumor-lineage types (0.25) for consistency">0.25</stromal_myeloid_pressure_half_max>
+        <cd8_treg_brake_max type="double" units="1/min" description="ceiling on how much contact with Treg can suppress CD8 cycle-entry rate (IL-2 competition proxy -- Tregs documented as the literature brake on T-cell quorum sensing via superior IL-2 receptor affinity). Set equal to cd4_cd8_help_max so Treg contact can, at saturation, fully cancel out CD4 help">1.7e-4</cd8_treg_brake_max>
+        <treg_self_limit_max type="double" units="1/min" description="ceiling on how much Treg-Treg contact suppresses further Treg cycle entry (proxy for the reciprocal IL-2 quorum-sensing equilibrium between Tregs and IL-2-producing CD4 cells described in the literature)">1.7e-4</treg_self_limit_max>
+
+        <!-- Pancreatic hormones (insulin, GLP-1), delivered via the same
+             vessel points that already deliver oxygen/glucose -- islets are
+             highly vascularized (~20% of arterial flow despite ~2% of
+             pancreatic mass) with beta cells secreting directionally toward
+             the capillary bed, so "arrives via blood" is not just a modeling
+             convenience (see chat writeup). Both hormones get a baseline
+             (fasting) level, 3 meal-triggered pulses/24h (Bateman/
+             biexponential rise-decay shape, hardcoded rise/decay time
+             constants in custom.cpp -- see update_hormone_secretion()), and
+             a mild circadian envelope. insulin: PI3K/Akt/mTOR -> promotes
+             PDAC proliferation, suppresses apoptosis, suppresses xenophagy
+             (mTOR activation is antagonistic to the rapamycin-driven
+             infected->xenophagy transition this model already has). GLP-1:
+             AMPK -> inhibits mTOR -> promotes autophagy, hypothesized (not
+             directly demonstrated in the literature found -- see chat) to
+             likewise promote xenophagy, i.e. act like rapamycin. -->
+        <insulin_fasting_pM type="double" units="pM" description="fasting blood insulin baseline, mid-range of the clinical normal fasting range 2-25 mU/L =~ 14-174 pM">60</insulin_fasting_pM>
+        <insulin_peak_fold type="double" units="dimensionless" description="PLACEHOLDER -- postprandial insulin peak as a multiple of fasting baseline. Literature confirmed the qualitative pattern (rises after a meal, peaks within ~30-90min, returns to baseline within ~2-3h) but no precise fold-change number for a normal (non-diabetic, non-injected) physiological meal response was found; 5x is a commonly-cited rule-of-thumb order of magnitude, not a specific citation">5</insulin_peak_fold>
+        <glp1_fasting_pM type="double" units="pM" description="fasting plasma GLP-1, literature value ~15 pmol/L">15</glp1_fasting_pM>
+        <glp1_peak_fold type="double" units="dimensionless" description="postprandial GLP-1 peak / fasting, from literature values (peak ~40 pmol/L / fasting ~15 pmol/L)">2.67</glp1_peak_fold>
+        <hormone_circadian_amplitude type="double" units="dimensionless" description="PLACEHOLDER -- fractional amplitude of the ~24h circadian modulation shared by insulin and GLP1 (literature confirms both have real circadian rhythmicity, 'in phase' with each other, higher daytime/evening and lower overnight, but gave no specific amplitude number)">0.2</hormone_circadian_amplitude>
+        <hormone_secretion_rate type="double" units="1/min" description="vessel secretion_rate for insulin/GLP1. Matched to the same order of magnitude as this model's existing vessel oxygen(200)/glucose(100) secretion rates -- an initial value of 1.0/min was tested and found far too weak (domain-mean concentration collapsed to ~1-7 pM regardless of target, since diffusion+decay away from the sparse vessel points dominated); 150/min was empirically found to let the domain-mean concentration actually approach its time-varying secretion_target. Not itself a literature-calibrated number, just an engineering fix so the mechanism is numerically live">150</hormone_secretion_rate>
+
+        <insulin_prolif_max type="double" units="1/min" description="ceiling on insulin-driven tumor cycle-entry rate (PI3K/Akt/mTOR promotes PDAC proliferation). Reuses the existing glucose-driven cycle-entry ceiling (7.2e-4) for consistency with this model's established tumor cycle-entry scale">7.2e-4</insulin_prolif_max>
+        <insulin_prolif_half_max type="double" units="pM" description="half-max for insulin's proliferation/anti-apoptosis/anti-xenophagy effects; placed at the fasting baseline (insulin_fasting_pM) so the response is centered in the normal physiological range, not requiring frank hyperinsulinemia to engage">60</insulin_prolif_half_max>
+        <glp1_xenophagy_half_max type="double" units="pM" description="half-max for GLP-1's xenophagy-promotion effect; placed between fasting (15) and postprandial peak (40) so the effect engages over the normal meal-response range">20</glp1_xenophagy_half_max>
     </user_parameters>
 </PhysiCell_settings>

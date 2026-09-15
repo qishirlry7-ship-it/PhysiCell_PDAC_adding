@@ -84,13 +84,76 @@ PD-L1lo_tumor,oxygen,increases,cycle entry,7.2e-4,3,2,0
 PD-L1hi_tumor,oxygen,increases,cycle entry,7.2e-4,3,2,0
 PD-L1lo_tumor,glucose,increases,cycle entry,7.2e-4,0.15,2,0
 PD-L1hi_tumor,glucose,increases,cycle entry,7.2e-4,0.15,2,0
-Bifidobacterium_longum,glucose,increases,cycle entry,4.8e-4,0.15,2,0
+// Bifidobacterium_longum cycle-entry ceiling recalibrated from 4.8e-4/min
+// (~24h doubling time) to 2.0e-3/min (~5.6h doubling time), matching the
+// SLOWER end of literature-measured B. longum generation times (121-337
+// min in favorable lab culture conditions -- the slower end was chosen
+// deliberately, not the fastest 121min/2h value, since lab culture medium
+// is more favorable than a nutrient-competitive TME). XML base cycle rate
+// (glucose-starved floor) scaled by the same ~4.17x factor, 1e-4->4.2e-4,
+// to keep the base:ceiling ratio consistent.
+// Oxygen suppression is new: B. longum is a documented obligate anaerobe,
+// severely growth-inhibited by O2 (headspace 3-6% O2 causes severe-to-
+// sublethal inhibition via self-generated H2O2 toxicity) -- this is the
+// literature mechanism behind why B. longum selectively colonizes hypoxic
+// tumor regions in the first place (the whole rationale for using it as a
+// tumor-targeted vector), which this model had not represented at all
+// before this pass. half_max=5 mmHg (growth suppression) is close to the
+// tumor cells' own oxygen half_max=3 for cycle entry, since both are
+// responding to the same physical oxygen gradient just in opposite
+// directions; half_max=15 mmHg (added to the death pathway) requires more
+// sustained oxygen exposure to represent actual H2O2-mediated killing, not
+// just growth arrest.
+Bifidobacterium_longum,glucose,increases,cycle entry,2.0e-3,0.15,2,0
+Bifidobacterium_longum,oxygen,decreases,cycle entry,0,5,2,0
+Bifidobacterium_longum,oxygen,increases,apoptosis,0.005,15,2,0
+// NK_cell already had a static attack_rate=0.05/min on Bifidobacterium_longum
+// in the XML (pre-dating this session), and PMN_MDSC now gets one too
+// (0.03/min -- literature: neutrophils are documented as critical for
+// bacterial CONTAINMENT in tumors via NETs, "immobilize and neutralize",
+// modeled here as an attack rather than phagocytosis since NETs work
+// extracellularly rather than by engulfment; see chat writeup). Neither
+// attack actually did anything before this rule, though: attack_cell()
+// only accumulates cell_integrity.damage, and nothing was converting that
+// into bacterial death (unlike tumor cells, which already have their own
+// damage,increases,apoptosis rule). half_max=10/hill=4 is deliberately
+// lower/less steep than the tumor cells' damage threshold (45/16) --
+// bacteria are simpler/more fragile than tumor cells, so a more gradual,
+// lower-threshold death response is more plausible than requiring the same
+// heavily-saturated multi-hit threshold tumor cells need.
+Bifidobacterium_longum,damage,increases,apoptosis,0.02,10,4,0
 PD-L1lo_tumor,contact with Bifidobacterium_longum,increases,transform to PD-L1lo_tumor_infected,0.002,0.1,2,0
 PD-L1hi_tumor,contact with Bifidobacterium_longum,increases,transform to PD-L1hi_tumor_infected,0.002,0.1,2,0
 PD-L1lo_tumor_infected,rapamycin,increases,transform to PD-L1lo_tumor_xenophagy,0.001,0.3,2,0
 PD-L1hi_tumor_infected,rapamycin,increases,transform to PD-L1hi_tumor_xenophagy,0.001,0.3,2,0
 Bifidobacterium_longum,contact with PD-L1lo_tumor_infected,increases,apoptosis,0.01,0.1,2,0
 Bifidobacterium_longum,contact with PD-L1hi_tumor_infected,increases,apoptosis,0.01,0.1,2,0
+
+// --- Pancreatic hormones: insulin (PI3K/Akt/mTOR -> promotes PDAC
+// proliferation, suppresses apoptosis, antagonizes the rapamycin-driven
+// xenophagy transition above) and GLP-1 (AMPK -> inhibits mTOR -> promotes
+// autophagy; hypothesized, not directly demonstrated in literature, to
+// likewise promote xenophagy, acting like rapamycin). See
+// custom_modules/custom.cpp's update_hormone_secretion() for how the two
+// vessel types deliver these on a meal-pulsed + circadian schedule, and the
+// chat writeup for full citations. half_max values use insulin_prolif_
+// half_max / glp1_xenophagy_half_max (pM) from user_parameters.
+PD-L1lo_tumor,insulin,increases,cycle entry,7.2e-4,60,2,0
+PD-L1hi_tumor,insulin,increases,cycle entry,7.2e-4,60,2,0
+PD-L1lo_tumor_infected,insulin,increases,cycle entry,7.2e-4,60,2,0
+PD-L1lo_tumor_xenophagy,insulin,increases,cycle entry,7.2e-4,60,2,0
+PD-L1hi_tumor_infected,insulin,increases,cycle entry,7.2e-4,60,2,0
+PD-L1hi_tumor_xenophagy,insulin,increases,cycle entry,7.2e-4,60,2,0
+PD-L1lo_tumor,insulin,decreases,apoptosis,0,60,2,0
+PD-L1hi_tumor,insulin,decreases,apoptosis,0,60,2,0
+PD-L1lo_tumor_infected,insulin,decreases,apoptosis,0,60,2,0
+PD-L1lo_tumor_xenophagy,insulin,decreases,apoptosis,0,60,2,0
+PD-L1hi_tumor_infected,insulin,decreases,apoptosis,0,60,2,0
+PD-L1hi_tumor_xenophagy,insulin,decreases,apoptosis,0,60,2,0
+PD-L1lo_tumor_infected,insulin,decreases,transform to PD-L1lo_tumor_xenophagy,0,60,2,0
+PD-L1hi_tumor_infected,insulin,decreases,transform to PD-L1hi_tumor_xenophagy,0,60,2,0
+PD-L1lo_tumor_infected,GLP1,increases,transform to PD-L1lo_tumor_xenophagy,0.001,20,2,0
+PD-L1hi_tumor_infected,GLP1,increases,transform to PD-L1hi_tumor_xenophagy,0.001,20,2,0
 
 PD-L1lo_tumor_infected,pressure,decreases,cycle entry,0,0.25,3,0
 PD-L1lo_tumor_xenophagy,pressure,decreases,cycle entry,0,0.25,3,0
@@ -162,6 +225,17 @@ PD-1lo_CD137lo_CD8_Tcell,contact with PD-1lo_CD4_Tcell,increases,cycle entry,1.7
 PD-1hi_CD137hi_CD8_Tcell,contact with PD-1lo_CD4_Tcell,increases,cycle entry,1.7e-4,0.1,2,0
 PD-1hi_CD137lo_CD8_Tcell,contact with PD-1lo_CD4_Tcell,increases,cycle entry,1.7e-4,0.1,2,0
 
+// CD8 negative feedback: NOT pressure-based (literature review found T-cell
+// population control is a documented IL-2 quorum-sensing mechanism -- Tregs
+// compete for IL-2 via their high-affinity IL-2Ralpha and act as the brake
+// on activated-T-cell expansion -- not mechanical contact inhibition; see
+// chat writeup). Modeled as contact with Treg suppressing CD8 cycle entry,
+// a direct proxy for that documented IL-2-competition brake.
+PD-1lo_CD137hi_CD8_Tcell,contact with Treg,decreases,cycle entry,0,0.1,2,0
+PD-1lo_CD137lo_CD8_Tcell,contact with Treg,decreases,cycle entry,0,0.1,2,0
+PD-1hi_CD137hi_CD8_Tcell,contact with Treg,decreases,cycle entry,0,0.1,2,0
+PD-1hi_CD137lo_CD8_Tcell,contact with Treg,decreases,cycle entry,0,0.1,2,0
+
 // --- Macrophage/Treg/CAF proliferation (previously all fixed at 0 -- see
 // chat writeup for the literature review of all 12 non-proliferating cell
 // types in this model; these 3 were the ones the literature clearly did NOT
@@ -172,19 +246,48 @@ PD-1hi_CD137lo_CD8_Tcell,contact with PD-1lo_CD4_Tcell,increases,cycle entry,1.7
 // PDAC macrophage-proliferation study). half_max=0.1 matches the same
 // "contact with X" convention as above.
 macrophage,contact with myCAF,increases,cycle entry,1.7e-4,0.1,2,0
+// Macrophage negative feedback: real literature describes a "territory
+// model" (contact-mediated spacing/repulsion between macrophages) plus
+// density-dependent quorum-sensing-like cytokine feedback, not classical
+// contact inhibition of proliferation -- pressure is used here as a
+// practical proxy for that territorial constraint (see chat writeup).
+macrophage,pressure,decreases,cycle entry,0,0.25,3,0
 // Treg: driven by local TGF_beta (literature: Treg in-situ expansion is
 // TGF-beta-dependent). half_max=2.5 reuses the same TGF_beta half-max
 // already established for T cell responses elsewhere in this file.
 Treg,TGF_beta,increases,cycle entry,1.7e-4,2.5,2,0
+// Treg negative feedback: NOT pressure (same T-cell quorum-sensing
+// reasoning as CD8 above) -- Treg-Treg contact instead, a proxy for the
+// reciprocal IL-2 equilibrium the literature describes between Tregs and
+// IL-2-producing CD4 cells (too many Tregs competing for the same IL-2
+// pool self-limits further Treg expansion).
+Treg,contact with Treg,decreases,cycle entry,0,0.1,2,0
 // myCAF: driven by TGF_beta, reusing the EXACT half_max/hill_power already
 // used for myCAF's own TGF_beta-driven ECM secretion rule below, since both
 // represent the same TGF-beta/myofibroblast-activation axis.
 myCAF,TGF_beta,increases,cycle entry,1.7e-4,1,2,0
+// myCAF negative feedback: classical contact inhibition of proliferation
+// (CIP) is well-established for fibroblasts (density-dependent growth
+// arrest via loss of focal adhesions); CAFs retain some of this (less than
+// normal fibroblasts, but not absent) -- pressure is a direct,
+// literature-appropriate signal here, reusing the tumor cells' own
+// calibrated half_max=0.25/hill=3.
+myCAF,pressure,decreases,cycle entry,0,0.25,3,0
 // iCAF: driven by its own secreted IL6 (autocrine loop; literature: iCAFs
 // are defined by an IL-6/JAK-STAT autocrine identity, Ohlund et al. 2017
 // JEM). half_max=1 is a placeholder (no existing IL6-reading rule in this
-// model to anchor to before this one).
-iCAF,IL6,increases,cycle entry,1.7e-4,1,2,0
+// model to anchor to before this one). Ceiling uses icaf_prolif_max
+// (5.7e-5, LOWER than the other proliferation ceilings) rather than the
+// shared 1.7e-4 used elsewhere -- a full 15-day test run showed this
+// specific autocrine loop, uniquely among everything in this model, has NO
+// externally-limited input (more iCAF directly makes more of its own
+// driving signal), producing 34.7x runaway growth even before considering
+// pressure. Lowering the ceiling AND adding the pressure-brake below
+// together address this (see chat writeup).
+iCAF,IL6,increases,cycle entry,5.7e-5,1,2,0
+// iCAF negative feedback: same CIP reasoning as myCAF (both are
+// fibroblast-lineage).
+iCAF,pressure,decreases,cycle entry,0,0.25,3,0
 
 // --- IL-6, CCL2, IL-10: three cytokines that were already being secreted
 // in this model (iCAF->IL6/CCL2; Treg/M_MDSC/PMN_MDSC->IL10) but never read
@@ -265,7 +368,10 @@ PD-1hi_CD137lo_CD8_Tcell,IL10,decreases,attack PD-L1lo_tumor,0,2.5,2,0
 // behavior, since carrying Gal-8 is the only intended difference, and
 // cloning a cell_definition in this XML never carries over cell_rules.csv
 // entries (keyed by exact type name string).
-Bifidobacterium_longum_Gal8,glucose,increases,cycle entry,4.8e-4,0.15,2,0
+Bifidobacterium_longum_Gal8,glucose,increases,cycle entry,2.0e-3,0.15,2,0
+Bifidobacterium_longum_Gal8,oxygen,decreases,cycle entry,0,5,2,0
+Bifidobacterium_longum_Gal8,oxygen,increases,apoptosis,0.005,15,2,0
+Bifidobacterium_longum_Gal8,damage,increases,apoptosis,0.02,10,4,0
 PD-L1lo_tumor,contact with Bifidobacterium_longum_Gal8,increases,transform to PD-L1lo_tumor_infected,0.002,0.1,2,0
 PD-L1hi_tumor,contact with Bifidobacterium_longum_Gal8,increases,transform to PD-L1hi_tumor_infected,0.002,0.1,2,0
 Bifidobacterium_longum_Gal8,contact with PD-L1lo_tumor_infected,increases,apoptosis,0.01,0.1,2,0

@@ -345,6 +345,95 @@ void recruit_bacteria( double dt )
 }
 
 // ---------------------------------------------------------------------------
+// Pancreatic hormone delivery (insulin, GLP-1). Both modeled as arriving via
+// blood supply -- secreted by the same vessel points that already deliver
+// oxygen/glucose. This is not just a modeling convenience: pancreatic
+// islets are highly vascularized (~20% of arterial blood flow despite ~2%
+// of pancreatic mass) and beta cells have polarized, directed secretion
+// toward the capillary bed (see chat writeup for citations), so "arrives
+// via blood" is a physiologically accurate description of how the tumor
+// microenvironment actually encounters these hormones, not a shortcut.
+//
+// Each hormone's target local concentration (set as its vessels'
+// secretion_target, i.e. phenotype.secretion.saturation_densities -- the
+// concentration BioFVM's source term drives the local voxel toward) is:
+//   target(t) = fasting_baseline * circadian(t) * (1 + (peak_fold-1)*pulse(t))
+// circadian(t) is a mild +-hormone_circadian_amplitude sinusoid, trough at
+// 03:00, peak at 15:00 (literature: both hormones are higher daytime/
+// evening, lower overnight). pulse(t) sums 3 meal-triggered pulses/24h
+// (08:00, 13:00, 19:00), each a normalized Bateman/biexponential rise-decay
+// curve -- rise/decay time constants are hand-picked to match the
+// literature's qualitative timing (insulin: peaks ~25-30min, back near
+// baseline by ~3h; GLP-1: peaks ~20min -- much faster, matching its ~1-2min
+// plasma half-life meaning its blood level tracks secretion almost
+// immediately -- back near baseline by ~3-4h), NOT fitted to precise PK
+// rate constants (none were found in literature at this level of detail).
+// See chat writeup for the full citation list and the honest caveat that
+// insulin_peak_fold=5 is a rule-of-thumb, not a specific citation (unlike
+// GLP-1's peak_fold=2.67, which IS a literature ratio: ~40/~15 pmol/L).
+// ---------------------------------------------------------------------------
+
+static double bateman_pulse( double tau, double t_rise, double t_decay )
+{
+	if( tau < 0 )
+	{ return 0.0; }
+	double t_peak = (t_decay*t_rise)/(t_decay-t_rise) * log(t_decay/t_rise);
+	double peak_val = exp(-t_peak/t_decay) - exp(-t_peak/t_rise);
+	double val = exp(-tau/t_decay) - exp(-tau/t_rise);
+	return val / peak_val;
+}
+
+static double meal_pulse_sum( double time_of_day_min, double t_rise, double t_decay )
+{
+	static const double meal_times[3] = { 480.0, 780.0, 1140.0 }; // 08:00, 13:00, 19:00
+	double total = 0.0;
+	for( int i=0; i < 3; i++ )
+	{
+		double tau = time_of_day_min - meal_times[i];
+		if( tau < 0 )
+		{ tau += 1440.0; } // most recent occurrence (possibly "yesterday's")
+		total += bateman_pulse( tau, t_rise, t_decay );
+	}
+	return total;
+}
+
+void update_hormone_secretion( double dt )
+{
+	static int insulin_idx = microenvironment.find_density_index("insulin");
+	static int glp1_idx = microenvironment.find_density_index("GLP1");
+
+	static double insulin_fasting = parameters.doubles("insulin_fasting_pM");
+	static double insulin_peak_fold = parameters.doubles("insulin_peak_fold");
+	static double glp1_fasting = parameters.doubles("glp1_fasting_pM");
+	static double glp1_peak_fold = parameters.doubles("glp1_peak_fold");
+	static double circadian_amp = parameters.doubles("hormone_circadian_amplitude");
+	static double secretion_rate_const = parameters.doubles("hormone_secretion_rate");
+
+	double time_of_day = fmod( PhysiCell_globals.current_time, 1440.0 );
+	double circadian = 1.0 + circadian_amp * ( -cos( 6.28318530717959 * (time_of_day - 180.0) / 1440.0 ) );
+
+	double insulin_target = insulin_fasting * circadian *
+		( 1.0 + (insulin_peak_fold - 1.0) * meal_pulse_sum(time_of_day, 15.0, 60.0) );
+	double glp1_target = glp1_fasting * circadian *
+		( 1.0 + (glp1_peak_fold - 1.0) * meal_pulse_sum(time_of_day, 8.0, 45.0) );
+
+	for( int i=0; i < (*all_cells).size(); i++ )
+	{
+		Cell* pC = (*all_cells)[i];
+		if( pC->phenotype.death.dead == true )
+		{ continue; }
+		if( pC->type_name == "fixed_vessel_source" || pC->type_name == "fixed_vessel_source_compressed" )
+		{
+			pC->phenotype.secretion.secretion_rates[insulin_idx] = secretion_rate_const;
+			pC->phenotype.secretion.saturation_densities[insulin_idx] = insulin_target;
+			pC->phenotype.secretion.secretion_rates[glp1_idx] = secretion_rate_const;
+			pC->phenotype.secretion.saturation_densities[glp1_idx] = glp1_target;
+		}
+	}
+	return;
+}
+
+// ---------------------------------------------------------------------------
 // Gal-8/CD4 proliferation mechanism (agent-proximity). REDESIGNED this
 // round: no longer touches CD8 killing at all (that multiplier is removed
 // -- see cell_rules.csv's comment for the history). Gal-8 now acts on CD4 T
@@ -470,10 +559,21 @@ void phenotype_function(Cell *pCell, Phenotype &phenotype, double dt)
 {
 	xenophagy::petrinet_phenotype(pCell, phenotype, dt);
 
-	// Gal-8-driven proliferation only applies to CD4 T cells, and only
-	// once the engineered bacterium is switched on.
-	static bool gal8_enabled = parameters.bools("bifidobacterium_gal8_enabled");
-	if( gal8_enabled &&
+	// Gal-8-driven proliferation on CD4 T cells: DISABLED by default (user
+	// request), gated on its own independent switch (gal8_cd4_effect_
+	// enabled) rather than on bifidobacterium_gal8_enabled. This
+	// deliberately decouples "does the Gal-8-carrying bacterium exist" from
+	// "does Gal-8 concentration do anything to T cells" -- with this switch
+	// off, Bifidobacterium_longum_Gal8 can be spawned (bifidobacterium_
+	// gal8_enabled=true) and carry gal8_amount same as before, but no CD4
+	// cell ever reads nearby Gal-8 or has its cycle-entry/apoptosis rate
+	// touched by it: sum_nearby_gal8() is never called for this purpose,
+	// gal8_exposure_time never accumulates, cd4_gal8_net_growth_rate() is
+	// never evaluated. Nothing below this switch check runs. Code kept
+	// in place, not deleted, so it can be re-enabled by flipping the one
+	// switch in user_parameters.
+	static bool gal8_cd4_effect_enabled = parameters.bools("gal8_cd4_effect_enabled");
+	if( gal8_cd4_effect_enabled &&
 		( pCell->type_name == "PD-1lo_CD4_Tcell" || pCell->type_name == "PD-1hi_CD4_Tcell" ) )
 	{
 		static double radius = parameters.doubles("gal8_effect_radius");
