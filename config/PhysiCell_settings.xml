@@ -329,6 +329,70 @@
                 <boundary_value ID="zmax" enabled="False">0</boundary_value>
             </Dirichlet_options>
         </variable>
+        <variable name="Gal8_ext" units="dimensionless" ID="16">
+            <physical_parameter_set>
+                <diffusion_coefficient units="micron^2/min">1000</diffusion_coefficient>
+                <decay_rate units="1/min">0.1</decay_rate>
+            </physical_parameter_set>
+            <initial_condition units="dimensionless">0</initial_condition>
+            <Dirichlet_boundary_condition units="dimensionless" enabled="False">0</Dirichlet_boundary_condition>
+            <Dirichlet_options>
+                <boundary_value ID="xmin" enabled="False">0</boundary_value>
+                <boundary_value ID="xmax" enabled="False">0</boundary_value>
+                <boundary_value ID="ymin" enabled="False">0</boundary_value>
+                <boundary_value ID="ymax" enabled="False">0</boundary_value>
+                <boundary_value ID="zmin" enabled="False">0</boundary_value>
+                <boundary_value ID="zmax" enabled="False">0</boundary_value>
+            </Dirichlet_options>
+        </variable>
+        <variable name="insulin" units="pM" ID="17">
+            <physical_parameter_set>
+                <diffusion_coefficient units="micron^2/min">1000</diffusion_coefficient>
+                <decay_rate units="1/min">0.139</decay_rate>
+            </physical_parameter_set>
+            <initial_condition units="pM">60</initial_condition>
+            <Dirichlet_boundary_condition units="pM" enabled="False">60</Dirichlet_boundary_condition>
+            <Dirichlet_options>
+                <boundary_value ID="xmin" enabled="False">60</boundary_value>
+                <boundary_value ID="xmax" enabled="False">60</boundary_value>
+                <boundary_value ID="ymin" enabled="False">60</boundary_value>
+                <boundary_value ID="ymax" enabled="False">60</boundary_value>
+                <boundary_value ID="zmin" enabled="False">60</boundary_value>
+                <boundary_value ID="zmax" enabled="False">60</boundary_value>
+            </Dirichlet_options>
+        </variable>
+        <variable name="GLP1" units="pM" ID="18">
+            <physical_parameter_set>
+                <diffusion_coefficient units="micron^2/min">1000</diffusion_coefficient>
+                <decay_rate units="1/min">0.462</decay_rate>
+            </physical_parameter_set>
+            <initial_condition units="pM">15</initial_condition>
+            <Dirichlet_boundary_condition units="pM" enabled="False">15</Dirichlet_boundary_condition>
+            <Dirichlet_options>
+                <boundary_value ID="xmin" enabled="False">15</boundary_value>
+                <boundary_value ID="xmax" enabled="False">15</boundary_value>
+                <boundary_value ID="ymin" enabled="False">15</boundary_value>
+                <boundary_value ID="ymax" enabled="False">15</boundary_value>
+                <boundary_value ID="zmin" enabled="False">15</boundary_value>
+                <boundary_value ID="zmax" enabled="False">15</boundary_value>
+            </Dirichlet_options>
+        </variable>
+        <variable name="CCK" units="pM" ID="19">
+            <physical_parameter_set>
+                <diffusion_coefficient units="micron^2/min">1000</diffusion_coefficient>
+                <decay_rate units="1/min">0.347</decay_rate>
+            </physical_parameter_set>
+            <initial_condition units="pM">1</initial_condition>
+            <Dirichlet_boundary_condition units="pM" enabled="False">1</Dirichlet_boundary_condition>
+            <Dirichlet_options>
+                <boundary_value ID="xmin" enabled="False">1</boundary_value>
+                <boundary_value ID="xmax" enabled="False">1</boundary_value>
+                <boundary_value ID="ymin" enabled="False">1</boundary_value>
+                <boundary_value ID="ymax" enabled="False">1</boundary_value>
+                <boundary_value ID="zmin" enabled="False">1</boundary_value>
+                <boundary_value ID="zmax" enabled="False">1</boundary_value>
+            </Dirichlet_options>
+        </variable>
 </microenvironment_setup>
 
     <cell_definitions>
@@ -341,7 +405,7 @@
                 </cycle>
                 <death>
                     <model code="100" name="apoptosis">
-                        <death_rate units="1/min">7.2e-5</death_rate>
+                        <death_rate units="1/min">3.6e-5</death_rate>
                         <phase_durations units="min">
                             <duration index="0" fixed_duration="true">516</duration>
                         </phase_durations>
@@ -463,6 +527,12 @@
                         <uptake_rate units="1/min">0</uptake_rate>
                         <net_export_rate units="total substrate/min">0</net_export_rate>
                     </substrate>
+                    <substrate name="Gal8_ext">
+                        <secretion_rate units="1/min">0</secretion_rate>
+                        <secretion_target units="substrate density">5</secretion_target>
+                        <uptake_rate units="1/min">0</uptake_rate>
+                        <net_export_rate units="total substrate/min">0</net_export_rate>
+                    </substrate>
 </secretion>
                 <cell_interactions>
                     <apoptotic_phagocytosis_rate units="1/min">0</apoptotic_phagocytosis_rate>
@@ -522,7 +592,7 @@
                 </cycle>
                 <death>
                     <model code="100" name="apoptosis">
-                        <death_rate units="1/min">7.2e-5</death_rate>
+                        <death_rate units="1/min">3.6e-5</death_rate>
                         <phase_durations units="min">
                             <duration index="0" fixed_duration="true">516</duration>
                         </phase_durations>
@@ -641,6 +711,12 @@
                     <substrate name="lactate">
                         <secretion_rate units="1/min">1.0</secretion_rate>
                         <secretion_target units="substrate density">10</secretion_target>
+                        <uptake_rate units="1/min">0</uptake_rate>
+                        <net_export_rate units="total substrate/min">0</net_export_rate>
+                    </substrate>
+                    <substrate name="Gal8_ext">
+                        <secretion_rate units="1/min">0</secretion_rate>
+                        <secretion_target units="substrate density">5</secretion_target>
                         <uptake_rate units="1/min">0</uptake_rate>
                         <net_export_rate units="total substrate/min">0</net_export_rate>
                     </substrate>
@@ -826,6 +902,7 @@
                         <phagocytosis_rate name="PD-L1hi_tumor" units="1/min">0</phagocytosis_rate>
                         <phagocytosis_rate name="macrophage" units="1/min">0.0</phagocytosis_rate>
                                             <phagocytosis_rate name="Bifidobacterium_longum" units="1/min">0.02</phagocytosis_rate>
+                                            <phagocytosis_rate name="Bifidobacterium_longum_Gal8" units="1/min">0.02</phagocytosis_rate>
 </live_phagocytosis_rates>
                     <attack_rates>
                         <attack_rate name="PD-1hi_CD4_Tcell" units="1/min">0</attack_rate>
@@ -2537,6 +2614,8 @@
                     <live_phagocytosis_rates>
                     </live_phagocytosis_rates>
                     <attack_rates>
+                        <attack_rate name="Bifidobacterium_longum" units="1/min">0.03</attack_rate>
+                        <attack_rate name="Bifidobacterium_longum_Gal8" units="1/min">0.03</attack_rate>
                     </attack_rates>
                     <attack_damage_rate units="1/min">1</attack_damage_rate>
                     <attack_duration units="min">0.1</attack_duration>
@@ -2559,6 +2638,137 @@
           </initial_parameter_distributions>
         </cell_definition>
 <cell_definition name="cDC1" ID="14">
+            <phenotype>
+                <cycle code="5" name="live">
+                    <phase_transition_rates units="1/min">
+                        <rate start_index="0" end_index="0" fixed_duration="false">0</rate>
+                    </phase_transition_rates>
+                </cycle>
+                <death>
+                    <model code="100" name="apoptosis">
+                        <death_rate units="1/min">0</death_rate>
+                        <phase_durations units="min">
+                            <duration index="0" fixed_duration="true">516</duration>
+                        </phase_durations>
+                        <parameters>
+                            <unlysed_fluid_change_rate units="1/min">0.05</unlysed_fluid_change_rate>
+                            <lysed_fluid_change_rate units="1/min">0</lysed_fluid_change_rate>
+                            <cytoplasmic_biomass_change_rate units="1/min">1.66667e-02</cytoplasmic_biomass_change_rate>
+                            <nuclear_biomass_change_rate units="1/min">5.83333e-03</nuclear_biomass_change_rate>
+                            <calcification_rate units="1/min">0</calcification_rate>
+                            <relative_rupture_volume units="dimensionless">2.0</relative_rupture_volume>
+                        </parameters>
+                    </model>
+                    <model code="101" name="necrosis">
+                        <death_rate units="1/min">0</death_rate>
+                        <phase_durations units="min">
+                            <duration index="0" fixed_duration="true">0</duration>
+                            <duration index="1" fixed_duration="true">86400</duration>
+                        </phase_durations>
+                        <parameters>
+                            <unlysed_fluid_change_rate units="1/min">0.05</unlysed_fluid_change_rate>
+                            <lysed_fluid_change_rate units="1/min">0</lysed_fluid_change_rate>
+                            <cytoplasmic_biomass_change_rate units="1/min">1.66667e-02</cytoplasmic_biomass_change_rate>
+                            <nuclear_biomass_change_rate units="1/min">5.83333e-03</nuclear_biomass_change_rate>
+                            <calcification_rate units="1/min">0</calcification_rate>
+                            <relative_rupture_volume units="dimensionless">2.0</relative_rupture_volume>
+                        </parameters>
+                    </model>
+                </death>
+                <volume>
+                    <total units="micron^3">2494</total>
+                    <fluid_fraction units="dimensionless">0.75</fluid_fraction>
+                    <nuclear units="micron^3">540</nuclear>
+                    <fluid_change_rate units="1/min">0.05</fluid_change_rate>
+                    <cytoplasmic_biomass_change_rate units="1/min">0.0045</cytoplasmic_biomass_change_rate>
+                    <nuclear_biomass_change_rate units="1/min">0.0055</nuclear_biomass_change_rate>
+                    <calcified_fraction units="dimensionless">0</calcified_fraction>
+                    <calcification_rate units="1/min">0</calcification_rate>
+                    <relative_rupture_volume units="dimensionless">2.0</relative_rupture_volume>
+                </volume>
+                <mechanics>
+                    <cell_cell_adhesion_strength units="micron/min">0</cell_cell_adhesion_strength>
+                    <cell_cell_repulsion_strength units="micron/min">10</cell_cell_repulsion_strength>
+                    <relative_maximum_adhesion_distance units="dimensionless">1.5</relative_maximum_adhesion_distance>
+                    <cell_adhesion_affinities>
+                    </cell_adhesion_affinities>
+                    <options>
+                        <set_relative_equilibrium_distance enabled="false" units="dimensionless">1.8</set_relative_equilibrium_distance>
+                        <set_absolute_equilibrium_distance enabled="false" units="micron">15.12</set_absolute_equilibrium_distance>
+                    </options>
+                    <attachment_elastic_constant units="1/min">0.01</attachment_elastic_constant>
+                    <attachment_rate units="1/min">0</attachment_rate>
+                    <detachment_rate units="1/min">0.0</detachment_rate>
+                    <maximum_number_of_attachments>12</maximum_number_of_attachments>
+                </mechanics>
+                <motility>
+                    <speed units="micron/min">1</speed>
+                    <persistence_time units="min">5</persistence_time>
+                    <migration_bias units="dimensionless">0.25</migration_bias>
+                    <options>
+                        <enabled>true</enabled>
+                        <use_2D>true</use_2D>
+                        <chemotaxis>
+                            <enabled>true</enabled>
+                            <substrate>debris</substrate>
+                            <direction>1</direction>
+                        </chemotaxis>
+                        <advanced_chemotaxis>
+                            <enabled>false</enabled>
+                            <normalize_each_gradient>false</normalize_each_gradient>
+                            <chemotactic_sensitivities>
+                                <chemotactic_sensitivity substrate="oxygen">0.0</chemotactic_sensitivity>
+                                <chemotactic_sensitivity substrate="debris">0.0</chemotactic_sensitivity>
+                                <chemotactic_sensitivity substrate="IFN_gamma">0.0</chemotactic_sensitivity>
+                                <chemotactic_sensitivity substrate="TGF_beta">0.0</chemotactic_sensitivity>
+                                <chemotactic_sensitivity substrate="substrate">0.0</chemotactic_sensitivity>
+                            </chemotactic_sensitivities>
+                        </advanced_chemotaxis>
+                    </options>
+                </motility>
+                <secretion>
+                    <substrate name="oxygen">
+                        <secretion_rate units="1/min">0</secretion_rate>
+                        <secretion_target units="substrate density">1</secretion_target>
+                        <uptake_rate units="1/min">10</uptake_rate>
+                        <net_export_rate units="total substrate/min">0</net_export_rate>
+                    </substrate>
+                    <substrate name="IFN_gamma">
+                        <secretion_rate units="1/min">0.2</secretion_rate>
+                        <secretion_target units="substrate density">10</secretion_target>
+                        <uptake_rate units="1/min">0</uptake_rate>
+                        <net_export_rate units="total substrate/min">0.0</net_export_rate>
+                    </substrate>
+                </secretion>
+                <cell_interactions>
+                    <apoptotic_phagocytosis_rate units="1/min">0.1</apoptotic_phagocytosis_rate>
+                    <necrotic_phagocytosis_rate units="1/min">0.017</necrotic_phagocytosis_rate>
+                    <other_dead_phagocytosis_rate units="1/min">0.01</other_dead_phagocytosis_rate>
+                    <live_phagocytosis_rates>
+                    </live_phagocytosis_rates>
+                    <attack_rates>
+                    </attack_rates>
+                    <attack_damage_rate units="1/min">1</attack_damage_rate>
+                    <attack_duration units="min">0.1</attack_duration>
+                    <fusion_rates>
+                    </fusion_rates>
+                </cell_interactions>
+                <cell_transformations>
+                    <transformation_rates>
+                    </transformation_rates>
+                </cell_transformations>
+                <cell_integrity>
+                    <damage_rate units="1/min">0.0</damage_rate>
+                    <damage_repair_rate units="1/min">0.0</damage_repair_rate>
+                </cell_integrity>
+            </phenotype>
+            <custom_data>
+                <sample conserved="false" units="dimensionless" description="">1.0</sample>
+            </custom_data>
+            <initial_parameter_distributions enabled="false">
+          </initial_parameter_distributions>
+        </cell_definition>
+<cell_definition name="cDC1_licensed" ID="25">
             <phenotype>
                 <cycle code="5" name="live">
                     <phase_transition_rates units="1/min">
@@ -2925,6 +3135,7 @@
                     </live_phagocytosis_rates>
                     <attack_rates>
                                             <attack_rate name="Bifidobacterium_longum" units="1/min">0.05</attack_rate>
+                                            <attack_rate name="Bifidobacterium_longum_Gal8" units="1/min">0.05</attack_rate>
 </attack_rates>
                     <attack_damage_rate units="1/min">1</attack_damage_rate>
                     <attack_duration units="min">0.1</attack_duration>
@@ -3212,7 +3423,132 @@
             <phenotype>
                 <cycle code="5" name="live">
                     <phase_transition_rates units="1/min">
-                        <rate start_index="0" end_index="0" fixed_duration="false">1e-4</rate>
+                        <rate start_index="0" end_index="0" fixed_duration="false">4.2e-4</rate>
+                    </phase_transition_rates>
+                </cycle>
+                <death>
+                    <model code="100" name="apoptosis">
+                        <death_rate units="1/min">0.001</death_rate>
+                        <phase_durations units="min">
+                            <duration index="0" fixed_duration="true">516</duration>
+                        </phase_durations>
+                        <parameters>
+                            <unlysed_fluid_change_rate units="1/min">0.05</unlysed_fluid_change_rate>
+                            <lysed_fluid_change_rate units="1/min">0</lysed_fluid_change_rate>
+                            <cytoplasmic_biomass_change_rate units="1/min">1.66667e-02</cytoplasmic_biomass_change_rate>
+                            <nuclear_biomass_change_rate units="1/min">5.83333e-03</nuclear_biomass_change_rate>
+                            <calcification_rate units="1/min">0</calcification_rate>
+                            <relative_rupture_volume units="dimensionless">2.0</relative_rupture_volume>
+                        </parameters>
+                    </model>
+                    <model code="101" name="necrosis">
+                        <death_rate units="1/min">0</death_rate>
+                        <phase_durations units="min">
+                            <duration index="0" fixed_duration="true">0</duration>
+                            <duration index="1" fixed_duration="true">86400</duration>
+                        </phase_durations>
+                        <parameters>
+                            <unlysed_fluid_change_rate units="1/min">0.05</unlysed_fluid_change_rate>
+                            <lysed_fluid_change_rate units="1/min">0</lysed_fluid_change_rate>
+                            <cytoplasmic_biomass_change_rate units="1/min">1.66667e-02</cytoplasmic_biomass_change_rate>
+                            <nuclear_biomass_change_rate units="1/min">5.83333e-03</nuclear_biomass_change_rate>
+                            <calcification_rate units="1/min">0</calcification_rate>
+                            <relative_rupture_volume units="dimensionless">2.0</relative_rupture_volume>
+                        </parameters>
+                    </model>
+                </death>
+                <volume>
+                    <total units="micron^3">100</total>
+                    <fluid_fraction units="dimensionless">0.75</fluid_fraction>
+                    <nuclear units="micron^3">540</nuclear>
+                    <fluid_change_rate units="1/min">0.05</fluid_change_rate>
+                    <cytoplasmic_biomass_change_rate units="1/min">0.0045</cytoplasmic_biomass_change_rate>
+                    <nuclear_biomass_change_rate units="1/min">0.0055</nuclear_biomass_change_rate>
+                    <calcified_fraction units="dimensionless">0</calcified_fraction>
+                    <calcification_rate units="1/min">0</calcification_rate>
+                    <relative_rupture_volume units="dimensionless">2.0</relative_rupture_volume>
+                </volume>
+                <mechanics>
+                    <cell_cell_adhesion_strength units="micron/min">0</cell_cell_adhesion_strength>
+                    <cell_cell_repulsion_strength units="micron/min">10.0</cell_cell_repulsion_strength>
+                    <relative_maximum_adhesion_distance units="dimensionless">1.5</relative_maximum_adhesion_distance>
+                    <cell_adhesion_affinities>
+                    </cell_adhesion_affinities>
+                    <options>
+                        <set_relative_equilibrium_distance enabled="false" units="dimensionless">1.8</set_relative_equilibrium_distance>
+                        <set_absolute_equilibrium_distance enabled="false" units="micron">15.12</set_absolute_equilibrium_distance>
+                    </options>
+                    <attachment_elastic_constant units="1/min">0.01</attachment_elastic_constant>
+                    <attachment_rate units="1/min">0</attachment_rate>
+                    <detachment_rate units="1/min">0.0</detachment_rate>
+                    <maximum_number_of_attachments>12</maximum_number_of_attachments>
+                </mechanics>
+                <motility>
+                    <speed units="micron/min">0.3</speed>
+                    <persistence_time units="min">5</persistence_time>
+                    <migration_bias units="dimensionless">0.25</migration_bias>
+                    <options>
+                        <enabled>true</enabled>
+                        <use_2D>true</use_2D>
+                        <chemotaxis>
+                            <enabled>true</enabled>
+                            <substrate>oxygen</substrate>
+                            <direction>-1</direction>
+                        </chemotaxis>
+                        <advanced_chemotaxis>
+                            <enabled>false</enabled>
+                            <normalize_each_gradient>false</normalize_each_gradient>
+                            <chemotactic_sensitivities>
+                                <chemotactic_sensitivity substrate="oxygen">0.0</chemotactic_sensitivity>
+                                <chemotactic_sensitivity substrate="debris">0.0</chemotactic_sensitivity>
+                                <chemotactic_sensitivity substrate="IFN_gamma">0.0</chemotactic_sensitivity>
+                                <chemotactic_sensitivity substrate="TGF_beta">0.0</chemotactic_sensitivity>
+                                <chemotactic_sensitivity substrate="substrate">0.0</chemotactic_sensitivity>
+                            </chemotactic_sensitivities>
+                        </advanced_chemotaxis>
+                    </options>
+                </motility>
+                <secretion>
+                    <substrate name="oxygen">
+                        <secretion_rate units="1/min">0</secretion_rate>
+                        <secretion_target units="substrate density">1</secretion_target>
+                        <uptake_rate units="1/min">1</uptake_rate>
+                        <net_export_rate units="total substrate/min">0</net_export_rate>
+                    </substrate>
+                </secretion>
+                <cell_interactions>
+                    <apoptotic_phagocytosis_rate units="1/min">0.1</apoptotic_phagocytosis_rate>
+                    <necrotic_phagocytosis_rate units="1/min">0.017</necrotic_phagocytosis_rate>
+                    <other_dead_phagocytosis_rate units="1/min">0.01</other_dead_phagocytosis_rate>
+                    <live_phagocytosis_rates>
+                    </live_phagocytosis_rates>
+                    <attack_rates>
+                    </attack_rates>
+                    <attack_damage_rate units="1/min">1</attack_damage_rate>
+                    <attack_duration units="min">0.1</attack_duration>
+                    <fusion_rates>
+                    </fusion_rates>
+                </cell_interactions>
+                <cell_transformations>
+                    <transformation_rates>
+                    </transformation_rates>
+                </cell_transformations>
+                <cell_integrity>
+                    <damage_rate units="1/min">0.0</damage_rate>
+                    <damage_repair_rate units="1/min">0.0</damage_repair_rate>
+                </cell_integrity>
+            </phenotype>
+            <custom_data>
+                <sample conserved="false" units="dimensionless" description="">1.0</sample>
+            </custom_data>
+            <initial_parameter_distributions enabled="false">
+          </initial_parameter_distributions>
+        </cell_definition>
+<cell_definition name="Bifidobacterium_longum_Gal8" ID="24">
+            <phenotype>
+                <cycle code="5" name="live">
+                    <phase_transition_rates units="1/min">
+                        <rate start_index="0" end_index="0" fixed_duration="false">4.2e-4</rate>
                     </phase_transition_rates>
                 </cycle>
                 <death>
@@ -3342,7 +3678,7 @@
                 </cycle>
                 <death>
                     <model code="100" name="apoptosis">
-                        <death_rate units="1/min">7.2e-5</death_rate>
+                        <death_rate units="1/min">3.6e-5</death_rate>
                         <phase_durations units="min">
                             <duration index="0" fixed_duration="true">516</duration>
                         </phase_durations>
@@ -3456,6 +3792,12 @@
                     <substrate name="lactate">
                         <secretion_rate units="1/min">1.0</secretion_rate>
                         <secretion_target units="substrate density">10</secretion_target>
+                        <uptake_rate units="1/min">0</uptake_rate>
+                        <net_export_rate units="total substrate/min">0</net_export_rate>
+                    </substrate>
+                    <substrate name="Gal8_ext">
+                        <secretion_rate units="1/min">0</secretion_rate>
+                        <secretion_target units="substrate density">5</secretion_target>
                         <uptake_rate units="1/min">0</uptake_rate>
                         <net_export_rate units="total substrate/min">0</net_export_rate>
                     </substrate>
@@ -3498,7 +3840,7 @@
                 </cycle>
                 <death>
                     <model code="100" name="apoptosis">
-                        <death_rate units="1/min">7.2e-5</death_rate>
+                        <death_rate units="1/min">3.6e-5</death_rate>
                         <phase_durations units="min">
                             <duration index="0" fixed_duration="true">516</duration>
                         </phase_durations>
@@ -3615,6 +3957,12 @@
                         <uptake_rate units="1/min">0</uptake_rate>
                         <net_export_rate units="total substrate/min">0</net_export_rate>
                     </substrate>
+                    <substrate name="Gal8_ext">
+                        <secretion_rate units="1/min">0</secretion_rate>
+                        <secretion_target units="substrate density">5</secretion_target>
+                        <uptake_rate units="1/min">0</uptake_rate>
+                        <net_export_rate units="total substrate/min">0</net_export_rate>
+                    </substrate>
 </secretion>
                 <cell_interactions>
                     <apoptotic_phagocytosis_rate units="1/min">0</apoptotic_phagocytosis_rate>
@@ -3653,7 +4001,7 @@
                 </cycle>
                 <death>
                     <model code="100" name="apoptosis">
-                        <death_rate units="1/min">7.2e-5</death_rate>
+                        <death_rate units="1/min">3.6e-5</death_rate>
                         <phase_durations units="min">
                             <duration index="0" fixed_duration="true">516</duration>
                         </phase_durations>
@@ -3767,6 +4115,12 @@
                     <substrate name="lactate">
                         <secretion_rate units="1/min">1.0</secretion_rate>
                         <secretion_target units="substrate density">10</secretion_target>
+                        <uptake_rate units="1/min">0</uptake_rate>
+                        <net_export_rate units="total substrate/min">0</net_export_rate>
+                    </substrate>
+                    <substrate name="Gal8_ext">
+                        <secretion_rate units="1/min">0</secretion_rate>
+                        <secretion_target units="substrate density">5</secretion_target>
                         <uptake_rate units="1/min">0</uptake_rate>
                         <net_export_rate units="total substrate/min">0</net_export_rate>
                     </substrate>
@@ -3809,7 +4163,7 @@
                 </cycle>
                 <death>
                     <model code="100" name="apoptosis">
-                        <death_rate units="1/min">7.2e-5</death_rate>
+                        <death_rate units="1/min">3.6e-5</death_rate>
                         <phase_durations units="min">
                             <duration index="0" fixed_duration="true">516</duration>
                         </phase_durations>
@@ -3926,6 +4280,12 @@
                         <uptake_rate units="1/min">0</uptake_rate>
                         <net_export_rate units="total substrate/min">0</net_export_rate>
                     </substrate>
+                    <substrate name="Gal8_ext">
+                        <secretion_rate units="1/min">0</secretion_rate>
+                        <secretion_target units="substrate density">5</secretion_target>
+                        <uptake_rate units="1/min">0</uptake_rate>
+                        <net_export_rate units="total substrate/min">0</net_export_rate>
+                    </substrate>
 </secretion>
                 <cell_interactions>
                     <apoptotic_phagocytosis_rate units="1/min">0</apoptotic_phagocytosis_rate>
@@ -3965,7 +4325,7 @@
     </initial_conditions>
 
     <user_parameters>
-        <bacteria_entry_lambda type="double" units="1/min" description="per-vessel probability rate of a new Bifidobacterium longum entering nearby (Poisson process); no literature value found, kept deliberately low and adjustable">0.0003</bacteria_entry_lambda>
+        <bacteria_entry_lambda type="double" units="1/min" description="per-vessel probability rate of a new Bifidobacterium longum entering nearby (Poisson process); no literature value found, kept deliberately low and adjustable; set to 0 for the mechanism-4-only baseline (no bacteria/therapy) test">0</bacteria_entry_lambda>
         <petrinet_enabled type="bool" description="enable generated intracellular xenophagy Petri-net">true</petrinet_enabled>
         <petrinet_input_mode type="int" description="bacterial input source: 0=manual, 1=extracellular agents, 2=hybrid">1</petrinet_input_mode>
         <petrinet_global_seed type="int" description="base seed for deterministic per-cell Petri-net streams">42</petrinet_global_seed>
@@ -3974,5 +4334,89 @@
         <petrinet_metrics_csv type="string" description="optional per-cell xenophagy time-series output path">outputs/pdac_therapy/xenophagy_metrics.csv</petrinet_metrics_csv>
         <petrinet_uptake_csv type="string" description="optional extracellular-agent uptake audit output path">outputs/pdac_therapy/bacterial_uptake.csv</petrinet_uptake_csv>
         <petrinet_metrics_interval type="double" units="min" description="xenophagy metrics sampling interval; non-positive disables">6</petrinet_metrics_interval>
+
+        <!-- Gal-8/CD4/CD8 mechanism (agent-proximity). REDESIGNED this round:
+             Gal-8 now acts on CD4 T cell PROLIFERATION (not CD8 killing --
+             that CD8-direct multiplier is removed; see custom.cpp history).
+             CD8 gets its own, separate proliferation term driven by CD4
+             "help" (contact), per literature on CD4-derived IL-2 licensing
+             CD8 clonal expansion. Both bacterium switches default false. -->
+        <bifidobacterium_enabled type="bool" description="enable recruit_bacteria() spawning of the original (non-Gal8) Bifidobacterium_longum near vessels">false</bifidobacterium_enabled>
+        <bifidobacterium_gal8_enabled type="bool" description="enable recruit_bacteria() spawning of the engineered Bifidobacterium_longum_Gal8 (our own Gal-8 fusion-protein construct) near vessels. Independent of gal8_cd4_effect_enabled below -- this bacterium can be spawned and carry gal8_amount with that switch off, and will simply have no effect on any T cell">false</bifidobacterium_gal8_enabled>
+        <gal8_cd4_effect_enabled type="bool" description="DISABLED by user request (default false). Independently gates whether CD4 T cells read nearby Gal-8 (sum_nearby_gal8()) and whether that reading does anything to CD4 cycle-entry/apoptosis (cd4_gal8_net_growth_rate()) -- see phenotype_function() in custom.cpp. Deliberately decoupled from bifidobacterium_gal8_enabled: with this off, Bifidobacterium_longum_Gal8 can exist and carry Gal-8 with zero effect on any T cell, however many of them are nearby. Flip to true to re-enable the mechanism -- all underlying code is intact, nothing was deleted">false</gal8_cd4_effect_enabled>
+
+        <gal8_amount_fixed type="double" units="a.u." description="PLACEHOLDER -- every Bifidobacterium_longum_Gal8 carries this SAME fixed Gal-8 amount at creation (no per-bacterium distribution -- the collaborator's E_required(theta) numbers turned out to answer a different question, intracellular Gal8-NDP52 binding for the bacterium's own xenophagy evasion, not extracellular secretion to affect CD4 T cells, so they are not used here; see chat writeup). STILL a.u., not a real molecule count -- the CD4 dose-response below runs on this placeholder scale, NOT a calibrated one, until a real per-bacterium extracellular-secretion estimate is available.">1.0</gal8_amount_fixed>
+        <gal8_effect_radius type="double" units="micron" description="radius within which a Bifidobacterium_longum_Gal8's carried Gal-8 contributes to a T cell's local exposure; matches the bacterial_uptake_distance convention in config/petrinet/parameters.xml (20 micron)">20</gal8_effect_radius>
+
+        <cd4_gal8_prolif_Pmax type="double" units="1/h" description="fast-saturating GAL-8 PROMOTION term ceiling for CD4 cycle-entry rate perturbation r(C,t)=Pmax*C/(C+Kp) - Irate*t*C/(C+Ki). Least-squares fit (pure-Python grid+coordinate-descent, no scipy available) to the two CD4 CCK-8 files (Row A=24h, Row B=44h; 0.05/0.2/0.5 uM), R^2=0.92 on the 6 (dose,time) points -- see chat writeup for the fit, residuals, and its known miss on the single highest-SD data point (0.05uM/24h, SD=21.9%)">0.00406</cd4_gal8_prolif_Pmax>
+        <cd4_gal8_prolif_Kp type="double" units="uM" description="half-max concentration for the promotion term (fitted)">0.00637</cd4_gal8_prolif_Kp>
+        <cd4_gal8_prolif_Irate type="double" units="1/h^2" description="rate at which the INHIBITION term's effective ceiling grows with cumulative exposure time t (hours) -- captures the CCK-8 data's clear pattern of low-dose promotion at 24h flipping to net decline by 44h, and the much steeper 24h-to-44h drop at 0.5uM than at lower doses (fitted)">0.0039187</cd4_gal8_prolif_Irate>
+        <cd4_gal8_prolif_Ki type="double" units="uM" description="half-max concentration for the inhibition term (fitted)">2.9825</cd4_gal8_prolif_Ki>
+
+        <cd4_cd8_help_max type="double" units="1/min" description="PLACEHOLDER ceiling on CD8 cycle-entry rate when in full contact with a PD-1lo_CD4_Tcell (the IL-2-mediated 'CD4 help' pathway; literature -- see chat -- confirms CD4-derived IL-2 drives CD8 clonal expansion in tumors, but gives no PDAC-specific rate constant). Anchored to the same order of magnitude as the macrophage/Treg/CAF proliferation ceilings below (~2-3 day doubling time under maximal engagement), pending better calibration">1.7e-4</cd4_cd8_help_max>
+        <macrophage_prolif_max type="double" units="1/min" description="ceiling on macrophage cycle-entry rate when in full contact with myCAF (CSF1 proxy -- literature: CAF-induced macrophage proliferation sustains TAM number in PDAC). Back-calculated from a PDAC-specific Ki67+ macrophage fraction (~10-20%) via a rough S/G2/M-window-duration argument (~10h Ki67+ window / ~0.15 fraction =~67h doubling time) -- see chat writeup">1.7e-4</macrophage_prolif_max>
+        <treg_prolif_max type="double" units="1/min" description="PLACEHOLDER ceiling on Treg cycle-entry rate driven by local TGF_beta (literature: Treg in-situ expansion in tumors is well documented and TGF-beta-dependent, but no PDAC-specific rate constant found). Anchored to the same order of magnitude as macrophage_prolif_max pending better calibration">1.7e-4</treg_prolif_max>
+        <mycaf_prolif_max type="double" units="1/min" description="PLACEHOLDER ceiling on myCAF cycle-entry rate, driven by TGF_beta (Ohlund et al. myCAF/iCAF dichotomy). Anchored to the same order of magnitude as macrophage_prolif_max pending better calibration">1.7e-4</mycaf_prolif_max>
+        <icaf_prolif_max type="double" units="1/min" description="ceiling on iCAF cycle-entry rate, driven by its OWN secreted IL6 (autocrine loop). Deliberately set LOWER than mycaf_prolif_max/macrophage_prolif_max (1/3 of that value) because a full 15-day test run showed this specific autocrine loop -- unlike every other proliferation term in this model -- has no external limiting input (more iCAF directly makes more of its own driving signal), so it needs a lower ceiling to compensate even with the pressure-brake below added at the same time -- see chat writeup for the 34.7x runaway iCAF growth this fixes">5.7e-5</icaf_prolif_max>
+
+        <!-- Pressure-brake on the newly-added proliferation terms above, added
+             after a full-length test run showed iCAF/myCAF runaway growth
+             (iCAF 34.7x, myCAF 7.4x over 15 days) with no negative feedback
+             at all -- unlike the 6 tumor-lineage types, which already had
+             pressure,decreases,cycle_entry (half_max=0.25, hill=3) as their
+             brake from the start. Literature review (see chat) found this
+             brake is NOT equally appropriate for every cell type though:
+             - myCAF/iCAF (fibroblast-lineage): classical contact inhibition
+               of proliferation (CIP) is well-established for fibroblasts,
+               density-dependent growth arrest via loss of focal adhesions;
+               CAFs retain SOME of this (less than normal fibroblasts, but
+               not absent) -- pressure is a direct, literature-appropriate
+               signal here.
+             - macrophage: real literature describes a "territory model"
+               (contact-mediated spacing/repulsion between macrophages) and
+               density-dependent quorum-sensing-like cytokine feedback, not
+               classical CIP -- pressure is used here as a practical proxy
+               for that territorial constraint, not a literal match.
+             - CD8/Treg: literature is clear this is the WRONG signal for T
+               cells -- T cell population control is documented as an IL-2
+               quorum-sensing mechanism (activated T cells sense population
+               density via shared IL-2 consumption, with Tregs acting as
+               the competitive brake via their high-affinity IL-2Ralpha) --
+               NOT mechanical/pressure-based contact inhibition. So CD8/Treg
+               do NOT get a pressure rule; see the Treg-contact-based rules
+             in cell_rules.csv instead. -->
+        <stromal_myeloid_pressure_half_max type="double" units="dimensionless" description="half_max for pressure-based cycle-entry suppression on macrophage/myCAF/iCAF, reusing the exact value already established/calibrated for the 6 tumor-lineage types (0.25) for consistency">0.25</stromal_myeloid_pressure_half_max>
+        <cd8_treg_brake_max type="double" units="1/min" description="ceiling on how much contact with Treg can suppress CD8 cycle-entry rate (IL-2 competition proxy -- Tregs documented as the literature brake on T-cell quorum sensing via superior IL-2 receptor affinity). Set equal to cd4_cd8_help_max so Treg contact can, at saturation, fully cancel out CD4 help">1.7e-4</cd8_treg_brake_max>
+        <treg_self_limit_max type="double" units="1/min" description="ceiling on how much Treg-Treg contact suppresses further Treg cycle entry (proxy for the reciprocal IL-2 quorum-sensing equilibrium between Tregs and IL-2-producing CD4 cells described in the literature)">1.7e-4</treg_self_limit_max>
+
+        <!-- Pancreatic hormones (insulin, GLP-1), delivered via the same
+             vessel points that already deliver oxygen/glucose -- islets are
+             highly vascularized (~20% of arterial flow despite ~2% of
+             pancreatic mass) with beta cells secreting directionally toward
+             the capillary bed, so "arrives via blood" is not just a modeling
+             convenience (see chat writeup). Both hormones get a baseline
+             (fasting) level, 3 meal-triggered pulses/24h (Bateman/
+             biexponential rise-decay shape, hardcoded rise/decay time
+             constants in custom.cpp -- see update_hormone_secretion()), and
+             a mild circadian envelope. insulin: PI3K/Akt/mTOR -> promotes
+             PDAC proliferation, suppresses apoptosis, suppresses xenophagy
+             (mTOR activation is antagonistic to the rapamycin-driven
+             infected->xenophagy transition this model already has). GLP-1:
+             AMPK -> inhibits mTOR -> promotes autophagy, hypothesized (not
+             directly demonstrated in the literature found -- see chat) to
+             likewise promote xenophagy, i.e. act like rapamycin. -->
+        <insulin_fasting_pM type="double" units="pM" description="fasting blood insulin baseline, mid-range of the clinical normal fasting range 2-25 mU/L =~ 14-174 pM">60</insulin_fasting_pM>
+        <insulin_peak_fold type="double" units="dimensionless" description="PLACEHOLDER -- postprandial insulin peak as a multiple of fasting baseline. Literature confirmed the qualitative pattern (rises after a meal, peaks within ~30-90min, returns to baseline within ~2-3h) but no precise fold-change number for a normal (non-diabetic, non-injected) physiological meal response was found; 5x is a commonly-cited rule-of-thumb order of magnitude, not a specific citation">5</insulin_peak_fold>
+        <glp1_fasting_pM type="double" units="pM" description="fasting plasma GLP-1, literature value ~15 pmol/L">15</glp1_fasting_pM>
+        <glp1_peak_fold type="double" units="dimensionless" description="postprandial GLP-1 peak / fasting, from literature values (peak ~40 pmol/L / fasting ~15 pmol/L)">2.67</glp1_peak_fold>
+        <cck_fasting_pM type="double" units="pM" description="fasting plasma CCK, literature value ~0.5-1 pmol/L">1</cck_fasting_pM>
+        <cck_peak_fold type="double" units="dimensionless" description="postprandial CCK peak / fasting, from literature values (mixed-meal peak ~3-5 pmol/L / fasting ~1 pmol/L, mid-range of the reported 3-15 pmol/L peak range across different studies/meal compositions)">5</cck_peak_fold>
+        <cck_enabled type="bool" description="DISABLED by user request (default false), temporary -- suspected contributor to a reintroduced tumor-growth-slowdown/initial-dip issue seen after adding CCK's myCAF-fibrosis effect (see chat writeup). Gates whether vessels ever secrete CCK (update_hormone_secretion() in custom.cpp); with this off the CCK field decays to ~0 within ~20-30min of run start and stays there, so the myCAF,CCK,... rules in cell_rules.csv see essentially no signal for the rest of the run. Does not affect insulin or GLP1. Flip to true to re-enable -- all underlying code/rules are intact, nothing was deleted">false</cck_enabled>
+        <hormone_circadian_amplitude type="double" units="dimensionless" description="PLACEHOLDER -- fractional amplitude of the ~24h circadian modulation shared by insulin/GLP1/CCK (literature confirms real circadian rhythmicity for all three -- insulin/GLP1 'in phase' with each other, higher daytime/evening and lower overnight; CCK's acrophase instead falls in the dark/night period, opposite phase, see update_hormone_secretion() in custom.cpp -- but no specific amplitude number was found for any of them)">0.2</hormone_circadian_amplitude>
+        <hormone_secretion_rate type="double" units="1/min" description="vessel secretion_rate shared by insulin/GLP1/CCK. Matched to the same order of magnitude as this model's existing vessel oxygen(200)/glucose(100) secretion rates -- an initial value of 1.0/min was tested and found far too weak (domain-mean concentration collapsed to ~1-7 pM regardless of target, since diffusion+decay away from the sparse vessel points dominated); 150/min was empirically found to let the domain-mean concentration actually approach its time-varying secretion_target. Not itself a literature-calibrated number, just an engineering fix so the mechanism is numerically live">150</hormone_secretion_rate>
+
+        <insulin_prolif_max type="double" units="1/min" description="ceiling on insulin-driven tumor cycle-entry rate (PI3K/Akt/mTOR promotes PDAC proliferation). Reuses the existing glucose-driven cycle-entry ceiling (7.2e-4) for consistency with this model's established tumor cycle-entry scale">7.2e-4</insulin_prolif_max>
+        <insulin_prolif_half_max type="double" units="pM" description="half-max for insulin's proliferation/anti-apoptosis/anti-xenophagy effects; placed at the fasting baseline (insulin_fasting_pM) so the response is centered in the normal physiological range, not requiring frank hyperinsulinemia to engage">60</insulin_prolif_half_max>
+        <glp1_xenophagy_half_max type="double" units="pM" description="half-max for GLP-1's xenophagy-promotion effect; placed between fasting (15) and postprandial peak (40) so the effect engages over the normal meal-response range">20</glp1_xenophagy_half_max>
     </user_parameters>
 </PhysiCell_settings>

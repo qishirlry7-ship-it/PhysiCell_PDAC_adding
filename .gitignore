@@ -11,3 +11,10 @@ outputs/
 __pycache__/
 benchmark-results/*.csv
 benchmark-results/*.json
+
+# intermediate per-frame images built while assembling the visualization
+# videos in scripts/analysis/ -- large (100s of MB), regenerable from the
+# make_*_frames.py/.sh scripts, not deliverables themselves (the mp4s are)
+scripts/analysis/field_frames/
+scripts/analysis/growth_frames/
+scripts/analysis/native_frames/

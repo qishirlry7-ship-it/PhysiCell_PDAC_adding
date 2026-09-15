@@ -95,5 +95,10 @@ void contact_function(Cell *pMe, Phenotype &phenoMe, Cell *pOther, Phenotype &ph
 // per main-loop iteration from main.cpp, dt = diffusion_dt)
 void recruit_bacteria(double dt);
 
+// pancreatic hormone (insulin, GLP-1) delivery via vessel secretion,
+// meal-pulsed + circadian (called once per main-loop iteration from
+// main.cpp, dt = diffusion_dt)
+void update_hormone_secretion(double dt);
+
 // Build-time generated intracellular xenophagy Petri-net integration.
 #include "petrinet/physicell_petrinet_adapter.h"
