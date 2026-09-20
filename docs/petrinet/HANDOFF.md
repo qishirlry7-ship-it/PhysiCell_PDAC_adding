@@ -5,8 +5,8 @@ Branch: `codex/petrinet-integration`
 
 ## Delivered
 
-- build-time JSON-to-C++ generator with stale-output checking;
-- generated 57-place/80-transition xenophagy SSA engine;
+- run-time JSON model loading with a self-contained `petrinet::` runtime;
+- 57-place/80-transition xenophagy SSA engine;
 - independent lazy PetriNet state per infected tumor;
 - arbitrary manual input and one-agent/one-token extracellular uptake;
 - state-conserving cell division and reconstructed capacity;
@@ -63,10 +63,11 @@ Detailed conditions and tables remain in `VALIDATION.md`.
 - places/transitions: 57/80;
 - JSON SHA-256: `beaafd39036a29aab6eb846082b6d4f2ceef830d7c2d83594d976bd681b5c305`;
 - parameter SHA-256: `2a32bf28b0e1e7b6fdb39272defbb2ddba358be091794c5cf87dffd0d370a904`;
-- generator: `scripts/generate_petrinet_cpp.py` 2.2.0.
+- runtime: `custom_modules/petrinet/runtime/` (JSON loaded at run time).
 
-The generated banner is authoritative. Run `--check` before review and update
-the manifest whenever JSON, parameter XML or generator output changes.
+The JSON and parameter XML are the authoritative model definition. They are no
+longer compiled into C++ at build time, so there is no generated banner to
+reconcile -- recompute the hashes above whenever either file changes.
 
 ## Working-tree warning at handoff
 

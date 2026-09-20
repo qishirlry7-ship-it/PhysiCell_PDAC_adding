@@ -22,9 +22,8 @@ The single non-PhysiCell parameter source is
 `config/petrinet/parameters.xml`. It contains engine/death/sigmoid/capacity
 parameters, all MHC parameters and initial conditions, initial Petri-net
 marking, signal mode, MHC integration step, division fraction, disabled
-transitions, and transition expression overrides. The build
-generator validates it and compiles it into the checked-in C++ pair.
-Agent-based uptake enters through `SalRuffle`; `EnteringCyt` and `StayingVac`
+transitions, and transition expression overrides. The engine validates it at
+load time. Agent-based uptake enters through `SalRuffle`; `EnteringCyt` and `StayingVac`
 remain enabled and decide the intracellular compartment through ordinary SSA
 competition. There are no independent C++ numeric defaults that override this
 XML.
@@ -136,12 +135,13 @@ standard interaction probability remains `attack_rate * target_immunogenicity
 attack is therefore not added a second time. CD8 behavior is unchanged because
 this interface represents MHC-II, not MHC-I.
 
-The present MHC-II synthesis input is the fixed scalar `mhc_ifn_gamma` in
-`config/petrinet/parameters.xml`. Despite the matching name, it is not yet
-connected to the local PhysiCell `IFN_gamma` substrate. Any future dynamic
-coupling must define an explicit concentration unit or conversion factor and
-increment the interface version if the `advance()` contract changes. The
-planned design is documented in `DESIGN.md`.
+The MHC-II synthesis input is the constant `mhc_S_M_base` in
+`config/petrinet/parameters.xml`. IFN-gamma dependence is deliberately absent
+(see `DESIGN.md`): the model targets a uniformly high-IFN-gamma state, so the
+saturating term was constant in practice. The spatial PhysiCell `IFN_gamma`
+substrate is unaffected and still drives CD8 rules. Re-introducing the coupling
+would change the `advance()` contract and require an interface version
+increment.
 
 ## Division
 

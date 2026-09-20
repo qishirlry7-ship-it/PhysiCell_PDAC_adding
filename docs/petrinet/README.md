@@ -1,24 +1,20 @@
 # PhysiCell–PetriNet integration
 
 This directory is the collaboration contract for the xenophagy Petri-net
-integration. The runtime is C++ only. Python is used at build time to convert
-the upstream JSON topology plus `config/petrinet/parameters.xml` into
-deterministic C++ source. That XML is the sole source for all non-PhysiCell
-numeric parameters, initial marking, transition overrides, and MHC settings.
+integration. The runtime is C++ only and loads its model from
+`config/petrinet/xenophagy_model.json` at run time — there is no build-time
+code generation step. That XML (`config/petrinet/parameters.xml`) remains the
+sole source for all non-PhysiCell numeric parameters, initial marking,
+transition overrides, and MHC settings.
 
 ## WSL base workflow
 
 From the PhysiCell repository in the WSL base environment:
 
 ```bash
-python3 scripts/generate_petrinet_cpp.py
-python3 scripts/generate_petrinet_cpp.py --check
 bash scripts/run_petrinet_tests.sh
 make -j4
 ```
-
-The checked-in generated source lets collaborators compile without running the
-generator. `--check` is the required stale-model check before review.
 
 Before opening or merging a PR, also derive a disabled-mode configuration and
 verify that the baseline PhysiCell run remains operational:
@@ -58,13 +54,15 @@ then chooses vacuole versus cytosol. This scenario switch does not require
 regeneration or recompilation. Set `petrinet_uptake_csv` in the same run XML
 when a conservation audit log is required.
 
-Do not edit generated files manually. Update `INTERFACE.md` before changing a
-public JSON, XML, CSV, or C++ contract; regenerate and commit the model
-snapshot, unified parameter XML, generated pair, and version hashes together.
+Do not edit the loaded model implicitly. Update `INTERFACE.md` before changing a
+public JSON, XML, CSV, or C++ contract; commit the model snapshot, unified
+parameter XML, and the version hashes in `HANDOFF.md` together.
 
-Important current limitation: the MHC-II ODE uses a fixed IFN-gamma value from
-`parameters.xml`; it does not yet consume the local PhysiCell `IFN_gamma`
-field. See `DESIGN.md` before interpreting spatial MHC-II results.
+Important modelling choice: MHC synthesis uses a constant rate from
+`parameters.xml`. IFN-gamma dependence was deliberately removed because the
+model targets a uniformly high-IFN-gamma state; the local PhysiCell
+`IFN_gamma` field still drives CD8 rules but is not read by the PetriNet. See
+`DESIGN.md` before interpreting spatial MHC-II results.
 
 ## Verified minimal demo
 

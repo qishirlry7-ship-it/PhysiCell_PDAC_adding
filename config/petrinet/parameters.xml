@@ -20,10 +20,11 @@
     <parameter name="mhc_d_C" value="0.03" units="1/h"/>
     <parameter name="mhc_d_P" value="0.069" units="1/h"/>
     <parameter name="mhc_k_load" value="0.0001" units="1/h/molecule"/>
-    <parameter name="mhc_S_M_base" value="200" units="molecule/h"/>
-    <parameter name="mhc_V_M_IFN" value="4000" units="molecule/h"/>
-    <parameter name="mhc_K_M_IFN" value="0.5" units="ng/mL"/>
-    <parameter name="mhc_ifn_gamma" value="5" units="ng/mL"/>
+    <!-- Constant MHC-II synthesis rate. IFN-gamma modulation was removed: this
+         model targets a uniformly high-IFN-gamma state, so the saturating term
+         was a constant in practice. The value equals the old effective rate
+         S_M_base + V_M_IFN*I/(K_M_IFN+I) evaluated at I = mhc_ifn_gamma. -->
+    <parameter name="mhc_S_M_base" value="7472" units="molecule/h"/>
     <parameter name="mhc_r_pep" value="5" units="dimensionless"/>
     <parameter name="mhc_max_step_seconds" value="60" units="s"/>
     <parameter name="mhc_X0" value="0" units="molecules"/>

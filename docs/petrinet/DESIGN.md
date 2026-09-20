@@ -5,9 +5,14 @@ couplings. Stable field and API contracts belong in `INTERFACE.md`.
 
 ## Runtime architecture
 
-The upstream JSON topology and `config/petrinet/parameters.xml` are validated
-by `scripts/generate_petrinet_cpp.py` and compiled into immutable C++ arrays.
-PhysiCell has no runtime dependency on Python or `petrinettool`.
+The upstream JSON topology is parsed at run time by the self-contained
+`petrinet::` runtime library in `custom_modules/petrinet/runtime/` (`json.cpp`,
+`model.cpp`, `expression.cpp`, `ssa.cpp`). `xenophagy::PetriNetEngine` is a thin
+wrapper over it and resolves place indices by name against the loaded model, so
+place ordering is an implementation detail rather than a compiled-in contract.
+PhysiCell has no runtime dependency on Python or `petrinettool`. Editing the
+model or its parameters no longer requires recompiling — only replacing the
+JSON.
 
 Each infected tumor owns a `CellPetriNetState`: marking, internal time, queued
 inputs, MHC state and deterministic random stream. Uninfected cells allocate no
@@ -52,24 +57,28 @@ Python defines IFN-gamma-dependent MHC-II synthesis as
 S_M(c)=S_{M,base}+V_{M,IFN}\frac{c}{K_{M,IFN}+c}.
 \]
 
-The current C++ engine evaluates this once from the fixed
-`mhc_ifn_gamma=5 ng/mL` parameter. It does **not** read the local PhysiCell
-`IFN_gamma` substrate. Consequently all active tumors use approximately the
-same near-saturated MHC-II synthesis rate, while the spatial IFN-gamma field
-currently affects CD8 rules only.
+The C++ engine does **not** implement this term. IFN-gamma dependence was
+deliberately removed: the model targets a uniformly high-IFN-gamma state, so
+the saturating factor is effectively constant and contributes no spatial
+contrast, while it carried three parameters and an unresolved unit mismatch
+(the PhysiCell field is dimensionless, the PetriNet parameter was annotated
+`ng/mL`). MHC synthesis is therefore a constant:
 
-The intended implementation is:
+\[
+S_M=\text{const},
+\]
 
-1. define the PhysiCell IFN-gamma field in physical `ng/mL`, or add an explicit
-   XML conversion factor from its present dimensionless scale;
-2. read each target cell's local substrate concentration at phenotype update;
-3. pass that value into `advance()` or update `S_M` for each integration step;
-4. retain a configurable fixed-value mode for locked Python/C++ parity tests;
-5. validate zero, intermediate and saturated IFN-gamma analytically, then run
-   a spatial macrophage-to-tumor response test.
+set to the old expression's value at the high-IFN-gamma operating point, so
+presentation levels are numerically unchanged. The spatial PhysiCell
+`IFN_gamma` field still exists and still drives the CD8 rules; only the
+PetriNet coupling is absent.
 
-This is a planned interface change, not completed functionality. Previous MHC
-smoke tests demonstrate the downstream pMHC-II-to-CD4 path only.
+Re-introducing the coupling, if it is ever wanted, means: define the PhysiCell
+field in physical units (or add an XML conversion factor), read each target
+cell's local concentration at phenotype update, and pass it into `advance()`.
+Keep a fixed-value mode for parity tests either way.
+
+Previous MHC smoke tests demonstrate the downstream pMHC-II-to-CD4 path only.
 
 ## Baseline calibration before efficacy claims
 
