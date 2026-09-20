@@ -10,7 +10,6 @@ if ! cmp -s main.cpp tests/bacterial_uptake_simulation/main.cpp; then
 fi
 
 name="petrinet_uptake_test"
-python3 scripts/generate_petrinet_cpp.py --check
 python3 scripts/make_minimal_petrinet_config.py \
   --output-name "$name" --duration-min 30 --bacteria 0 --cells 25 \
   --extracellular-bacteria 50 --input-mode agent

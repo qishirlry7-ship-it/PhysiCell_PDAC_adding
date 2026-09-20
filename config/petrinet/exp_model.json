@@ -1,0 +1,1917 @@
+{
+  "name": "Hannig_Scheidel_merged_plus_enter",
+  "places": [
+    {
+      "id": "SalMediumStart",
+      "tokens": 0
+    },
+    {
+      "id": "SalMedium",
+      "tokens": 0
+    },
+    {
+      "id": "SalCellSurf",
+      "tokens": 0
+    },
+    {
+      "id": "NrRuffle",
+      "tokens": 0
+    },
+    {
+      "id": "CapCellSurf",
+      "tokens": 1
+    },
+    {
+      "id": "SalRuffle",
+      "tokens": 0
+    },
+    {
+      "id": "MediumGun",
+      "tokens": 1500
+    },
+    {
+      "id": "SalVac",
+      "tokens": 0
+    },
+    {
+      "id": "SalCyt",
+      "tokens": 0
+    },
+    {
+      "id": "AdapSalCyt",
+      "tokens": 0
+    },
+    {
+      "id": "CapCyt",
+      "tokens": 700
+    },
+    {
+      "id": "AdapSalVac",
+      "tokens": 0
+    },
+    {
+      "id": "CapVac",
+      "tokens": 150
+    },
+    {
+      "id": "XenoSig",
+      "tokens": 0
+    },
+    {
+      "id": "AA",
+      "tokens": 1
+    },
+    {
+      "id": "AAstarvation",
+      "tokens": 0
+    },
+    {
+      "id": "Ap_Gal8",
+      "tokens": 0
+    },
+    {
+      "id": "Ap_Gal8_Ub",
+      "tokens": 0
+    },
+    {
+      "id": "Ap_Gal8_Ub_N_S",
+      "tokens": 0
+    },
+    {
+      "id": "Ap_Gal8_Ub_OPTNp",
+      "tokens": 0
+    },
+    {
+      "id": "Ap_Ub",
+      "tokens": 0
+    },
+    {
+      "id": "Ap_Ub_N_S",
+      "tokens": 0
+    },
+    {
+      "id": "Ap_Ub_OPTNp",
+      "tokens": 0
+    },
+    {
+      "id": "E3_ligase",
+      "tokens": 50
+    },
+    {
+      "id": "Gal8",
+      "tokens": 100
+    },
+    {
+      "id": "LC3_GABARAP",
+      "tokens": 50
+    },
+    {
+      "id": "N_S",
+      "tokens": 30
+    },
+    {
+      "id": "NDP52",
+      "tokens": 100
+    },
+    {
+      "id": "OPTN",
+      "tokens": 50
+    },
+    {
+      "id": "S_damagedSCV",
+      "tokens": 0
+    },
+    {
+      "id": "S_Gal8",
+      "tokens": 0
+    },
+    {
+      "id": "S_Gal8_NDP52",
+      "tokens": 0
+    },
+    {
+      "id": "S_Gal8_Ub",
+      "tokens": 0
+    },
+    {
+      "id": "S_Gal8_Ub_NDP52",
+      "tokens": 0
+    },
+    {
+      "id": "S_Gal8_Ub_NDP52_N_S",
+      "tokens": 0
+    },
+    {
+      "id": "S_Gal8_Ub_NDP52_OPTN_p62",
+      "tokens": 0
+    },
+    {
+      "id": "S_Gal8_Ub_NDP52_OPTN_p62_N_S",
+      "tokens": 0
+    },
+    {
+      "id": "S_Gal8_Ub_NDP52_OPTN_p62_N_S_diTBK1",
+      "tokens": 0
+    },
+    {
+      "id": "S_Gal8_Ub_NDP52_OPTN_p62_N_S_diTBK1i",
+      "tokens": 0
+    },
+    {
+      "id": "S_Gal8_Ub_NDP52_p62_OPTNp_N_S_OligoTBK1",
+      "tokens": 0
+    },
+    {
+      "id": "S_Gal8_Ub_OPTN",
+      "tokens": 0
+    },
+    {
+      "id": "S_Gal8_Ub_p62",
+      "tokens": 0
+    },
+    {
+      "id": "S_Ub",
+      "tokens": 0
+    },
+    {
+      "id": "S_Ub_NDP52",
+      "tokens": 0
+    },
+    {
+      "id": "S_Ub_NDP52_N_S",
+      "tokens": 0
+    },
+    {
+      "id": "S_Ub_NDP52_OPTN_p62",
+      "tokens": 0
+    },
+    {
+      "id": "S_Ub_NDP52_OPTN_p62_N_S",
+      "tokens": 0
+    },
+    {
+      "id": "S_Ub_NDP52_OPTN_p62_N_S_OligoTBK1",
+      "tokens": 0
+    },
+    {
+      "id": "S_Ub_NDP52_OPTN_p62_N_S_diTBK1",
+      "tokens": 0
+    },
+    {
+      "id": "S_Ub_NDP52_OPTN_p62_N_S_diTBK1i",
+      "tokens": 0
+    },
+    {
+      "id": "S_Ub_OPTN",
+      "tokens": 0
+    },
+    {
+      "id": "S_Ub_p62",
+      "tokens": 0
+    },
+    {
+      "id": "SignalAutophagyInduction",
+      "tokens": 0
+    },
+    {
+      "id": "SignalSCVdamage",
+      "tokens": 0
+    },
+    {
+      "id": "TBK1",
+      "tokens": 50
+    },
+    {
+      "id": "ULK1comp",
+      "tokens": 0
+    },
+    {
+      "id": "mTORC1_ULK1comp",
+      "tokens": 1
+    },
+    {
+      "id": "mTORC1_ULK1comp_SCV",
+      "tokens": 0
+    },
+    {
+      "id": "mTORC1inactive",
+      "tokens": 0
+    },
+    {
+      "id": "p62",
+      "tokens": 50
+    },
+    {
+      "id": "LC3_signal",
+      "tokens": 0
+    },
+    {
+      "id": "LC3",
+      "tokens": 0
+    },
+    {
+      "id": "XenoStart",
+      "tokens": 0
+    }
+  ],
+  "transitions": [
+    {
+      "id": "FirstLanding",
+      "rate": 0.0019,
+      "deterministic": false,
+      "input": [
+        {
+          "from": "SalMediumStart",
+          "weight": 1
+        }
+      ],
+      "output": [
+        {
+          "to": "SalCellSurf",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "Landing",
+      "rate": 0.0384,
+      "deterministic": false,
+      "input": [
+        {
+          "from": "SalMedium",
+          "weight": 1
+        }
+      ],
+      "output": [
+        {
+          "to": "SalCellSurf",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "TakeOff",
+      "rate": 0.67,
+      "deterministic": false,
+      "input": [
+        {
+          "from": "SalCellSurf",
+          "weight": 1
+        }
+      ],
+      "output": [
+        {
+          "to": "SalMedium",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "Initiation",
+      "rate": 0.0005,
+      "deterministic": false,
+      "input": [
+        {
+          "from": "SalCellSurf",
+          "weight": 1
+        },
+        {
+          "from": "CapCellSurf",
+          "weight": 1
+        }
+      ],
+      "output": [
+        {
+          "to": "NrRuffle",
+          "weight": 1
+        },
+        {
+          "to": "CapCellSurf",
+          "weight": 1
+        },
+        {
+          "to": "SalRuffle",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "Joining",
+      "rate": 0.005,
+      "deterministic": false,
+      "input": [
+        {
+          "from": "CapCellSurf",
+          "weight": 1
+        },
+        {
+          "from": "SalCellSurf",
+          "weight": 1
+        },
+        {
+          "from": "NrRuffle",
+          "weight": 1
+        }
+      ],
+      "output": [
+        {
+          "to": "NrRuffle",
+          "weight": 1
+        },
+        {
+          "to": "CapCellSurf",
+          "weight": 1
+        },
+        {
+          "to": "SalRuffle",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "CapBeingReached",
+      "rate": 0.01,
+      "deterministic": false,
+      "input": [
+        {
+          "from": "NrRuffle",
+          "weight": 4
+        },
+        {
+          "from": "CapCellSurf",
+          "weight": 1
+        }
+      ],
+      "output": [
+        {
+          "to": "NrRuffle",
+          "weight": 4
+        }
+      ]
+    },
+    {
+      "id": "Removing",
+      "rate": 1.0,
+      "deterministic": false,
+      "input": [
+        {
+          "from": "MediumGun",
+          "weight": 1
+        }
+      ],
+      "output": []
+    },
+    {
+      "id": "Adding",
+      "rate": 1.0,
+      "deterministic": false,
+      "input": [
+        {
+          "from": "MediumGun",
+          "weight": 1
+        }
+      ],
+      "output": [
+        {
+          "to": "SalMediumStart",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "StayingVac",
+      "rate": 0.006,
+      "input": [
+        {
+          "from": "SalRuffle",
+          "weight": 1
+        }
+      ],
+      "output": [
+        {
+          "to": "SalVac",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "EnteringCyt",
+      "rate": 0.004,
+      "input": [
+        {
+          "from": "SalRuffle",
+          "weight": 1
+        }
+      ],
+      "output": [
+        {
+          "to": "SalCyt",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "ProSalVac",
+      "rate": 0.00032,
+      "input": [
+        {
+          "from": "AdapSalVac",
+          "weight": 1
+        },
+        {
+          "from": "CapVac",
+          "weight": 1
+        }
+      ],
+      "output": [
+        {
+          "to": "SalVac",
+          "weight": 2
+        }
+      ],
+      "deterministic": false
+    },
+    {
+      "id": "ProSalCyt",
+      "rate": 0.00032,
+      "input": [
+        {
+          "from": "AdapSalCyt",
+          "weight": 1
+        },
+        {
+          "from": "CapCyt",
+          "weight": 1
+        }
+      ],
+      "output": [
+        {
+          "to": "SalCyt",
+          "weight": 2
+        }
+      ],
+      "deterministic": false
+    },
+    {
+      "id": "AdaptingCyt",
+      "rate": 0.167,
+      "input": [
+        {
+          "from": "SalCyt",
+          "weight": 1
+        }
+      ],
+      "output": [
+        {
+          "to": "AdapSalCyt",
+          "weight": 1
+        }
+      ],
+      "deterministic": false
+    },
+    {
+      "id": "AdaptingVac",
+      "rate": 0.036,
+      "input": [
+        {
+          "from": "SalVac",
+          "weight": 1
+        }
+      ],
+      "output": [
+        {
+          "to": "AdapSalVac",
+          "weight": 1
+        }
+      ],
+      "deterministic": false
+    },
+    {
+      "id": "VacDamage",
+      "rate": 0.018,
+      "deterministic": false,
+      "input": [
+        {
+          "from": "SalVac",
+          "weight": 1
+        }
+      ],
+      "output": [
+        {
+          "to": "SalCyt",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "Deg1",
+      "rate": 0.001,
+      "deterministic": true,
+      "input": [
+        {
+          "from": "Ap_Gal8",
+          "weight": 1
+        }
+      ],
+      "output": []
+    },
+    {
+      "id": "Deg2",
+      "rate": 0.001,
+      "deterministic": true,
+      "input": [
+        {
+          "from": "Ap_Gal8_Ub_OPTNp",
+          "weight": 1
+        }
+      ],
+      "output": []
+    },
+    {
+      "id": "Deg2i",
+      "rate": 0.001,
+      "deterministic": true,
+      "input": [
+        {
+          "from": "Ap_Gal8_Ub_N_S",
+          "weight": 1
+        }
+      ],
+      "output": []
+    },
+    {
+      "id": "Deg2ii",
+      "rate": 0.001,
+      "deterministic": true,
+      "input": [
+        {
+          "from": "Ap_Gal8_Ub",
+          "weight": 1
+        }
+      ],
+      "output": []
+    },
+    {
+      "id": "Deg3",
+      "rate": 0.001,
+      "deterministic": true,
+      "input": [
+        {
+          "from": "Ap_Ub_OPTNp",
+          "weight": 1
+        }
+      ],
+      "output": []
+    },
+    {
+      "id": "Deg3i",
+      "rate": 0.001,
+      "deterministic": true,
+      "input": [
+        {
+          "from": "Ap_Ub_N_S",
+          "weight": 1
+        }
+      ],
+      "output": []
+    },
+    {
+      "id": "Deg3ii",
+      "rate": 0.001,
+      "deterministic": true,
+      "input": [
+        {
+          "from": "Ap_Ub",
+          "weight": 1
+        }
+      ],
+      "output": []
+    },
+    {
+      "id": "Output",
+      "rate": 0.001,
+      "deterministic": true,
+      "input": [
+        {
+          "from": "mTORC1_ULK1comp_SCV",
+          "weight": 1
+        }
+      ],
+      "output": []
+    },
+    {
+      "id": "Syn1",
+      "rate": 0.0005,
+      "deterministic": true,
+      "output": [
+        {
+          "to": "Gal8",
+          "weight": 1
+        }
+      ],
+      "input": []
+    },
+    {
+      "id": "Syn2",
+      "rate": 0.0005,
+      "deterministic": true,
+      "output": [
+        {
+          "to": "E3_ligase",
+          "weight": 1
+        }
+      ],
+      "input": []
+    },
+    {
+      "id": "Syn4",
+      "rate": 0.0005,
+      "deterministic": true,
+      "output": [
+        {
+          "to": "p62",
+          "weight": 1
+        }
+      ],
+      "input": []
+    },
+    {
+      "id": "Syn5",
+      "rate": 0.0005,
+      "deterministic": true,
+      "output": [
+        {
+          "to": "NDP52",
+          "weight": 1
+        }
+      ],
+      "input": []
+    },
+    {
+      "id": "Syn6",
+      "rate": 0.0005,
+      "deterministic": true,
+      "output": [
+        {
+          "to": "OPTN",
+          "weight": 1
+        }
+      ],
+      "input": []
+    },
+    {
+      "id": "Syn7",
+      "rate": 0.0005,
+      "deterministic": true,
+      "output": [
+        {
+          "to": "N_S",
+          "weight": 1
+        }
+      ],
+      "input": []
+    },
+    {
+      "id": "Syn8",
+      "rate": 0.0005,
+      "deterministic": true,
+      "output": [
+        {
+          "to": "TBK1",
+          "weight": 1
+        }
+      ],
+      "input": []
+    },
+    {
+      "id": "Syn9",
+      "rate": 0.0005,
+      "deterministic": true,
+      "output": [
+        {
+          "to": "mTORC1_ULK1comp",
+          "weight": 1
+        }
+      ],
+      "input": []
+    },
+    {
+      "id": "T1",
+      "rate": 0.01,
+      "condition": "infection_context",
+      "input": [
+        {
+          "from": "Gal8",
+          "weight": 1
+        },
+        {
+          "from": "S_damagedSCV",
+          "weight": 1
+        }
+      ],
+      "output": [
+        {
+          "to": "S_Gal8",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "T10",
+      "rate": 0.01,
+      "input": [
+        {
+          "from": "N_S",
+          "weight": 1
+        },
+        {
+          "from": "S_Gal8_Ub_NDP52",
+          "weight": 1
+        }
+      ],
+      "output": [
+        {
+          "to": "S_Gal8_Ub_NDP52_N_S",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "T10i",
+      "rate": 0.01,
+      "input": [
+        {
+          "from": "S_Gal8_Ub_NDP52_OPTN_p62",
+          "weight": 1
+        },
+        {
+          "from": "N_S",
+          "weight": 1
+        }
+      ],
+      "output": [
+        {
+          "to": "S_Gal8_Ub_NDP52_OPTN_p62_N_S",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "T11",
+      "rate": 0.01,
+      "input": [
+        {
+          "from": "S_Gal8_Ub_NDP52_N_S",
+          "weight": 1
+        }
+      ],
+      "output": [
+        {
+          "to": "N_S",
+          "weight": 1
+        },
+        {
+          "to": "S_Gal8_Ub",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "T12",
+      "rate": 0.01,
+      "input": [
+        {
+          "from": "N_S",
+          "weight": 1
+        },
+        {
+          "from": "p62",
+          "weight": 1
+        },
+        {
+          "from": "S_Gal8_Ub",
+          "weight": 1
+        },
+        {
+          "from": "OPTN",
+          "weight": 1
+        },
+        {
+          "from": "NDP52",
+          "weight": 1
+        }
+      ],
+      "output": [
+        {
+          "to": "S_Gal8_Ub_NDP52_OPTN_p62_N_S",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "T13",
+      "rate": 0.01,
+      "input": [
+        {
+          "from": "S_Gal8_Ub_NDP52_OPTN_p62_N_S",
+          "weight": 1
+        },
+        {
+          "from": "TBK1",
+          "weight": 2
+        }
+      ],
+      "output": [
+        {
+          "to": "S_Gal8_Ub_NDP52_OPTN_p62_N_S_diTBK1",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "T13i",
+      "rate": 0.01,
+      "input": [
+        {
+          "from": "S_Gal8_Ub_NDP52_OPTN_p62_N_S",
+          "weight": 1
+        },
+        {
+          "from": "TBK1",
+          "weight": 2
+        }
+      ],
+      "output": [
+        {
+          "to": "S_Gal8_Ub_NDP52_OPTN_p62_N_S_diTBK1i",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "T14",
+      "rate": 0.01,
+      "input": [
+        {
+          "from": "S_Gal8_Ub_NDP52_OPTN_p62_N_S_diTBK1",
+          "weight": 1
+        }
+      ],
+      "output": [
+        {
+          "to": "S_Gal8_Ub_NDP52_OPTN_p62_N_S",
+          "weight": 1
+        },
+        {
+          "to": "TBK1",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "T14i",
+      "rate": 0.01,
+      "input": [
+        {
+          "from": "S_Gal8_Ub_NDP52_OPTN_p62_N_S_diTBK1i",
+          "weight": 1
+        }
+      ],
+      "output": [
+        {
+          "to": "S_Gal8_Ub_NDP52_OPTN_p62_N_S",
+          "weight": 1
+        },
+        {
+          "to": "TBK1",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "T15",
+      "rate": 0.01,
+      "input": [
+        {
+          "from": "S_Gal8_Ub_NDP52_OPTN_p62_N_S",
+          "weight": 1
+        },
+        {
+          "from": "TBK1",
+          "weight": 2
+        }
+      ],
+      "output": [
+        {
+          "to": "S_Gal8_Ub_NDP52_p62_OPTNp_N_S_OligoTBK1",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "T16",
+      "rate": 0.01,
+      "input": [
+        {
+          "from": "LC3_GABARAP",
+          "weight": 1
+        },
+        {
+          "from": "S_Gal8_Ub_NDP52_p62_OPTNp_N_S_OligoTBK1",
+          "weight": 1
+        }
+      ],
+      "output": [
+        {
+          "to": "Ap_Gal8_Ub_OPTNp",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "T16i",
+      "rate": 0.01,
+      "input": [
+        {
+          "from": "S_Gal8_Ub_NDP52_OPTN_p62_N_S",
+          "weight": 1
+        },
+        {
+          "from": "LC3_GABARAP",
+          "weight": 1
+        }
+      ],
+      "output": [
+        {
+          "to": "Ap_Gal8_Ub_N_S",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "T16ii",
+      "rate": 0.01,
+      "input": [
+        {
+          "from": "S_Gal8_Ub_NDP52_OPTN_p62",
+          "weight": 1
+        },
+        {
+          "from": "LC3_GABARAP",
+          "weight": 1
+        }
+      ],
+      "output": [
+        {
+          "to": "Ap_Gal8_Ub",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "T18",
+      "rate": 0.01,
+      "condition": "infection_context",
+      "input": [
+        {
+          "from": "E3_ligase",
+          "weight": 1
+        },
+        {
+          "from": "S_damagedSCV",
+          "weight": 1
+        }
+      ],
+      "output": [
+        {
+          "to": "S_Ub",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "T19",
+      "rate": 0.01,
+      "input": [
+        {
+          "from": "S_Ub",
+          "weight": 1
+        },
+        {
+          "from": "p62",
+          "weight": 1
+        }
+      ],
+      "output": [
+        {
+          "to": "S_Ub_p62",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "T2",
+      "rate": 0.01,
+      "input": [
+        {
+          "from": "E3_ligase",
+          "weight": 1
+        },
+        {
+          "from": "S_Gal8",
+          "weight": 1
+        }
+      ],
+      "output": [
+        {
+          "to": "S_Gal8_Ub",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "T20",
+      "rate": 0.01,
+      "input": [
+        {
+          "from": "S_Ub_p62",
+          "weight": 1
+        }
+      ],
+      "output": [
+        {
+          "to": "S_Ub",
+          "weight": 1
+        },
+        {
+          "to": "p62",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "T21",
+      "rate": 0.01,
+      "input": [
+        {
+          "from": "S_Ub",
+          "weight": 1
+        },
+        {
+          "from": "OPTN",
+          "weight": 1
+        }
+      ],
+      "output": [
+        {
+          "to": "S_Ub_OPTN",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "T22",
+      "rate": 0.01,
+      "input": [
+        {
+          "from": "S_Ub_OPTN",
+          "weight": 1
+        }
+      ],
+      "output": [
+        {
+          "to": "S_Ub",
+          "weight": 1
+        },
+        {
+          "to": "OPTN",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "T23",
+      "rate": 0.01,
+      "input": [
+        {
+          "from": "NDP52",
+          "weight": 1
+        },
+        {
+          "from": "S_Ub",
+          "weight": 1
+        }
+      ],
+      "output": [
+        {
+          "to": "S_Ub_NDP52",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "T24",
+      "rate": 0.01,
+      "input": [
+        {
+          "from": "S_Ub_NDP52",
+          "weight": 1
+        }
+      ],
+      "output": [
+        {
+          "to": "NDP52",
+          "weight": 1
+        },
+        {
+          "to": "S_Ub",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "T25",
+      "rate": 0.01,
+      "input": [
+        {
+          "from": "S_Ub",
+          "weight": 1
+        },
+        {
+          "from": "OPTN",
+          "weight": 1
+        },
+        {
+          "from": "p62",
+          "weight": 1
+        },
+        {
+          "from": "NDP52",
+          "weight": 1
+        }
+      ],
+      "output": [
+        {
+          "to": "S_Ub_NDP52_OPTN_p62",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "T26",
+      "rate": 0.01,
+      "input": [
+        {
+          "from": "N_S",
+          "weight": 1
+        },
+        {
+          "from": "S_Ub_NDP52",
+          "weight": 1
+        }
+      ],
+      "output": [
+        {
+          "to": "S_Ub_NDP52_N_S",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "T26i",
+      "rate": 0.01,
+      "input": [
+        {
+          "from": "N_S",
+          "weight": 1
+        },
+        {
+          "from": "S_Ub_NDP52_OPTN_p62",
+          "weight": 1
+        }
+      ],
+      "output": [
+        {
+          "to": "S_Ub_NDP52_OPTN_p62_N_S",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "T27",
+      "rate": 0.01,
+      "input": [
+        {
+          "from": "S_Ub_NDP52_N_S",
+          "weight": 1
+        }
+      ],
+      "output": [
+        {
+          "to": "N_S",
+          "weight": 1
+        },
+        {
+          "to": "S_Ub",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "T28",
+      "rate": 0.01,
+      "input": [
+        {
+          "from": "N_S",
+          "weight": 1
+        },
+        {
+          "from": "S_Ub",
+          "weight": 1
+        },
+        {
+          "from": "OPTN",
+          "weight": 1
+        },
+        {
+          "from": "p62",
+          "weight": 1
+        },
+        {
+          "from": "NDP52",
+          "weight": 1
+        }
+      ],
+      "output": [
+        {
+          "to": "S_Ub_NDP52_OPTN_p62_N_S",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "T29",
+      "rate": 0.01,
+      "input": [
+        {
+          "from": "TBK1",
+          "weight": 2
+        },
+        {
+          "from": "S_Ub_NDP52_OPTN_p62_N_S",
+          "weight": 1
+        }
+      ],
+      "output": [
+        {
+          "to": "S_Ub_NDP52_OPTN_p62_N_S_diTBK1",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "T29_",
+      "rate": 0.01,
+      "input": [
+        {
+          "from": "TBK1",
+          "weight": 2
+        },
+        {
+          "from": "S_Ub_NDP52_OPTN_p62_N_S",
+          "weight": 1
+        }
+      ],
+      "output": [
+        {
+          "to": "S_Ub_NDP52_OPTN_p62_N_S_diTBK1i",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "T2i",
+      "rate": 0.01,
+      "input": [
+        {
+          "from": "S_Gal8_NDP52",
+          "weight": 1
+        },
+        {
+          "from": "E3_ligase",
+          "weight": 1
+        }
+      ],
+      "output": [
+        {
+          "to": "S_Gal8_Ub_NDP52",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "T3",
+      "rate": 0.01,
+      "input": [
+        {
+          "from": "NDP52",
+          "weight": 1
+        },
+        {
+          "from": "S_Gal8_Ub",
+          "weight": 1
+        }
+      ],
+      "output": [
+        {
+          "to": "S_Gal8_Ub_NDP52",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "T3_release",
+      "rate": 0.01,
+      "input": [
+        {
+          "from": "S_Gal8_Ub_NDP52",
+          "weight": 1
+        }
+      ],
+      "output": [
+        {
+          "to": "S_Gal8_Ub",
+          "weight": 1
+        },
+        {
+          "to": "NDP52",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "T30",
+      "rate": 0.01,
+      "input": [
+        {
+          "from": "S_Ub_NDP52_OPTN_p62_N_S_diTBK1",
+          "weight": 1
+        }
+      ],
+      "output": [
+        {
+          "to": "S_Ub_NDP52_OPTN_p62_N_S",
+          "weight": 1
+        },
+        {
+          "to": "TBK1",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "T30_",
+      "rate": 0.01,
+      "input": [
+        {
+          "from": "S_Ub_NDP52_OPTN_p62_N_S_diTBK1i",
+          "weight": 1
+        }
+      ],
+      "output": [
+        {
+          "to": "S_Ub_NDP52_OPTN_p62_N_S",
+          "weight": 1
+        },
+        {
+          "to": "TBK1",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "T31",
+      "rate": 0.01,
+      "input": [
+        {
+          "from": "TBK1",
+          "weight": 2
+        },
+        {
+          "from": "S_Ub_NDP52_OPTN_p62_N_S",
+          "weight": 1
+        }
+      ],
+      "output": [
+        {
+          "to": "S_Ub_NDP52_OPTN_p62_N_S_OligoTBK1",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "T32",
+      "rate": 0.01,
+      "input": [
+        {
+          "from": "LC3_GABARAP",
+          "weight": 1
+        },
+        {
+          "from": "S_Ub_NDP52_OPTN_p62_N_S_OligoTBK1",
+          "weight": 1
+        }
+      ],
+      "output": [
+        {
+          "to": "Ap_Ub_OPTNp",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "T32i",
+      "rate": 0.01,
+      "input": [
+        {
+          "from": "LC3_GABARAP",
+          "weight": 1
+        },
+        {
+          "from": "S_Ub_NDP52_OPTN_p62_N_S",
+          "weight": 1
+        }
+      ],
+      "output": [
+        {
+          "to": "Ap_Ub_N_S",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "T32ii",
+      "rate": 0.01,
+      "input": [
+        {
+          "from": "S_Ub_NDP52_OPTN_p62",
+          "weight": 1
+        },
+        {
+          "from": "LC3_GABARAP",
+          "weight": 1
+        }
+      ],
+      "output": [
+        {
+          "to": "Ap_Ub",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "T33",
+      "rate": 0.01,
+      "input": [
+        {
+          "from": "SignalSCVdamage",
+          "weight": 1
+        },
+        {
+          "from": "AA",
+          "weight": 1
+        }
+      ],
+      "output": [
+        {
+          "to": "AAstarvation",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "T34",
+      "rate": 0.01,
+      "input": [
+        {
+          "from": "AAstarvation",
+          "weight": 1
+        },
+        {
+          "from": "mTORC1_ULK1comp",
+          "weight": 1
+        }
+      ],
+      "output": [
+        {
+          "to": "mTORC1inactive",
+          "weight": 1
+        },
+        {
+          "to": "ULK1comp",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "T35",
+      "rate": 0.01,
+      "input": [
+        {
+          "from": "mTORC1inactive",
+          "weight": 1
+        },
+        {
+          "from": "ULK1comp",
+          "weight": 1
+        }
+      ],
+      "output": [
+        {
+          "to": "AA",
+          "weight": 1
+        },
+        {
+          "to": "mTORC1_ULK1comp",
+          "weight": 1
+        },
+        {
+          "to": "mTORC1_ULK1comp_SCV",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "T36",
+      "rate": 0.01,
+      "input": [
+        {
+          "from": "ULK1comp",
+          "weight": 1
+        }
+      ],
+      "output": [
+        {
+          "to": "SignalAutophagyInduction",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "T37",
+      "rate": 0.01,
+      "input": [
+        {
+          "from": "SignalAutophagyInduction",
+          "weight": 1
+        }
+      ],
+      "output": [
+        {
+          "to": "ULK1comp",
+          "weight": 1
+        },
+        {
+          "to": "LC3_signal",
+          "weight": 1
+        }
+      ],
+      "deterministic": false
+    },
+    {
+      "id": "T3i",
+      "rate": 0.01,
+      "input": [
+        {
+          "from": "NDP52",
+          "weight": 1
+        },
+        {
+          "from": "S_Gal8",
+          "weight": 1
+        }
+      ],
+      "output": [
+        {
+          "to": "S_Gal8_NDP52",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "T4",
+      "rate": 0.01,
+      "input": [
+        {
+          "from": "S_Gal8_NDP52",
+          "weight": 1
+        },
+        {
+          "from": "LC3_GABARAP",
+          "weight": 1
+        }
+      ],
+      "output": [
+        {
+          "to": "Ap_Gal8",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "T5",
+      "rate": 0.01,
+      "input": [
+        {
+          "from": "OPTN",
+          "weight": 1
+        },
+        {
+          "from": "S_Gal8_Ub",
+          "weight": 1
+        }
+      ],
+      "output": [
+        {
+          "to": "S_Gal8_Ub_OPTN",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "T6",
+      "rate": 0.01,
+      "input": [
+        {
+          "from": "S_Gal8_Ub_OPTN",
+          "weight": 1
+        }
+      ],
+      "output": [
+        {
+          "to": "S_Gal8_Ub",
+          "weight": 1
+        },
+        {
+          "to": "OPTN",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "T7",
+      "rate": 0.01,
+      "input": [
+        {
+          "from": "S_Gal8_Ub",
+          "weight": 1
+        },
+        {
+          "from": "p62",
+          "weight": 1
+        }
+      ],
+      "output": [
+        {
+          "to": "S_Gal8_Ub_p62",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "T8",
+      "rate": 0.01,
+      "input": [
+        {
+          "from": "S_Gal8_Ub_p62",
+          "weight": 1
+        }
+      ],
+      "output": [
+        {
+          "to": "S_Gal8_Ub",
+          "weight": 1
+        },
+        {
+          "to": "p62",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "T9",
+      "rate": 0.01,
+      "input": [
+        {
+          "from": "p62",
+          "weight": 1
+        },
+        {
+          "from": "S_Gal8_Ub",
+          "weight": 1
+        },
+        {
+          "from": "NDP52",
+          "weight": 1
+        },
+        {
+          "from": "OPTN",
+          "weight": 1
+        }
+      ],
+      "output": [
+        {
+          "to": "S_Gal8_Ub_NDP52_OPTN_p62",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "Bridge",
+      "rate": 1.0,
+      "deterministic": false,
+      "input": [
+        {
+          "from": "XenoStart",
+          "weight": 1
+        }
+      ],
+      "output": [
+        {
+          "to": "S_damagedSCV",
+          "weight": 1
+        },
+        {
+          "to": "SignalSCVdamage",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "Syn10",
+      "rate": 1.0,
+      "deterministic": false,
+      "input": [],
+      "output": [
+        {
+          "to": "LC3",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "T38",
+      "rate": 0.01,
+      "deterministic": false,
+      "input": [
+        {
+          "from": "LC3_signal",
+          "weight": 1
+        },
+        {
+          "from": "LC3",
+          "weight": 1
+        }
+      ],
+      "output": [
+        {
+          "to": "LC3_GABARAP",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "XenoDeg3",
+      "rate": 0.0001,
+      "deterministic": false,
+      "input": [
+        {
+          "from": "SalCyt",
+          "weight": 1
+        }
+      ],
+      "output": [
+        {
+          "to": "XenoStart",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "XenoDeg4",
+      "rate": 0.0001,
+      "deterministic": false,
+      "input": [
+        {
+          "from": "AdapSalCyt",
+          "weight": 1
+        }
+      ],
+      "output": [
+        {
+          "to": "XenoStart",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "XenoFail",
+      "rate": 1.0,
+      "deterministic": false,
+      "input": [
+        {
+          "from": "XenoStart",
+          "weight": 1
+        }
+      ],
+      "output": [
+        {
+          "to": "SalCyt",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "EXP1",
+      "rate": 0.1,
+      "deterministic": false,
+      "input": [
+        {
+          "from": "S_damagedSCV",
+          "weight": 1
+        },
+        {
+          "from": "NDP52",
+          "weight": 1
+        }
+      ],
+      "output": [
+        {
+          "to": "S_Gal8_NDP52",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "EXP2",
+      "rate": 0.01,
+      "deterministic": false,
+      "input": [
+        {
+          "from": "S_damagedSCV",
+          "weight": 1
+        },
+        {
+          "from": "E3_ligase",
+          "weight": 1
+        }
+      ],
+      "output": [
+        {
+          "to": "S_Gal8_Ub",
+          "weight": 1
+        }
+      ]
+    }
+  ]
+}

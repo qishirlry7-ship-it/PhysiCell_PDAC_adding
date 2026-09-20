@@ -3,8 +3,6 @@ set -euo pipefail
 root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$root"
 
-python3 scripts/generate_petrinet_cpp.py --check
-bash scripts/run_petrinet_tests.sh
 python3 scripts/make_minimal_petrinet_config.py
 make -j4
 ./project outputs/petrinet_minimal/PhysiCell_settings.xml \

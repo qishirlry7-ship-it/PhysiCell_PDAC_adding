@@ -123,6 +123,10 @@ void add_observables(PhysiCell::Cell_Definition* definition) {
         definition->custom_data.add_variable("ap_ub_tokens", "count", 0.0);
     if (definition->custom_data.find_variable_index("surface_pMHC") < 0)
         definition->custom_data.add_variable("surface_pMHC", "count", 0.0);
+    if (definition->custom_data.find_variable_index("surface_pMHC_I") < 0)
+        definition->custom_data.add_variable("surface_pMHC_I", "count", 0.0);
+    if (definition->custom_data.find_variable_index("surface_pMHC_II") < 0)
+        definition->custom_data.add_variable("surface_pMHC_II", "count", 0.0);
     if (definition->custom_data.find_variable_index("mhcii_cd4_recognition") < 0)
         definition->custom_data.add_variable("mhcii_cd4_recognition", "dimensionless", 0.0);
     if (definition->custom_data.find_variable_index("pn_death_probability") < 0)
@@ -185,7 +189,7 @@ void setup_petrinet_integration() {
         throw std::runtime_error("petrinet_input_mode must be 0, 1, or 2");
     input_mode = static_cast<BacterialInputMode>(configured_mode);
     uptake_rng.seed(mix_seed(global_seed ^ 0x42555054414b45ULL));
-    next_uptake_time_minutes = parameters.bacterial_uptake_interval;
+    next_uptake_time_minutes = parameters().bacterial_uptake_interval;
     if (manual_input_enabled())
         load_schedule(PhysiCell::parameters.strings("petrinet_entry_csv"));
     metrics_interval_minutes = PhysiCell::parameters.doubles("petrinet_metrics_interval");
@@ -196,7 +200,8 @@ void setup_petrinet_integration() {
         metrics_file << "time_min,cell_id,cell_type,intracellular_bacteria,"
                         "sal_ruffle_tokens,uptaken_bacteria,"
                         "ap_gal8_tokens,ap_ub_tokens,xenophagy_activity,"
-                        "surface_pMHC,mhcii_cd4_recognition,physicell_damage,"
+                        "surface_pMHC,surface_pMHC_I,surface_pMHC_II,"
+                        "mhcii_cd4_recognition,physicell_damage,"
                         "death_probability,is_dead,"
                         "petrinet_death_triggered,death_time_min\n";
     }
@@ -221,7 +226,7 @@ void setup_petrinet_integration() {
         if (!definition) continue;
         for (const char* target_name : target_names)
             definition->phenotype.cell_interactions.attack_rate(target_name) =
-                parameters.mhcii_cd4_attack_max;
+                parameters().mhcii_cd4_attack_max;
     }
 }
 
@@ -272,7 +277,7 @@ void process_bacterial_entry_schedule(double current_time_minutes) {
 
 void process_extracellular_bacterial_uptake(double current_time_minutes) {
     if (!integration_enabled || !agent_input_enabled()) return;
-    const double interval = parameters.bacterial_uptake_interval;
+    const double interval = parameters().bacterial_uptake_interval;
     if (current_time_minutes + 1e-9 < next_uptake_time_minutes) return;
 
     struct Decision {
@@ -293,10 +298,10 @@ void process_extracellular_bacterial_uptake(double current_time_minutes) {
         });
 
         std::vector<Decision> decisions;
-        const double radius2 = parameters.bacterial_uptake_distance *
-                               parameters.bacterial_uptake_distance;
+        const double radius2 = parameters().bacterial_uptake_distance *
+                               parameters().bacterial_uptake_distance;
         const double probability = -std::expm1(
-            -parameters.bacterial_uptake_rate * interval);
+            -parameters().bacterial_uptake_rate * interval);
 
         for (PhysiCell::Cell* bacterium : bacteria) {
             const int voxel = bacterium->get_current_mechanics_voxel_index();
@@ -360,12 +365,14 @@ void write_petrinet_metrics(double current_time_minutes) {
             state->death_time_minutes = current_time_minutes;
         metrics_file << current_time_minutes << ',' << cell->ID << ',' << cell->type_name << ','
                      << cell->custom_data["intracellular_bacteria"] << ','
-                     << state->marking[SalRuffle] << ','
+                     << engine.sal_ruffle_tokens(state->marking) << ','
                      << engine.uptaken_bacterial_burden(state->marking) << ','
                      << engine.gal8_autophagosome_tokens(state->marking) << ','
                      << engine.ub_autophagosome_tokens(state->marking) << ','
                      << cell->custom_data["xenophagy_activity"] << ','
                      << cell->custom_data["surface_pMHC"] << ','
+                     << cell->custom_data["surface_pMHC_I"] << ','
+                     << cell->custom_data["surface_pMHC_II"] << ','
                      << cell->custom_data["mhcii_cd4_recognition"] << ','
                      << cell->phenotype.cell_integrity.damage << ','
                      << cell->custom_data["pn_death_probability"] << ','
@@ -394,9 +401,11 @@ void petrinet_phenotype(PhysiCell::Cell* cell, PhysiCell::Phenotype& phenotype,
     cell->custom_data["ap_ub_tokens"] = engine.ub_autophagosome_tokens(state->marking);
     cell->custom_data["xenophagy_activity"] = result.xenophagy_activity;
     cell->custom_data["surface_pMHC"] = state->mhc.P;
+    cell->custom_data["surface_pMHC_I"] = state->mhc1.P;
+    cell->custom_data["surface_pMHC_II"] = state->mhc.P;
     const double cd4_recognition = mhcii_cd4_recognition(
-        state->mhc.P, parameters.mhcii_cd4_half_max,
-        parameters.mhcii_cd4_hill);
+        state->mhc.P, parameters().mhcii_cd4_half_max,
+        parameters().mhcii_cd4_hill);
     cell->custom_data["mhcii_cd4_recognition"] = cd4_recognition;
     set_cd4_immunogenicity(cell, cd4_recognition);
     cell->custom_data["pn_death_probability"] = result.death_probability;
@@ -417,7 +426,7 @@ void petrinet_division(PhysiCell::Cell* parent, PhysiCell::Cell* child) {
     CellPetriNetState* parent_state = state_for(parent, false);
     if (!parent_state) return;
     CellPetriNetState* child_state = state_for(child, true);
-    engine.split(*parent_state, *child_state, parameters.division_daughter_fraction,
+    engine.split(*parent_state, *child_state, parameters().division_daughter_fraction,
                  mix_seed(global_seed ^ static_cast<std::uint64_t>(child->ID)));
     parent->custom_data["pn_active"] = parent_state->active ? 1.0 : 0.0;
     child->custom_data["pn_active"] = child_state->active ? 1.0 : 0.0;
