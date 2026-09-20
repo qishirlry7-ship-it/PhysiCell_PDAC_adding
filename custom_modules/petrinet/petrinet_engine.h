@@ -1,12 +1,76 @@
 #pragma once
 
-#include "../generated/xenophagy_model_generated.h"
+#include "runtime/include/petrinet/expression.h"
+#include "runtime/include/petrinet/model.h"
 
+#include <array>
 #include <cstdint>
 #include <deque>
+#include <map>
 #include <random>
+#include <string>
+#include <vector>
 
 namespace xenophagy {
+
+using Marking = std::vector<int>;
+
+struct ModelParameters {
+    double k_death = 1e-7;
+    double death_threshold = 100.0;
+    double cap_cyt_initial = 700.0;
+    double cap_vac_initial = 150.0;
+    double sigmoid_k = 5e-5;
+    double sigmoid_mid_base = 1800.0;
+    double sigmoid_mid_slope = 200.0;
+    double mhc_alpha = 1.0;
+    double mhc_beta = 1.0;
+    double xeno_signal_mode = 0.0;
+    double division_daughter_fraction = 1.0;
+    double mhc_d_X = 0.2;
+    double mhc_d_M = 0.07;
+    double mhc_k_T = 1.0;
+    double mhc_d_C = 0.03;
+    double mhc_d_P = 0.069;
+    double mhc_k_load = 1e-4;
+    // Constant MHC synthesis rates (molecules/h). IFN-gamma modulation was
+    // removed -- see the note in petrinet_engine.cpp. Values equal the old
+    // double-counted saturation expression S_M_base + V_M_IFN*I/(K_M_IFN+I)
+    // where S_M_base was already the resolved saturated rate, so presentation
+    // levels are preserved exactly.
+    double mhc_S_M_base = 7472.0;
+    double mhc_r_pep = 5.0;
+    double mhc_max_step_seconds = 60.0;
+    double mhc_X0 = 0.0;
+    double mhc_M0 = 10000.0;
+    double mhc_C0 = 0.0;
+    double mhc_P0 = 0.0;
+    // MHC-I branch: cross-presentation of xenophagy-derived antigen onto MHC-I.
+    // The rate set is much faster than MHC-II and does not share its parameters.
+    bool mhc1_enable = true;
+    double mhc1_cross_frac = 0.05;
+    double mhc1_d_X = 14.4;
+    double mhc1_d_M = 1.663;
+    double mhc1_k_T = 28.8;
+    double mhc1_d_C = 0.1663;
+    double mhc1_d_P = 0.0433;
+    double mhc1_k_load = 0.018144;
+    // MHC-I synthesis: the old code passed mhc1_S_M_base (=200) into the
+    // saturating expression, so the resolved constant is 200 + V*I/(K+I) with
+    // I = mhc1_ifn_gamma = 150, i.e. 4187 -- not a double-counted value.
+    double mhc1_S_M = 4187.0;
+    double mhc1_M0 = 10000.0;
+    double mhc1_r_pep = 1.0;
+    double mhc2_d_P_mature = 0.007;
+    double bacterial_uptake_rate = 0.02;
+    double bacterial_uptake_interval = 1.0;
+    double bacterial_uptake_distance = 20.0;
+    double mhcii_cd4_attack_max = 0.15;
+    double mhcii_cd4_half_max = 30.0;
+    double mhcii_cd4_hill = 1.0;
+};
+
+const ModelParameters& parameters();
 
 struct EntryEvent {
     double time_seconds = 0.0;
@@ -23,27 +87,46 @@ struct EntryEvent {
 };
 
 struct MHCState {
-    double X = parameters.mhc_X0;
-    double M = parameters.mhc_M0;
-    double C = parameters.mhc_C0;
-    double P = parameters.mhc_P0;
+    double X = 0.0;
+    double M = 10000.0;
+    double C = 0.0;
+    double P = 0.0;
 };
 
 struct MHCParameters {
+    // Two independent presentation branches. MHC-I uses its own (much faster)
+    // rate set; MHC-II is the xenophagy/cross-presentation branch. Defaults are
+    // aligned with the reference implementation in model2's
+    // examples/xenophagy_population (population.h, struct MHCParams).
+    bool mhc1_enable = true;
+    double mhc1_cross_frac = 0.05;
+    double alpha = 1.0;
+    double beta = 1.0;
+
+    double mhc1_d_X;
+    double mhc1_d_M;
+    double mhc1_k_T;
+    double mhc1_d_C;
+    double mhc1_d_P;
+    double mhc1_k_load;
+    double mhc1_S_M;
+    double mhc1_M0;
+    double mhc1_r_pep;
+
     double d_X;
     double d_M;
     double k_T;
     double d_C;
     double d_P;
+    // MHC-II surface decay depends on maturation state; the immature (default)
+    // rate keeps pMHC-II short-lived, the mature rate stabilises it.
+    double mhc2_d_P_immature;
     double k_load;
     double S_M;
     double r_pep;
 
-    explicit MHCParameters(const ModelParameters& p = parameters)
-        : d_X(p.mhc_d_X), d_M(p.mhc_d_M), k_T(p.mhc_k_T),
-          d_C(p.mhc_d_C), d_P(p.mhc_d_P), k_load(p.mhc_k_load),
-          S_M(p.mhc_S_M_base + p.mhc_V_M_IFN * p.mhc_ifn_gamma /
-              (p.mhc_K_M_IFN + p.mhc_ifn_gamma)), r_pep(p.mhc_r_pep) {}
+    explicit MHCParameters(bool mhc2_mature = false,
+                           const ModelParameters& p = parameters());
 };
 
 struct CellPetriNetState {
@@ -55,6 +138,7 @@ struct CellPetriNetState {
     bool petrinet_death_triggered = false;
     double death_time_minutes = -1.0;
     MHCState mhc;
+    MHCState mhc1;
     std::deque<EntryEvent> entries;
     std::mt19937_64 rng;
 
@@ -65,13 +149,19 @@ struct WindowResult {
     double integrated_death_hazard = 0.0;
     double death_probability = 0.0;
     double antigen_flux = 0.0;
+    int deg_count = 0;
     double xenophagy_activity = 0.0;
     double peak_xenophagy_activity = 0.0;
     double peak_surface_pMHC = 0.0;
+    double peak_surface_pMHC_I = 0.0;
+    double peak_surface_pMHC_II = 0.0;
     int intracellular_bacteria = 0;
     int sal_ruffle_tokens = 0;
     int uptaken_bacteria = 0;
     std::uint64_t reactions_fired = 0;
+    // True when the SSA loop hit EngineConfig::max_events before reaching the
+    // requested window end, so the caller knows the window was truncated.
+    bool reactions_capped = false;
 };
 
 struct EngineConfig {
@@ -80,11 +170,36 @@ struct EngineConfig {
         ContinuousCompetingHazard
     };
 
-    ModelParameters model = parameters;
-    MHCParameters mhc = MHCParameters(model);
-    XenoSignalMode xeno_signal_mode = parameters.xeno_signal_mode == 0.0
+    std::string model_json = "config/petrinet/xenophagy_model.json";
+    ModelParameters model = parameters();
+    bool mhc2_mature = false;
+    MHCParameters mhc = MHCParameters(mhc2_mature, model);
+    XenoSignalMode xeno_signal_mode = parameters().xeno_signal_mode == 0.0
         ? XenoSignalMode::PythonPostReactionBernoulli
         : XenoSignalMode::ContinuousCompetingHazard;
+
+    // Parameter overrides applied to the loaded model at construction time.
+    // The JSON topology carries the network structure; the PHYSICELL XML (or a
+    // caller-provided table) carries the calibrated rates. Without this the
+    // XML would be dead configuration, which is exactly the bug this fixes.
+    std::map<std::string, std::string> override_expression;
+    std::map<std::string, int> initial_marking;
+    int cap_cyt = -1;  // <0 keeps the model's own value
+    int cap_vac = -1;
+
+    // Michaelis-Menten synthesis. Transitions flagged "deterministic" in the
+    // JSON are saturable synthesis/degradation steps: their rate law is
+    //     k * baseline / (baseline + substrate_tokens)
+    // with `substrate` the place named here per transition id. Reactions with
+    // no substrate entry fall back to their own JSON rate (mass action).
+    std::map<std::string, std::string> syn_mm;
+    double syn_baseline = 200.0;
+
+    // Hard cap on SSA reactions per advance() call. With a large initial
+    // marking the total propensity can reach O(1000)/s, which would otherwise
+    // make a multi-hour window spin for millions of iterations. The cap keeps
+    // per-callback cost bounded and is reported via reactions_capped.
+    int max_events = 100000;
 };
 
 class PetriNetEngine {
@@ -97,21 +212,61 @@ public:
                double daughter_fraction, std::uint64_t child_seed) const;
 
     double propensity(std::size_t transition_index, const Marking& marking) const;
-    int bacterial_burden(const Marking& marking) const;
-    int uptaken_bacterial_burden(const Marking& marking) const;
+    int bacterial_burden(const Marking& marking) const;    int uptaken_bacterial_burden(const Marking& marking) const;
+    int sal_ruffle_tokens(const Marking& marking) const;
     int gal8_autophagosome_tokens(const Marking& marking) const;
     int ub_autophagosome_tokens(const Marking& marking) const;
     double xenophagy_activity(const Marking& marking) const;
 
+    // The model is loaded from JSON at run time, so place and transition
+    // indices are not compile-time constants. These accessors let callers
+    // (tests, benchmarks, diagnostics) resolve them by name instead of
+    // hard-coding enum values that no longer exist.
+    const petrinet::Model& model() const { return model_; }
+    std::size_t place_count() const { return model_.places.size(); }
+    std::size_t transition_count() const { return model_.transitions.size(); }
+    int place_index(const std::string& id) const;
+    int transition_index(const std::string& id) const;
+    int token(const Marking& marking, const std::string& place_id) const;
+    int token(const Marking& marking, int index) const;
+
 private:
     EngineConfig config_;
+    petrinet::Model model_;
+    std::vector<petrinet::Expression> expressions_;
+    // Lazy transition table: only transitions the model can actually fire are
+    // visited each SSA step. Every other transition has zero propensity by
+    // construction, so scanning it is pure overhead.
+    std::vector<std::size_t> active_transitions_;
+    std::vector<petrinet::Expression> active_expressions_;
+    int ix_sal_ruffle_ = -1;
+    int ix_sal_vac_ = -1;
+    int ix_sal_cyt_ = -1;
+    int ix_adap_sal_cyt_ = -1;
+    int ix_adap_sal_vac_ = -1;
+    int ix_cap_cyt_ = -1;
+    int ix_cap_vac_ = -1;
+    int ix_xenosig_ = -1;
+    std::array<int, 4> bacterial_places_{{-1, -1, -1, -1}};
+    std::array<int, 4> gal8_ap_places_{{-1, -1, -1, -1}};
+    std::array<int, 3> ub_ap_places_{{-1, -1, -1}};
 
     double sigmoid_propensity(const CellPetriNetState& state) const;
+    double active_propensity(std::size_t active_i, const Marking& marking) const;
     void fire(std::size_t transition_index, Marking& marking) const;
     void apply_entry(CellPetriNetState& state, const EntryEvent& event) const;
     void integrate_interval(CellPetriNetState& state, double dt_seconds,
                             WindowResult& result) const;
+    void integrate_mhc_window(CellPetriNetState& state, int deg_count,
+                              double dt_seconds, WindowResult& result) const;
     void rebuild_capacity(Marking& marking) const;
+    // Applies config_.override_expression / initial_marking / capacities to the
+    // freshly loaded model, then rebuilds the active transition table.
+    void apply_overrides();
+    // Rewrites deterministic transitions that have a configured substrate into
+    // their saturable Michaelis-Menten rate law.
+    void apply_saturating_rates();
+    void rebuild_active_transitions();
 };
 
 } // namespace xenophagy
