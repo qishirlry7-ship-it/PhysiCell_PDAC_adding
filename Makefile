@@ -58,7 +58,7 @@ PhysiCell_pugixml.o PhysiCell_settings.o PhysiCell_geometry.o
 
 # put your custom objects here (they should be in the custom_modules directory)
 
-PhysiCell_custom_module_OBJECTS := custom.o petrinet_engine.o physicell_petrinet_adapter.o xenophagy_model_generated.o
+PhysiCell_custom_module_OBJECTS := custom.o petrinet_engine.o physicell_petrinet_adapter.o petrinet_json.o petrinet_model.o petrinet_expression.o petrinet_ssa.o
 
 pugixml_OBJECTS := pugixml.o
 
@@ -174,21 +174,23 @@ PhysiCell_geometry.o: ./modules/PhysiCell_geometry.cpp
 custom.o: ./custom_modules/custom.cpp
 	$(COMPILE_COMMAND) -c ./custom_modules/custom.cpp
 
-petrinet_engine.o: ./custom_modules/petrinet/petrinet_engine.cpp ./custom_modules/petrinet/petrinet_engine.h ./custom_modules/generated/xenophagy_model_generated.h
-	$(COMPILE_COMMAND) -c ./custom_modules/petrinet/petrinet_engine.cpp
+petrinet_engine.o: ./custom_modules/petrinet/petrinet_engine.cpp ./custom_modules/petrinet/petrinet_engine.h
+	$(COMPILE_COMMAND) -I./custom_modules/petrinet/runtime/include -c ./custom_modules/petrinet/petrinet_engine.cpp
 
-physicell_petrinet_adapter.o: ./custom_modules/petrinet/physicell_petrinet_adapter.cpp ./custom_modules/petrinet/physicell_petrinet_adapter.h ./custom_modules/petrinet/petrinet_engine.h ./custom_modules/generated/xenophagy_model_generated.h
-	$(COMPILE_COMMAND) -c ./custom_modules/petrinet/physicell_petrinet_adapter.cpp
+physicell_petrinet_adapter.o: ./custom_modules/petrinet/physicell_petrinet_adapter.cpp ./custom_modules/petrinet/physicell_petrinet_adapter.h ./custom_modules/petrinet/petrinet_engine.h
+	$(COMPILE_COMMAND) -I./custom_modules/petrinet/runtime/include -c ./custom_modules/petrinet/physicell_petrinet_adapter.cpp
 
-xenophagy_model_generated.o: ./custom_modules/generated/xenophagy_model_generated.cpp
-	$(COMPILE_COMMAND) -c ./custom_modules/generated/xenophagy_model_generated.cpp
+petrinet_json.o: ./custom_modules/petrinet/runtime/src/json.cpp
+	$(COMPILE_COMMAND) -I./custom_modules/petrinet/runtime/include -c ./custom_modules/petrinet/runtime/src/json.cpp -o petrinet_json.o
 
-petrinet-generate:
-	python3 scripts/generate_petrinet_cpp.py
+petrinet_model.o: ./custom_modules/petrinet/runtime/src/model.cpp
+	$(COMPILE_COMMAND) -I./custom_modules/petrinet/runtime/include -c ./custom_modules/petrinet/runtime/src/model.cpp -o petrinet_model.o
 
-petrinet-check:
-	python3 scripts/generate_petrinet_cpp.py --check
-	bash scripts/run_petrinet_tests.sh
+petrinet_expression.o: ./custom_modules/petrinet/runtime/src/expression.cpp
+	$(COMPILE_COMMAND) -I./custom_modules/petrinet/runtime/include -c ./custom_modules/petrinet/runtime/src/expression.cpp -o petrinet_expression.o
+
+petrinet_ssa.o: ./custom_modules/petrinet/runtime/src/ssa.cpp
+	$(COMPILE_COMMAND) -I./custom_modules/petrinet/runtime/include -c ./custom_modules/petrinet/runtime/src/ssa.cpp -o petrinet_ssa.o
 
 # cleanup
 
