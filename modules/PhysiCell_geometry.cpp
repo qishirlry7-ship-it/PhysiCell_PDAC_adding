@@ -731,6 +731,13 @@ std::vector<std::string> split_csv_labels( std::string labels_line )
 
 Cell* process_csv_v2_line( std::string line , std::vector<std::string> labels )
 {
+	// Strip a trailing carriage return. Files checked out on Windows (or under
+	// core.autocrlf=true) carry CRLF endings, and without this the final token
+	// keeps its '\r' -- so "PD-L1lo_tumor\r" never matches a cell definition
+	// and every cell in the file is skipped.
+	if( !line.empty() && line.back() == '\r' )
+	{ line.pop_back(); }
+
 	// split the line into tokens 
 	std::vector< std::string > tokens; 
 
