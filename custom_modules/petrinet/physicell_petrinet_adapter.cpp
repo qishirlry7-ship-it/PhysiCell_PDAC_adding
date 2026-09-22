@@ -18,10 +18,13 @@
 namespace xenophagy {
 namespace {
 
+// Tumour types the PetriNet acts on. Only the two base definitions are
+// listed: infection state lives in custom_data (pn_active, sal_ruffle_tokens,
+// intracellular_bacteria, surface_pMHC_I/II, ...) rather than in dedicated
+// *_infected / *_xenophagy cell types, so a tumour keeps its identity for the
+// whole run.
 const char* target_names[] = {
-    "PD-L1lo_tumor", "PD-L1hi_tumor",
-    "PD-L1lo_tumor_infected", "PD-L1lo_tumor_xenophagy",
-    "PD-L1hi_tumor_infected", "PD-L1hi_tumor_xenophagy"
+    "PD-L1lo_tumor", "PD-L1hi_tumor"
 };
 
 const char* cd4_names[] = {"PD-1hi_CD4_Tcell", "PD-1lo_CD4_Tcell"};

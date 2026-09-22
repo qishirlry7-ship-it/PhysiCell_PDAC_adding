@@ -263,14 +263,17 @@ std::vector<std::string> my_coloring_function(Cell *pCell)
 		"black",      // 17: fixed_vessel_source
 		"crimson",    // 18: fixed_vessel_source_compressed
 		"lawngreen",  // 19: Bifidobacterium_longum
-		"navy",       // 20: PD-L1lo_tumor_infected
-		"deeppink",   // 21: PD-L1lo_tumor_xenophagy
-		"sienna",     // 22: PD-L1hi_tumor_infected
-		"turquoise",  // 23: PD-L1hi_tumor_xenophagy
-		"white",      // 24: Bifidobacterium_longum_Gal8 (was falling through
+		// 20/21 are cDC1_licensed and Bifidobacterium_longum_Gal8. The four
+		// PD-L1lo/hi_tumor_infected and _xenophagy types that used to sit at
+		// 20-23 are gone: infection state is tracked in custom_data, not by
+		// converting a tumour into a new type. cDC1_licensed and
+		// Bifidobacterium_longum_Gal8 were renumbered down from 25/24 to
+		// 20/21 so the ID set stays a contiguous 0..21 (PhysiCell indexes
+		// some internal tables by ID, and a hole crashes it).
+		"white",      // 20: cDC1_licensed (no dedicated colour yet)
+		"white"       // 21: Bifidobacterium_longum_Gal8 (was falling through
 		              //     to the same "white" default before this fix --
 		              //     harmless but now explicit)
-		"coral"       // 25: cDC1_licensed
 	};
 	std::string interior_color = "white";
 	int extra_index = pCell->type - 13;

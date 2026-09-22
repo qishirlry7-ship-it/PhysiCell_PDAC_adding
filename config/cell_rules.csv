@@ -141,12 +141,8 @@ Bifidobacterium_longum,oxygen,increases,apoptosis,0.005,15,2,0
 // lower-threshold death response is more plausible than requiring the same
 // heavily-saturated multi-hit threshold tumor cells need.
 Bifidobacterium_longum,damage,increases,apoptosis,0.02,10,4,0
-PD-L1lo_tumor,contact with Bifidobacterium_longum,increases,transform to PD-L1lo_tumor_infected,0.002,0.1,2,0
-PD-L1hi_tumor,contact with Bifidobacterium_longum,increases,transform to PD-L1hi_tumor_infected,0.002,0.1,2,0
-PD-L1lo_tumor_infected,rapamycin,increases,transform to PD-L1lo_tumor_xenophagy,0.001,0.3,2,0
-PD-L1hi_tumor_infected,rapamycin,increases,transform to PD-L1hi_tumor_xenophagy,0.001,0.3,2,0
-Bifidobacterium_longum,contact with PD-L1lo_tumor_infected,increases,apoptosis,0.01,0.1,2,0
-Bifidobacterium_longum,contact with PD-L1hi_tumor_infected,increases,apoptosis,0.01,0.1,2,0
+Bifidobacterium_longum,contact with PD-L1lo_tumor,increases,apoptosis,0.01,0.1,2,0
+Bifidobacterium_longum,contact with PD-L1hi_tumor,increases,apoptosis,0.01,0.1,2,0
 
 // --- Pancreatic hormones: insulin (PI3K/Akt/mTOR -> promotes PDAC
 // proliferation, suppresses apoptosis, antagonizes the rapamycin-driven
@@ -159,53 +155,9 @@ Bifidobacterium_longum,contact with PD-L1hi_tumor_infected,increases,apoptosis,0
 // half_max / glp1_xenophagy_half_max (pM) from user_parameters.
 PD-L1lo_tumor,insulin,increases,cycle entry,7.2e-4,60,2,0
 PD-L1hi_tumor,insulin,increases,cycle entry,7.2e-4,60,2,0
-PD-L1lo_tumor_infected,insulin,increases,cycle entry,7.2e-4,60,2,0
-PD-L1lo_tumor_xenophagy,insulin,increases,cycle entry,7.2e-4,60,2,0
-PD-L1hi_tumor_infected,insulin,increases,cycle entry,7.2e-4,60,2,0
-PD-L1hi_tumor_xenophagy,insulin,increases,cycle entry,7.2e-4,60,2,0
 PD-L1lo_tumor,insulin,decreases,apoptosis,0,60,2,0
 PD-L1hi_tumor,insulin,decreases,apoptosis,0,60,2,0
-PD-L1lo_tumor_infected,insulin,decreases,apoptosis,0,60,2,0
-PD-L1lo_tumor_xenophagy,insulin,decreases,apoptosis,0,60,2,0
-PD-L1hi_tumor_infected,insulin,decreases,apoptosis,0,60,2,0
-PD-L1hi_tumor_xenophagy,insulin,decreases,apoptosis,0,60,2,0
-PD-L1lo_tumor_infected,insulin,decreases,transform to PD-L1lo_tumor_xenophagy,0,60,2,0
-PD-L1hi_tumor_infected,insulin,decreases,transform to PD-L1hi_tumor_xenophagy,0,60,2,0
-PD-L1lo_tumor_infected,GLP1,increases,transform to PD-L1lo_tumor_xenophagy,0.001,20,2,0
-PD-L1hi_tumor_infected,GLP1,increases,transform to PD-L1hi_tumor_xenophagy,0.001,20,2,0
 
-PD-L1lo_tumor_infected,pressure,decreases,cycle entry,0,0.25,3,0
-PD-L1lo_tumor_xenophagy,pressure,decreases,cycle entry,0,0.25,3,0
-PD-L1hi_tumor_infected,pressure,decreases,cycle entry,0,0.25,3,0
-PD-L1hi_tumor_xenophagy,pressure,decreases,cycle entry,0,0.25,3,0
-PD-L1lo_tumor_infected,damage,increases,apoptosis,0.023,45,16,0
-PD-L1lo_tumor_xenophagy,damage,increases,apoptosis,0.023,45,16,0
-PD-L1hi_tumor_infected,damage,increases,apoptosis,0.023,45,16,0
-PD-L1hi_tumor_xenophagy,damage,increases,apoptosis,0.023,45,16,0
-PD-L1lo_tumor_infected,dead,increases,debris secretion,0.017,0.1,10,1
-PD-L1lo_tumor_xenophagy,dead,increases,debris secretion,0.017,0.1,10,1
-PD-L1hi_tumor_infected,dead,increases,debris secretion,0.017,0.1,10,1
-PD-L1hi_tumor_xenophagy,dead,increases,debris secretion,0.017,0.1,10,1
-PD-L1lo_tumor_infected,oxygen,decreases,necrosis,0,2,4,0
-PD-L1lo_tumor_xenophagy,oxygen,decreases,necrosis,0,2,4,0
-PD-L1hi_tumor_infected,oxygen,decreases,necrosis,0,2,4,0
-PD-L1hi_tumor_xenophagy,oxygen,decreases,necrosis,0,2,4,0
-PD-L1lo_tumor_infected,glucose,decreases,necrosis,0,0.05,3,0
-PD-L1lo_tumor_xenophagy,glucose,decreases,necrosis,0,0.05,3,0
-PD-L1hi_tumor_infected,glucose,decreases,necrosis,0,0.05,3,0
-PD-L1hi_tumor_xenophagy,glucose,decreases,necrosis,0,0.05,3,0
-PD-L1lo_tumor_infected,oxygen,decreases,lactate secretion,0.1,5,3,0
-PD-L1lo_tumor_xenophagy,oxygen,decreases,lactate secretion,0.1,5,3,0
-PD-L1hi_tumor_infected,oxygen,decreases,lactate secretion,0.1,5,3,0
-PD-L1hi_tumor_xenophagy,oxygen,decreases,lactate secretion,0.1,5,3,0
-PD-L1lo_tumor_infected,oxygen,increases,cycle entry,7.2e-4,3,2,0
-PD-L1lo_tumor_xenophagy,oxygen,increases,cycle entry,7.2e-4,3,2,0
-PD-L1hi_tumor_infected,oxygen,increases,cycle entry,7.2e-4,3,2,0
-PD-L1hi_tumor_xenophagy,oxygen,increases,cycle entry,7.2e-4,3,2,0
-PD-L1lo_tumor_infected,glucose,increases,cycle entry,7.2e-4,0.15,2,0
-PD-L1lo_tumor_xenophagy,glucose,increases,cycle entry,7.2e-4,0.15,2,0
-PD-L1hi_tumor_infected,glucose,increases,cycle entry,7.2e-4,0.15,2,0
-PD-L1hi_tumor_xenophagy,glucose,increases,cycle entry,7.2e-4,0.15,2,0
 
 // --- REPLACED TWICE (per user decisions):
 // (1) the original diffusible-field Gal8_ext mechanism (tumor-secreted
@@ -327,10 +279,6 @@ iCAF,pressure,decreases,cycle entry,0,0.25,3,0
 // numeric threshold is a placeholder.
 PD-L1lo_tumor,IL6,increases,cycle entry,7.2e-4,3,2,0
 PD-L1hi_tumor,IL6,increases,cycle entry,7.2e-4,3,2,0
-PD-L1lo_tumor_infected,IL6,increases,cycle entry,7.2e-4,3,2,0
-PD-L1lo_tumor_xenophagy,IL6,increases,cycle entry,7.2e-4,3,2,0
-PD-L1hi_tumor_infected,IL6,increases,cycle entry,7.2e-4,3,2,0
-PD-L1hi_tumor_xenophagy,IL6,increases,cycle entry,7.2e-4,3,2,0
 // IL-6 -> macrophage M2-like polarization: this model has no explicit
 // M1/M2 macrophage state, so M2 polarization is approximated by its most
 // canonical functional marker -- upregulated IL-10 secretion (macrophage
@@ -352,10 +300,6 @@ macrophage,IL6,increases,IL10 secretion,0.5,5,4,0
 // rules already in this file).
 PD-L1lo_tumor,CCL2,increases,cycle entry,7.2e-4,3,2,0
 PD-L1hi_tumor,CCL2,increases,cycle entry,7.2e-4,3,2,0
-PD-L1lo_tumor_infected,CCL2,increases,cycle entry,7.2e-4,3,2,0
-PD-L1lo_tumor_xenophagy,CCL2,increases,cycle entry,7.2e-4,3,2,0
-PD-L1hi_tumor_infected,CCL2,increases,cycle entry,7.2e-4,3,2,0
-PD-L1hi_tumor_xenophagy,CCL2,increases,cycle entry,7.2e-4,3,2,0
 PD-1lo_CD137hi_CD8_Tcell,CCL2,decreases,migration speed,0,2,2,0
 PD-1lo_CD137lo_CD8_Tcell,CCL2,decreases,migration speed,0,2,2,0
 PD-1hi_CD137hi_CD8_Tcell,CCL2,decreases,migration speed,0,2,2,0
@@ -394,7 +338,5 @@ Bifidobacterium_longum_Gal8,glucose,increases,cycle entry,2.0e-3,0.15,2,0
 Bifidobacterium_longum_Gal8,oxygen,decreases,cycle entry,0,5,2,0
 Bifidobacterium_longum_Gal8,oxygen,increases,apoptosis,0.005,15,2,0
 Bifidobacterium_longum_Gal8,damage,increases,apoptosis,0.02,10,4,0
-PD-L1lo_tumor,contact with Bifidobacterium_longum_Gal8,increases,transform to PD-L1lo_tumor_infected,0.002,0.1,2,0
-PD-L1hi_tumor,contact with Bifidobacterium_longum_Gal8,increases,transform to PD-L1hi_tumor_infected,0.002,0.1,2,0
-Bifidobacterium_longum_Gal8,contact with PD-L1lo_tumor_infected,increases,apoptosis,0.01,0.1,2,0
-Bifidobacterium_longum_Gal8,contact with PD-L1hi_tumor_infected,increases,apoptosis,0.01,0.1,2,0
+Bifidobacterium_longum_Gal8,contact with PD-L1lo_tumor,increases,apoptosis,0.01,0.1,2,0
+Bifidobacterium_longum_Gal8,contact with PD-L1hi_tumor,increases,apoptosis,0.01,0.1,2,0
