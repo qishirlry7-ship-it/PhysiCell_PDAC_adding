@@ -38,7 +38,9 @@ struct ScheduledEntry {
     int vacuole;
 };
 
-PetriNetEngine engine;
+// The engine is constructed in setup_petrinet_integration(), once the run XML
+// is parsed: the model JSON path is a run parameter, not a compile-time choice.
+std::unique_ptr<PetriNetEngine> engine_ptr;
 std::vector<std::unique_ptr<CellPetriNetState>> state_pool;
 std::vector<std::size_t> free_slots;
 std::unordered_map<unsigned int, std::size_t> slots_by_cell;
@@ -188,6 +190,27 @@ void setup_petrinet_integration() {
     if (configured_mode < 0 || configured_mode > 2)
         throw std::runtime_error("petrinet_input_mode must be 0, 1, or 2");
     input_mode = static_cast<BacterialInputMode>(configured_mode);
+
+    // Build the engine from the run-selected model. Empty keeps the historical
+    // default so existing configs are unaffected.
+    EngineConfig engine_config;
+    const std::string model_json = PhysiCell::parameters.strings("petrinet_model_json");
+    if (!model_json.empty()) engine_config.model_json = model_json;
+    engine_config.syn_mm = {
+        {"Syn1", "Gal8"},
+        {"Syn2", "E3_ligase"},
+        {"Syn4", "p62"},
+        {"Syn5", "NDP52"},
+        {"Syn6", "OPTN"},
+        {"Syn7", "N_S"},
+        {"Syn8", "TBK1"},
+        {"Syn9", "mTORC1_ULK1comp"},
+        {"Syn10", "LC3"},
+    };
+    engine_config.syn_baseline = 200.0;
+    engine_ptr.reset(new PetriNetEngine(engine_config));
+    std::cout << "[PetriNet] model: " << engine_config.model_json << "\n";
+
     uptake_rng.seed(mix_seed(global_seed ^ 0x42555054414b45ULL));
     next_uptake_time_minutes = parameters().bacterial_uptake_interval;
     if (manual_input_enabled())
@@ -246,7 +269,7 @@ void enqueue_bacterial_entry(PhysiCell::Cell* cell, double time_minutes,
                               int to_cytosol, int to_vacuole) {
     if (!integration_enabled || !cell || !is_target_tumor_cell(cell)) return;
     CellPetriNetState* state = state_for(cell, true);
-    engine.enqueue(*state, EntryEvent(time_minutes * 60.0, to_cytosol, to_vacuole));
+    engine_ptr->enqueue(*state, EntryEvent(time_minutes * 60.0, to_cytosol, to_vacuole));
 }
 
 void enqueue_bacterial_uptake(PhysiCell::Cell* cell, double time_minutes,
@@ -255,7 +278,7 @@ void enqueue_bacterial_uptake(PhysiCell::Cell* cell, double time_minutes,
     if (bacteria_count < 0) throw std::invalid_argument("bacterial uptake count must be non-negative");
     if (bacteria_count == 0) return;
     CellPetriNetState* state = state_for(cell, true);
-    engine.enqueue(*state, EntryEvent(time_minutes * 60.0, bacteria_count, 0, 0));
+    engine_ptr->enqueue(*state, EntryEvent(time_minutes * 60.0, bacteria_count, 0, 0));
 }
 
 void process_bacterial_entry_schedule(double current_time_minutes) {
@@ -365,10 +388,10 @@ void write_petrinet_metrics(double current_time_minutes) {
             state->death_time_minutes = current_time_minutes;
         metrics_file << current_time_minutes << ',' << cell->ID << ',' << cell->type_name << ','
                      << cell->custom_data["intracellular_bacteria"] << ','
-                     << engine.sal_ruffle_tokens(state->marking) << ','
-                     << engine.uptaken_bacterial_burden(state->marking) << ','
-                     << engine.gal8_autophagosome_tokens(state->marking) << ','
-                     << engine.ub_autophagosome_tokens(state->marking) << ','
+                     << engine_ptr->sal_ruffle_tokens(state->marking) << ','
+                     << engine_ptr->uptaken_bacterial_burden(state->marking) << ','
+                     << engine_ptr->gal8_autophagosome_tokens(state->marking) << ','
+                     << engine_ptr->ub_autophagosome_tokens(state->marking) << ','
                      << cell->custom_data["xenophagy_activity"] << ','
                      << cell->custom_data["surface_pMHC"] << ','
                      << cell->custom_data["surface_pMHC_I"] << ','
@@ -392,13 +415,13 @@ void petrinet_phenotype(PhysiCell::Cell* cell, PhysiCell::Phenotype& phenotype,
     // interval. Synchronize to the public clock; do not advance one interval
     // into the future.
     const double window_end = PhysiCell::PhysiCell_globals.current_time * 60.0;
-    WindowResult result = engine.advance(*state, window_end);
+    WindowResult result = engine_ptr->advance(*state, window_end);
     cell->custom_data["pn_active"] = state->active ? 1.0 : 0.0;
     cell->custom_data["intracellular_bacteria"] = result.intracellular_bacteria;
     cell->custom_data["sal_ruffle_tokens"] = result.sal_ruffle_tokens;
     cell->custom_data["uptaken_bacteria"] = result.uptaken_bacteria;
-    cell->custom_data["ap_gal8_tokens"] = engine.gal8_autophagosome_tokens(state->marking);
-    cell->custom_data["ap_ub_tokens"] = engine.ub_autophagosome_tokens(state->marking);
+    cell->custom_data["ap_gal8_tokens"] = engine_ptr->gal8_autophagosome_tokens(state->marking);
+    cell->custom_data["ap_ub_tokens"] = engine_ptr->ub_autophagosome_tokens(state->marking);
     cell->custom_data["xenophagy_activity"] = result.xenophagy_activity;
     cell->custom_data["surface_pMHC"] = state->mhc.P;
     cell->custom_data["surface_pMHC_I"] = state->mhc1.P;
@@ -426,7 +449,7 @@ void petrinet_division(PhysiCell::Cell* parent, PhysiCell::Cell* child) {
     CellPetriNetState* parent_state = state_for(parent, false);
     if (!parent_state) return;
     CellPetriNetState* child_state = state_for(child, true);
-    engine.split(*parent_state, *child_state, parameters().division_daughter_fraction,
+    engine_ptr->split(*parent_state, *child_state, parameters().division_daughter_fraction,
                  mix_seed(global_seed ^ static_cast<std::uint64_t>(child->ID)));
     parent->custom_data["pn_active"] = parent_state->active ? 1.0 : 0.0;
     child->custom_data["pn_active"] = child_state->active ? 1.0 : 0.0;
