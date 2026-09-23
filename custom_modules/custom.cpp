@@ -626,8 +626,7 @@ void update_cd8_mhci_recognition( void )
 // ---------------------------------------------------------------------------
 
 static double sum_nearby_gal8( Cell* pCell, double radius )
-{
-	int voxel = pCell->get_current_mechanics_voxel_index();
+{	int voxel = pCell->get_current_mechanics_voxel_index();
 	if( voxel < 0 )
 	{ return 0.0; }
 
@@ -658,6 +657,65 @@ static double sum_nearby_gal8( Cell* pCell, double radius )
 		}
 	}
 	return total;
+}
+
+// ---------------------------------------------------------------------------
+// MHC-II -> CD4 activation (agent-proximity).
+//
+// WHY THIS EXISTS: the effect we want is "a CD4 T cell becomes activated once
+// it recognises tumour MHC-II". The Rules engine cannot express that -- its
+// only cell-related signals are `contact with <cell_type>`, which fires on any
+// contact with ANY tumour cell, including the large majority that were never
+// infected and therefore present no bacterial antigen. Routing activation
+// through that signal would activate essentially every CD4 in the domain.
+//
+// So the recognition strength that Petrinet already computes per tumour cell
+// (custom_data["mhcii_cd4_recognition"], a 0..1 Hill output of surface
+// pMHC-II) is read here by proximity instead, exactly mirroring how
+// sum_nearby_gal8() reads a per-cell quantity from neighbours.
+//
+// We take the MAXIMUM over neighbours rather than a sum: T-cell activation is
+// a threshold/strongest-signal phenomenon, not an additive one, and a sum
+// would grow without bound as tumour density rises.
+// ---------------------------------------------------------------------------
+
+static double max_nearby_tumor_mhcii_recognition( Cell* pCell, double radius )
+{
+	int voxel = pCell->get_current_mechanics_voxel_index();
+	if( voxel < 0 )
+	{ return 0.0; }
+
+	double radius2 = radius*radius;
+	double best = 0.0;
+
+	std::vector<int> voxels(1, voxel);
+	const std::vector<int>& adjacent = pCell->get_container()->underlying_mesh.moore_connected_voxel_indices[voxel];
+	voxels.insert( voxels.end(), adjacent.begin(), adjacent.end() );
+
+	for( int candidate_voxel : voxels )
+	{
+		for( Cell* candidate : pCell->get_container()->agent_grid[candidate_voxel] )
+		{
+			if( candidate->phenotype.death.dead || candidate->phenotype.flagged_for_removal )
+			{ continue; }
+			if( !xenophagy::is_target_tumor_cell(candidate) )
+			{ continue; }
+			// never-infected tumours keep the registered default of 0.0, so
+			// they contribute nothing here -- that is the intended filter.
+			if( candidate->custom_data["mhcii_cd4_recognition"] <= best )
+			{ continue; }
+
+			double dx = pCell->position[0] - candidate->position[0];
+			double dy = pCell->position[1] - candidate->position[1];
+			double dz = pCell->position[2] - candidate->position[2];
+			double d2 = dx*dx + dy*dy + dz*dz;
+			if( d2 > radius2 )
+			{ continue; }
+
+			best = candidate->custom_data["mhcii_cd4_recognition"];
+		}
+	}
+	return best;
 }
 
 // Net relative growth rate (1/min, signed) -- positive means "net
@@ -725,15 +783,58 @@ void phenotype_function(Cell *pCell, Phenotype &phenotype, double dt)
 		}
 	}
 
+	// MHC-II -> CD4 activation. A RESTING CD4 (PD-1lo_CD4_Tcell) that comes
+	// within `cd4_activation_radius` of a tumour cell actually presenting
+	// bacterial antigen (mhcii_cd4_recognition above threshold) becomes an
+	// ACTIVATED CD4 (PD-1hi_CD4_Tcell). PD-1 is up-regulated after activation,
+	// so PD-1lo = resting and PD-1hi = activated is the correct reading --
+	// note this is the opposite of the older comment in cell_rules.csv, which
+	// treated PD-1lo as the functional/helper state. That comment reflected a
+	// different (incorrect) reading and was the reason the two CD4 types had
+	// their IFN-gamma secretion the wrong way round; see the XML secretion
+	// blocks, now PD-1lo = 0 and PD-1hi = 0.1.
+	//
+	// Only PD-1lo_CD4 is checked: conversion is one-way here, so a cell that
+	// has already activated is not re-examined every step.
+	if( pCell->type_name == "PD-1lo_CD4_Tcell" )
+	{
+		static bool cd4_activation_enabled = parameters.bools("cd4_activation_enabled");
+		if( cd4_activation_enabled )
+		{
+			static double radius = parameters.doubles("cd4_activation_radius");
+			static double threshold = parameters.doubles("cd4_activation_threshold");
+
+			double recognition = max_nearby_tumor_mhcii_recognition( pCell, radius );
+
+			// TEMPORARY diagnostic: log the best nearby recognition seen by a
+			// resting CD4, so we can tell "no infected tumour nearby" apart
+			// from "threshold never reached".
+			if( std::getenv("CD4DBG") != nullptr && recognition > 0.0 )
+			{
+				std::cout << "[CD4DBG t=" << PhysiCell::PhysiCell_globals.current_time
+				          << "] resting CD4 id=" << pCell->ID
+				          << " nearby_recog=" << recognition
+				          << " threshold=" << threshold
+				          << (recognition > threshold ? "  -> ACTIVATE" : "  -> below")
+				          << std::endl;
+			}
+			if( recognition > threshold )
+			{
+				static PhysiCell::Cell_Definition* pActivated =
+					find_cell_definition( "PD-1hi_CD4_Tcell" );
+				if( pActivated )
+				{ pCell->convert_to_cell_definition( *pActivated ); }
+			}
+		}
+	}
+
 	return;
 }
 
 void custom_function(Cell *pCell, Phenotype &phenotype, double dt)
 {
 	return;
-}
-
-void contact_function(Cell *pMe, Phenotype &phenoMe, Cell *pOther, Phenotype &phenoOther, double dt)
+}void contact_function(Cell *pMe, Phenotype &phenoMe, Cell *pOther, Phenotype &phenoOther, double dt)
 {
 	return;
 }

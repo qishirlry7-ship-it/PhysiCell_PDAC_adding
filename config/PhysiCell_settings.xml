@@ -515,7 +515,13 @@
                         <uptake_rate units="1/min">0.0</uptake_rate>
                         <net_export_rate units="total substrate/min">0.0</net_export_rate>
                     </substrate>
-                                    <substrate name="glucose">
+                                                        <substrate name="CXCL9_10">
+                        <secretion_rate units="1/min">0</secretion_rate>
+                        <secretion_target units="substrate density">10</secretion_target>
+                        <uptake_rate units="1/min">0</uptake_rate>
+                        <net_export_rate units="total substrate/min">0</net_export_rate>
+                    </substrate>
+<substrate name="glucose">
                         <secretion_rate units="1/min">0</secretion_rate>
                         <secretion_target units="substrate density">1</secretion_target>
                         <uptake_rate units="1/min">5</uptake_rate>
@@ -701,7 +707,13 @@
                         <uptake_rate units="1/min">0.0</uptake_rate>
                         <net_export_rate units="total substrate/min">0.0</net_export_rate>
                     </substrate>
-                                    <substrate name="glucose">
+                                                        <substrate name="CXCL9_10">
+                        <secretion_rate units="1/min">0</secretion_rate>
+                        <secretion_target units="substrate density">10</secretion_target>
+                        <uptake_rate units="1/min">0</uptake_rate>
+                        <net_export_rate units="total substrate/min">0</net_export_rate>
+                    </substrate>
+<substrate name="glucose">
                         <secretion_rate units="1/min">0</secretion_rate>
                         <secretion_target units="substrate density">1</secretion_target>
                         <uptake_rate units="1/min">5</uptake_rate>
@@ -888,7 +900,13 @@
                         <uptake_rate units="1/min">0.0</uptake_rate>
                         <net_export_rate units="total substrate/min">0.0</net_export_rate>
                     </substrate>
-                </secretion>
+                                    <substrate name="CXCL9_10">
+                        <secretion_rate units="1/min">0</secretion_rate>
+                        <secretion_target units="substrate density">10</secretion_target>
+                        <uptake_rate units="1/min">0</uptake_rate>
+                        <net_export_rate units="total substrate/min">0</net_export_rate>
+                    </substrate>
+</secretion>
                 <cell_interactions>
                     <apoptotic_phagocytosis_rate units="1/min">0.1</apoptotic_phagocytosis_rate>
                     <necrotic_phagocytosis_rate units="1/min">0.017</necrotic_phagocytosis_rate>
@@ -1728,7 +1746,7 @@
                         <net_export_rate units="total substrate/min">0.0</net_export_rate>
                     </substrate>
                     <substrate name="IFN_gamma">
-                        <secretion_rate units="1/min">0</secretion_rate>
+                        <secretion_rate units="1/min">0.1</secretion_rate>
                         <secretion_target units="substrate density">1</secretion_target>
                         <uptake_rate units="1/min">0</uptake_rate>
                         <net_export_rate units="total substrate/min">0.0</net_export_rate>
@@ -1896,7 +1914,7 @@
                         <net_export_rate units="total substrate/min">0.0</net_export_rate>
                     </substrate>
                     <substrate name="IFN_gamma">
-                        <secretion_rate units="1/min">0.1</secretion_rate>
+                        <secretion_rate units="1/min">0</secretion_rate>
                         <secretion_target units="substrate density">0.1</secretion_target>
                         <uptake_rate units="1/min">0</uptake_rate>
                         <net_export_rate units="total substrate/min">0.0</net_export_rate>
@@ -3480,7 +3498,17 @@
                 <motility>
                     <speed units="micron/min">0.3</speed>
                     <persistence_time units="min">5</persistence_time>
-                    <migration_bias units="dimensionless">0.25</migration_bias>
+                    <!-- RAISED from 0.25 to 0.7. Tracking the SVG snapshots showed
+                         only 2 of 5 measurable bacterium tracks moved closer to
+                         the tumour (median change in distance-to-tumour +138 micron,
+                         i.e. drifting AWAY). The chemotaxis direction was already
+                         correct (oxygen, -1 = toward hypoxia); at bias 0.25 three
+                         quarters of every persistence interval was a random walk,
+                         which swamped the directional term. B. longum is a motile
+                         obligate anaerobe whose value as a tumour vector rests on it
+                         actively seeking hypoxic tissue, so a dominant directional
+                         component is the intended behaviour. -->
+                    <migration_bias units="dimensionless">0.7</migration_bias>
                     <options>
                         <enabled>true</enabled>
                         <use_2D>true</use_2D>
@@ -3605,7 +3633,17 @@
                 <motility>
                     <speed units="micron/min">0.3</speed>
                     <persistence_time units="min">5</persistence_time>
-                    <migration_bias units="dimensionless">0.25</migration_bias>
+                    <!-- RAISED from 0.25 to 0.7. Tracking the SVG snapshots showed
+                         only 2 of 5 measurable bacterium tracks moved closer to
+                         the tumour (median change in distance-to-tumour +138 micron,
+                         i.e. drifting AWAY). The chemotaxis direction was already
+                         correct (oxygen, -1 = toward hypoxia); at bias 0.25 three
+                         quarters of every persistence interval was a random walk,
+                         which swamped the directional term. B. longum is a motile
+                         obligate anaerobe whose value as a tumour vector rests on it
+                         actively seeking hypoxic tissue, so a dominant directional
+                         component is the intended behaviour. -->
+                    <migration_bias units="dimensionless">0.7</migration_bias>
                     <options>
                         <enabled>true</enabled>
                         <use_2D>true</use_2D>
@@ -3673,7 +3711,7 @@
     </initial_conditions>
 
     <user_parameters>
-        <bacteria_entry_lambda type="double" units="1/min" description="per-vessel probability rate of a new Bifidobacterium longum entering nearby (Poisson process); no literature value found, kept deliberately low and adjustable; set to 0 for the mechanism-4-only baseline (no bacteria/therapy) test">0</bacteria_entry_lambda>
+        <bacteria_entry_lambda type="double" units="1/min" description="per-vessel probability rate of a new Bifidobacterium longum entering nearby (Poisson process). No literature value exists for translocation rate into a specific tumour, so this remains an adjustable placeholder rather than a calibrated number. ENABLED this round (was 0) at 1e-4 /min/vessel to let the MHC-II -> CD4 activation loop actually be exercised: with 119 vessels that is a population mean of 119*1e-4 = 0.0119 spawns/min, i.e. roughly one new bacterium every ~84 min, ~17 over a 24h run. Rationale for this magnitude: bacteria must reach the tumour (vessels sit a median 59.4 micron away, and a spawn lands within 30 micron of its vessel) for Petrinet to start, so a rate low enough to stay sparse but high enough to seed the mechanism within a few days. Set back to 0 to restore the no-bacteria baseline.">1e-4</bacteria_entry_lambda>
         <petrinet_enabled type="bool" description="enable generated intracellular xenophagy Petri-net">true</petrinet_enabled>
         <petrinet_input_mode type="int" description="bacterial input source: 0=manual, 1=extracellular agents, 2=hybrid">1</petrinet_input_mode>
         <petrinet_model_json type="string" description="PetriNet topology JSON to load; empty uses the engine default. Set to config/petrinet/wt_model.json or config/petrinet/exp_model.json to run the WT or EXP xenophagy variant">config/petrinet/wt_model.json</petrinet_model_json>
@@ -3690,7 +3728,7 @@
              CD8 gets its own, separate proliferation term driven by CD4
              "help" (contact), per literature on CD4-derived IL-2 licensing
              CD8 clonal expansion. Both bacterium switches default false. -->
-        <bifidobacterium_enabled type="bool" description="enable recruit_bacteria() spawning of the original (non-Gal8) Bifidobacterium_longum near vessels">false</bifidobacterium_enabled>
+        <bifidobacterium_enabled type="bool" description="enable recruit_bacteria() spawning of the original (non-Gal8) Bifidobacterium_longum near vessels. ENABLED this round (was false) so that the MHC-II -> CD4 activation loop has a bacterial source; without spawns, no tumour is ever infected, mhcii_cd4_recognition stays 0 for every cell and the CD4 activation conversion can never fire. Requires bacteria_entry_lambda > 0 to have any effect.">true</bifidobacterium_enabled>
         <bifidobacterium_gal8_enabled type="bool" description="enable recruit_bacteria() spawning of the engineered Bifidobacterium_longum_Gal8 (our own Gal-8 fusion-protein construct) near vessels. Independent of gal8_cd4_effect_enabled below -- this bacterium can be spawned and carry gal8_amount with that switch off, and will simply have no effect on any T cell">false</bifidobacterium_gal8_enabled>
         <gal8_cd4_effect_enabled type="bool" description="DISABLED by user request (default false). Independently gates whether CD4 T cells read nearby Gal-8 (sum_nearby_gal8()) and whether that reading does anything to CD4 cycle-entry/apoptosis (cd4_gal8_net_growth_rate()) -- see phenotype_function() in custom.cpp. Deliberately decoupled from bifidobacterium_gal8_enabled: with this off, Bifidobacterium_longum_Gal8 can exist and carry Gal-8 with zero effect on any T cell, however many of them are nearby. Flip to true to re-enable the mechanism -- all underlying code is intact, nothing was deleted">false</gal8_cd4_effect_enabled>
 
@@ -3710,6 +3748,10 @@
 
         <gal8_amount_fixed type="double" units="a.u." description="PLACEHOLDER -- every Bifidobacterium_longum_Gal8 carries this SAME fixed Gal-8 amount at creation (no per-bacterium distribution -- the collaborator's E_required(theta) numbers turned out to answer a different question, intracellular Gal8-NDP52 binding for the bacterium's own xenophagy evasion, not extracellular secretion to affect CD4 T cells, so they are not used here; see chat writeup). STILL a.u., not a real molecule count -- the CD4 dose-response below runs on this placeholder scale, NOT a calibrated one, until a real per-bacterium extracellular-secretion estimate is available.">1.0</gal8_amount_fixed>
         <gal8_effect_radius type="double" units="micron" description="radius within which a Bifidobacterium_longum_Gal8's carried Gal-8 contributes to a T cell's local exposure; matches the bacterial_uptake_distance convention in config/petrinet/parameters.xml (20 micron)">20</gal8_effect_radius>
+
+        <cd4_activation_enabled type="bool" description="enables the MHC-II -> CD4 activation conversion in phenotype_function() (custom.cpp): a RESTING CD4 (PD-1lo_CD4_Tcell) within cd4_activation_radius of a tumour cell whose Petrinet-derived mhcii_cd4_recognition exceeds cd4_activation_threshold becomes an ACTIVATED CD4 (PD-1hi_CD4_Tcell). PD-1 is up-regulated after activation, so PD-1lo = resting and PD-1hi = activated; this is why the two CD4 definitions' IFN-gamma secretion rates are PD-1lo = 0 and PD-1hi = 0.1 (they were the other way round, reflecting an earlier incorrect reading -- see the comment in custom.cpp). Set false to freeze every CD4 in its initial state.">true</cd4_activation_enabled>
+        <cd4_activation_radius type="double" units="micron" description="radius within which a resting CD4 reads tumour MHC-II presentation. Matches the bacterial_uptake_distance / gal8_effect_radius convention (20 micron) used elsewhere in this model.">20</cd4_activation_radius>
+        <cd4_activation_threshold type="double" units="dimensionless" description="mhcii_cd4_recognition value (0..1 Hill output of the tumour's surface pMHC-II) a nearby tumour must exceed for a resting CD4 to activate. Re-derived from a 5-day run AFTER the mhcii_cd4_half_max recalibration (30 -> 5000, in petrinet_engine.h), because that change shifts the whole recognition scale: the value calibrated against the old saturated distribution would have been meaningless. Measured recognition over infected tumours with the new half_max: p25=0.016, p50=0.568, p75=0.788, p90=0.852. 0.7 therefore admits about the top 42% of infected tumours -- only those presenting a genuinely high antigen load activate neighbouring CD4, which is the intended threshold behaviour (T-cell activation needs sufficient TCR signal, not merely any). Sensitivity, for reference: 0.5 admits 53%, 0.9 admits ~0%.">0.7</cd4_activation_threshold>
 
         <cd4_gal8_prolif_Pmax type="double" units="1/h" description="fast-saturating GAL-8 PROMOTION term ceiling for CD4 cycle-entry rate perturbation r(C,t)=Pmax*C/(C+Kp) - Irate*t*C/(C+Ki). Least-squares fit (pure-Python grid+coordinate-descent, no scipy available) to the two CD4 CCK-8 files (Row A=24h, Row B=44h; 0.05/0.2/0.5 uM), R^2=0.92 on the 6 (dose,time) points -- see chat writeup for the fit, residuals, and its known miss on the single highest-SD data point (0.05uM/24h, SD=21.9%)">0.00406</cd4_gal8_prolif_Pmax>
         <cd4_gal8_prolif_Kp type="double" units="uM" description="half-max concentration for the promotion term (fitted)">0.00637</cd4_gal8_prolif_Kp>

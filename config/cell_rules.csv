@@ -16,6 +16,33 @@ PD-L1lo_tumor,dead,increases,debris secretion,0.017,0.1,10,1
 PD-L1hi_tumor,dead,increases,debris secretion,0.017,0.1,10,1
 macrophage,oxygen,decreases,TGF_beta secretion,0,5,4,0
 macrophage,oxygen,increases,IFN_gamma secretion,0.1,5,4,0
+// IFN-gamma-induced CXCL9/10 secretion -- the T-cell recruitment arm.
+//
+// BEFORE THIS RULE, CXCL9_10 had NO producer anywhere: not in the XML
+// secretion tables (every rate was 0), not in cell_rules.csv and not in the
+// C++ code. The non-zero values visible in early snapshots are purely the
+// leftover of the initial-condition file (config/ic_microenvironment/
+// trough_microenvironment0.mat, max 1.55), which then decays with no source to
+// replenish it. Every CXCL9_10-referencing rule was therefore evaluated
+// against a field that asymptotes to zero.
+//
+// Biologically CXCL9/CXCL10 are the canonical IFN-gamma-inducible chemokines:
+// they are what makes a tumour "T-cell inflamed", and their receptor CXCR3 is
+// what draws effector CD8 T cells in. This closes the loop
+//   activated CD4/CD8 + NK -> IFN-gamma -> CXCL9/10 -> more T cells recruited
+// which is the recruitment arm the model was missing entirely.
+//
+// Producers chosen as the two IFN-gamma-responsive populations in this TME:
+// tumour cells (PDAC tumours express CXCL9/10 under IFN-gamma) and
+// macrophages (the dominant myeloid source). half_max=2 on the IFN_gamma
+// dimensionless scale, matching the PD-L1 rule above, since both are reading
+// the same IFN-gamma field and should respond over the same range.
+// rate/target follow this model's secretion convention (cf. the IL6/CCL2
+// rules) with a moderate target so the field stays spatially graded rather
+// than saturating everywhere.
+PD-L1lo_tumor,IFN_gamma,increases,CXCL9_10 secretion,0.5,2,2,0
+PD-L1hi_tumor,IFN_gamma,increases,CXCL9_10 secretion,0.5,2,2,0
+macrophage,IFN_gamma,increases,CXCL9_10 secretion,0.5,2,2,0
 PD-1lo_CD137lo_CD8_Tcell,contact with PD-L1hi_tumor,decreases,migration speed,0,0.1,2,0
 PD-1hi_CD137hi_CD8_Tcell,contact with PD-L1hi_tumor,decreases,migration speed,0,0.1,2,0
 PD-1hi_CD137lo_CD8_Tcell,contact with PD-L1hi_tumor,decreases,migration speed,0,0.1,2,0
@@ -99,6 +126,41 @@ PD-1lo_CD137hi_CD8_Tcell,TGF_beta,increases,transform to PD-1hi_CD137hi_CD8_Tcel
 cDC1,contact with PD-1lo_CD4_Tcell,increases,transform to cDC1_licensed,0.01,0.1,2,0
 PD-1hi_CD137lo_CD8_Tcell,contact with cDC1_licensed,increases,transform to PD-1hi_CD137hi_CD8_Tcell,0.002,0.5,2,0
 PD-1lo_CD137lo_CD8_Tcell,contact with cDC1_licensed,increases,transform to PD-1lo_CD137hi_CD8_Tcell,0.002,0.5,2,0
+// IFN-gamma-driven PD-L1 up-regulation. This rule was MISSING: PD-L1hi_tumor
+// (ID 1) had a full rule set, its own IFN_gamma uptake behaviour, and 28
+// references elsewhere, but nothing anywhere created it -- it is absent from
+// the initial conditions and no "transform to PD-L1hi_tumor" existed, so the
+// population stayed at zero for every run and the anti-PD-L1 arm was acting on
+// a static PD-L1 distribution.
+//
+// This is the canonical tumour immune-evasion feedback loop: infiltrating
+// CD8/NK/cDC1 release IFN-gamma, the tumour senses it and up-regulates PD-L1,
+// and the resulting PD-L1/PD-1 engagement damps the response. It is also the
+// mechanism the therapy targets, so it has to be represented for the treatment
+// to have anything to block.
+//
+// Parameters: rate 0.002/min matches this model's existing transformation-rate
+// convention (same value used for the TGF_beta-driven CD8 exhaustion
+// transitions above). half_max=2 is on the IFN_gamma field's own dimensionless
+// scale -- the measured field peaks near 0.4-0.46, so 2 puts most of the
+// range on the rising part of the Hill curve rather than saturating it, and
+// differs deliberately from the "contact with X" rules' customary 0.1 because
+// those read a binary contact signal while this reads a concentration.
+// Marker "increases" + first field 1 (applies to live cells only).
+PD-L1lo_tumor,IFN_gamma,increases,transform to PD-L1hi_tumor,0.002,2,2,0
+// Reverse reaction: PD-L1 surface expression is dynamic, not a one-way
+// switch -- without a decay path every tumour would eventually convert and the
+// PD-L1lo pool (which is what the base definitions and IC file describe) would
+// drain. Modelled as the low-IFN-gamma state favouring PD-L1lo again, at a
+// slower rate than up-regulation so that an IFN-gamma-high tumour stays
+// PD-L1hi. "decreases" with the same signal reads as "when IFN_gamma is low",
+// matching how the CD8 exhaustion rules above express directionality.
+//
+// NOTE ON THE MECHANISM: Transformation_Rates in this Rules dialect are
+// evaluated as rate * dt against a Hill function of the named signal, so
+// "decreases" here still means the transition is promoted by the signal being
+// LOW -- see PhysiCell_rules.cpp for the exact handling.
+PD-L1hi_tumor,IFN_gamma,decreases,transform to PD-L1lo_tumor,0.0005,2,2,0
 PD-L1lo_tumor,oxygen,increases,cycle entry,7.2e-4,3,2,0
 PD-L1hi_tumor,oxygen,increases,cycle entry,7.2e-4,3,2,0
 PD-L1lo_tumor,glucose,increases,cycle entry,7.2e-4,0.15,2,0

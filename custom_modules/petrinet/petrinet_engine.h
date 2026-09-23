@@ -39,6 +39,15 @@ struct ModelParameters {
     // where S_M_base was already the resolved saturated rate, so presentation
     // levels are preserved exactly.
     double mhc_S_M_base = 7472.0;
+    // IFN-gamma-induced MHC-II synthesis, restored. See the field comment in
+    // MHCParameters for the units decision. V_M_ifn = 4000 against
+    // S_M_base = 7472 gives a maximal induction of about 1.53x on the CURRENT
+    // (resolved) baseline -- note the baseline itself was set to the fully
+    // induced value when the IFN-gamma term was removed, so this is a modest
+    // additional range rather than the original 20x. Set V_M_ifn = 0 to
+    // restore exactly the previous constant-synthesis behaviour.
+    double mhc2_V_M_ifn = 4000.0;
+    double mhc2_K_M_ifn = 0.5;
     double mhc_r_pep = 5.0;
     double mhc_max_step_seconds = 60.0;
     double mhc_X0 = 0.0;
@@ -66,7 +75,16 @@ struct ModelParameters {
     double bacterial_uptake_interval = 1.0;
     double bacterial_uptake_distance = 20.0;
     double mhcii_cd4_attack_max = 0.15;
-    double mhcii_cd4_half_max = 30.0;
+    // Half-saturation for the MHC-II -> CD4 recognition Hill function.
+    // RECALIBRATED 30 -> 5000. At 30 this was saturated for every infected
+    // cell: measured surface_pMHC_II is 1550..59460 (p50 = 39120), roughly
+    // 1300x the old half-max, so mhcii_cd4_recognition sat at 0.98..0.9995 and
+    // carried no information beyond "is this cell infected". 5000 puts 94.5%
+    // of infected cells inside the 0.05..0.95 discriminating band.
+    // The asymmetry with MHC-I is real: mhci_cd8_half_max = 24 sits sensibly
+    // against a measured surface_pMHC_I of 64..131, so ONLY the MHC-II branch
+    // was mis-scaled.
+    double mhcii_cd4_half_max = 5000.0;
     double mhcii_cd4_hill = 1.0;
 };
 
@@ -124,6 +142,16 @@ struct MHCParameters {
     double k_load;
     double S_M;
     double r_pep;
+    // IFN-gamma-induced MHC-II synthesis. Restored from the reference model:
+    //   S_M_eff(c) = S_M + V_M_ifn * c / (K_M_ifn + c)
+    // c is the cell's LOCAL, DIMENSIONLESS PhysiCell IFN_gamma field value --
+    // no unit conversion is attempted. K_M_ifn is therefore on that same
+    // field scale; the measured field peaks near 0.4-0.46 and the original
+    // K was 0.5, so the pre-existing value is reused rather than re-invented.
+    // V_M_ifn = 4000 with S_M_base = 200 reproduces the original 20x maximal
+    // induction. Set V_M_ifn <= 0 to restore constant synthesis exactly.
+    double mhc2_V_M_ifn = 0.0;
+    double mhc2_K_M_ifn = 0.5;
 
     explicit MHCParameters(bool mhc2_mature = false,
                            const ModelParameters& p = parameters());
@@ -207,7 +235,8 @@ public:
     explicit PetriNetEngine(const EngineConfig& config = EngineConfig());
 
     void enqueue(CellPetriNetState& state, const EntryEvent& event) const;
-    WindowResult advance(CellPetriNetState& state, double window_end_seconds) const;
+    WindowResult advance(CellPetriNetState& state, double window_end_seconds,
+                         double local_ifn_gamma = -1.0) const;
     void split(CellPetriNetState& parent, CellPetriNetState& child,
                double daughter_fraction, std::uint64_t child_seed) const;
 
@@ -258,7 +287,8 @@ private:
     void integrate_interval(CellPetriNetState& state, double dt_seconds,
                             WindowResult& result) const;
     void integrate_mhc_window(CellPetriNetState& state, int deg_count,
-                              double dt_seconds, WindowResult& result) const;
+                              double dt_seconds, WindowResult& result,
+                              double local_ifn_gamma = -1.0) const;
     void rebuild_capacity(Marking& marking) const;
     // Applies config_.override_expression / initial_marking / capacities to the
     // freshly loaded model, then rebuilds the active transition table.

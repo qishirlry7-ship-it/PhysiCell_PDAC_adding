@@ -40,18 +40,49 @@ struct MhcBranch {
     double d_C;
     double d_P;
     double k_load;
-    // Constant MHC synthesis rate. IFN-gamma dependence was deliberately
-    // removed: this model represents a uniformly high-IFN-gamma state, so the
-    // saturating term V*I/(K+I) was a constant in practice and only added
-    // three parameters plus an unresolved unit mismatch (the PhysiCell field
-    // is dimensionless, the PetriNet parameter was annotated ng/mL).
+    // Basal MHC synthesis rate, used when no IFN-gamma information is supplied.
     double S_M;
+    // IFN-gamma-induced MHC synthesis (restored).
+    //
+    //     S_M_eff(c) = S_M + V_M_ifn * c / (K_M_ifn + c)
+    //
+    // This is the reference model's expression. It was previously removed
+    // because the caller had no per-cell IFN-gamma value, so the saturating
+    // factor was a constant in practice and the parameters also carried an
+    // unresolved unit mismatch (the PhysiCell field is dimensionless while the
+    // original annotation said ng/mL).
+    //
+    // Both problems are now handled without inventing a units conversion:
+    //   * the caller passes the cell's LOCAL, DIMENSIONLESS field value
+    //     straight through, and
+    //   * K_M_ifn is interpreted on that same dimensionless scale.
+    // The measured field peaks around 0.4-0.46 (see the project notes), and the
+    // original K was 0.5 -- i.e. the old value already sat at the operating
+    // point of this model's own field, so it is reused as-is rather than
+    // re-invented. V_M_ifn = 4000 with S_M_base = 200 gives the original
+    // 20x maximal induction (4000/200), which is inside the 5-20x range
+    // reported for IFN-gamma-driven MHC-II up-regulation.
+    //
+    // V_M_ifn <= 0 restores the old constant-synthesis behaviour exactly.
+    double V_M_ifn = 0.0;
+    double K_M_ifn = 0.5;
+    // Local IFN-gamma for THIS evaluation. Set per RK4 sub-step? No -- it is
+    // held fixed across the window: the field is updated on the diffusion
+    // timescale, which is far slower than these ODEs, so treating it as
+    // constant within one advance() call is the correct regime.
+    double ifn_gamma = 0.0;
+
+    double synthesis() const {
+        if (!(V_M_ifn > 0.0)) return S_M;
+        const double c = ifn_gamma > 0.0 ? ifn_gamma : 0.0;
+        return S_M + V_M_ifn * c / (K_M_ifn + c);
+    }
 };
 
 MHCState mhc_rhs(const MHCState& s, double phi, const MhcBranch& b) {
     MHCState ds;
     ds.X = phi - b.d_X * s.X;
-    ds.M = b.S_M - b.d_M * s.M;
+    ds.M = b.synthesis() - b.d_M * s.M;
     ds.C = b.k_load * s.X * s.M - b.k_T * s.C - b.d_C * s.C;
     ds.P = b.k_T * s.C - b.d_P * s.P;
     return ds;
@@ -103,7 +134,9 @@ MHCParameters::MHCParameters(bool mhc2_mature, const ModelParameters& p)
       mhc2_d_P_immature(p.mhc_d_P),
       k_load(p.mhc_k_load),
       S_M(p.mhc_S_M_base),
-      r_pep(p.mhc_r_pep) {}
+      r_pep(p.mhc_r_pep),
+      mhc2_V_M_ifn(p.mhc2_V_M_ifn),
+      mhc2_K_M_ifn(p.mhc2_K_M_ifn) {}
 
 CellPetriNetState::CellPetriNetState(std::uint64_t seed)
     : cell_seed(seed), rng(seed) {
@@ -348,7 +381,8 @@ void PetriNetEngine::integrate_interval(CellPetriNetState& state, double dt_seco
 }
 
 void PetriNetEngine::integrate_mhc_window(CellPetriNetState& state, int deg_count,
-                                          double dt_seconds, WindowResult& result) const {
+                                          double dt_seconds, WindowResult& result,
+                                          double local_ifn_gamma) const {
     if (dt_seconds <= 0.0) return;
     const double dt_hours = dt_seconds / 3600.0;
     const double phi_total = config_.mhc.r_pep * static_cast<double>(deg_count) / dt_hours;
@@ -360,16 +394,29 @@ void PetriNetEngine::integrate_mhc_window(CellPetriNetState& state, int deg_coun
     result.antigen_flux += phi_total * dt_hours;
     result.peak_xenophagy_activity = std::max(result.peak_xenophagy_activity, phi_total);
 
-    const MhcBranch b1 = {
-        config_.mhc.mhc1_d_X, config_.mhc.mhc1_d_M, config_.mhc.mhc1_k_T,
-        config_.mhc.mhc1_d_C, config_.mhc.mhc1_d_P, config_.mhc.mhc1_k_load,
-        config_.mhc.mhc1_S_M
-    };
-    const MhcBranch b2 = {
-        config_.mhc.d_X, config_.mhc.d_M, config_.mhc.k_T,
-        config_.mhc.d_C, config_.mhc.d_P, config_.mhc.k_load,
-        config_.mhc.S_M
-    };
+    MhcBranch b1;
+    b1.d_X = config_.mhc.mhc1_d_X;
+    b1.d_M = config_.mhc.mhc1_d_M;
+    b1.k_T = config_.mhc.mhc1_k_T;
+    b1.d_C = config_.mhc.mhc1_d_C;
+    b1.d_P = config_.mhc.mhc1_d_P;
+    b1.k_load = config_.mhc.mhc1_k_load;
+    b1.S_M = config_.mhc.mhc1_S_M;
+
+    MhcBranch b2;
+    b2.d_X = config_.mhc.d_X;
+    b2.d_M = config_.mhc.d_M;
+    b2.k_T = config_.mhc.k_T;
+    b2.d_C = config_.mhc.d_C;
+    b2.d_P = config_.mhc.d_P;
+    b2.k_load = config_.mhc.k_load;
+    b2.S_M = config_.mhc.S_M;
+    // IFN-gamma modulation applies to the MHC-II branch (the xenophagy /
+    // cross-presentation branch this model is built around). MHC-I keeps its
+    // own calibrated constant for now.
+    b2.V_M_ifn = config_.mhc.mhc2_V_M_ifn;
+    b2.K_M_ifn = config_.mhc.mhc2_K_M_ifn;
+    b2.ifn_gamma = local_ifn_gamma;
 
     // Fixed internal step, independent of the caller's window length. RK4 is
     // stable at this size for both the fast MHC-I branch and the stiffer
@@ -390,7 +437,8 @@ void PetriNetEngine::integrate_mhc_window(CellPetriNetState& state, int deg_coun
     }
 }
 
-WindowResult PetriNetEngine::advance(CellPetriNetState& state, double end) const {
+WindowResult PetriNetEngine::advance(CellPetriNetState& state, double end,
+                                    double local_ifn_gamma) const {
     if (!std::isfinite(end) || end < state.internal_time_seconds)
         throw std::invalid_argument("window end must not precede cell time");
     if (state.marking.empty()) state.marking = model_.initial_marking();
@@ -465,7 +513,8 @@ WindowResult PetriNetEngine::advance(CellPetriNetState& state, double end) const
             result.peak_xenophagy_activity, xenophagy_activity(state.marking));
         ++result.reactions_fired;
     }
-    integrate_mhc_window(state, result.deg_count, end - window_start, result);
+    integrate_mhc_window(state, result.deg_count, end - window_start, result,
+                         local_ifn_gamma);
     while (!state.entries.empty() && state.entries.front().time_seconds <= end + 1e-12) {
         apply_entry(state, state.entries.front());
         state.entries.pop_front();

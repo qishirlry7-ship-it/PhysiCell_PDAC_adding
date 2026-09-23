@@ -418,7 +418,26 @@ void petrinet_phenotype(PhysiCell::Cell* cell, PhysiCell::Phenotype& phenotype,
     // interval. Synchronize to the public clock; do not advance one interval
     // into the future.
     const double window_end = PhysiCell::PhysiCell_globals.current_time * 60.0;
-    WindowResult result = engine_ptr->advance(*state, window_end);
+
+    // THIS cell's local IFN-gamma, read from the BioFVM field at its current
+    // position. This is what closes the loop: CD8/NK/cDC1/activated-CD4 release
+    // IFN-gamma into the microenvironment, an infected tumour cell samples it
+    // here, and integrate_mhc_window() feeds it into the MHC-II synthesis term
+    // S_M_eff(c) = S_M + V_M_ifn * c / (K_M_ifn + c).
+    //
+    // The value is the raw, DIMENSIONLESS field density -- deliberately not
+    // converted to ng/mL. See the MHCParameters comment in petrinet_engine.h.
+    // A negative return means "no information"; -1 then disables the term,
+    // which keeps the parity test's constant-synthesis behaviour intact.
+    double local_ifn = -1.0;
+    {
+        static int ifn_idx = BioFVM::microenvironment.find_density_index("IFN_gamma");
+        const int voxel = cell->get_current_mechanics_voxel_index();
+        if (ifn_idx >= 0 && voxel >= 0 && voxel < BioFVM::microenvironment.number_of_voxels())
+            local_ifn = BioFVM::microenvironment.density_vector(voxel)[ifn_idx];
+    }
+
+    WindowResult result = engine_ptr->advance(*state, window_end, local_ifn);
     cell->custom_data["pn_active"] = state->active ? 1.0 : 0.0;
     cell->custom_data["intracellular_bacteria"] = result.intracellular_bacteria;
     cell->custom_data["sal_ruffle_tokens"] = result.sal_ruffle_tokens;

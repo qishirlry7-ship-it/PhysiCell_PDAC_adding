@@ -37,7 +37,17 @@
     <parameter name="bacterial_uptake_interval" value="1" units="min"/>
     <parameter name="bacterial_uptake_distance" value="20" units="micron"/>
     <parameter name="mhcii_cd4_attack_max" value="0.15" units="1/min"/>
-    <parameter name="mhcii_cd4_half_max" value="30" units="pMHC count"/>
+    <!-- Half-saturation for the MHC-II -> CD4 recognition Hill function.
+         RECALIBRATED from 30 to 5000. At 30 the function was saturated for
+         every infected cell: measured surface_pMHC_II runs 1550..59460 with
+         p50 = 39120, i.e. ~1300x the old half-max, so mhcii_cd4_recognition
+         was 0.98-0.9995 for essentially all infected cells and carried no
+         information beyond 'is this cell infected'. 5000 puts 94.5% of
+         infected cells inside the 0.05-0.95 discriminating band.
+         Note the asymmetry with MHC-I is real, not a mistake: mhci_cd8_
+         half_max = 24 sits sensibly against a measured surface_pMHC_I of
+         64..131 (2.7-5.5x), so only the MHC-II branch was mis-scaled. -->
+    <parameter name="mhcii_cd4_half_max" value="5000" units="pMHC count"/>
     <parameter name="mhcii_cd4_hill" value="1" units="dimensionless"/>
   </coupling>
   <initial_marking>
